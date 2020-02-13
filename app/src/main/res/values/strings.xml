@@ -13,4 +13,41 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+
+
+    <string name="left_bracket">(</string>
+    <string name="right_bracket">)</string>
+    <string name="percent_button">%</string>
+    <string name="all_clear_button">AC</string>
+    <string name="erase_button">CE</string>
+    <string name="seven_button">7</string>
+    <string name="eight_button">8</string>
+    <string name="nine_button">9</string>
+    <string name="divide_button">÷</string>
+    <string name="four_button">4</string>
+    <string name="five_button">5</string>
+    <string name="six_button">6</string>
+    <string name="times_button">x</string>
+    <string name="one_button">1</string>
+    <string name="two_button">2</string>
+    <string name="three_button">3</string>
+    <string name="minus_button">-</string>
+    <string name="zero_button">0</string>
+    <string name="decimal_button">.</string>
+    <string name="equal_button">=</string>
+    <string name="plus_button">+</string>
+    <string name="ERROR">error</string>
+    <string name="PowTen">E</string>
+    <string name="EnterPass">Enter Password</string>
+    <string name="Confirm">Confirm Password</string>
+    <string name="OK">OK</string>
+    <string name="warning">Warning: Your files will be encrypted with your password. You cannot change your password later.</string>
+    <string name="message">Enter the password then use the % button to access hidden files.</string>
+    <string name="title_activity_navigation">SneakyCal</string>
+    <string name="action_delete">Delete</string>
+    <string name="Access_Granted">Access Granted</string>
+    <string name="Gallery">Gallery</string>
+    <string name="Notes">Notes</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+
 </resources>
