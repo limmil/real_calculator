@@ -293,37 +293,6 @@ public class MainActivity extends AppCompatActivity
                 str = str.replace(getString(R.string.times_button), "*");
                 str = str.replace(getString(R.string.percent_button), "/100");
                 str = str.replace(getString((R.string.PowTen)), "*10^");
-
-                //postfix calculating
-                /*
-                try {
-                    ShuntingYard a = new ShuntingYard();
-                    Postfix q = new Postfix();
-                    str = a.convert(str);
-
-
-                    if (str.equals("error"))
-                    {
-                        disp.setText(getString(R.string.ERROR));
-                    }
-                    else
-                    {
-                        String answer = ( "" + q.eval(str) );
-                        if(answer.indexOf('E') != -1)
-                        {
-                            answer = answer.replace("E", "E(");
-                            answer = answer + ")";
-                        }
-
-                        disp.setText(answer);
-                    }
-                }
-                catch (Exception e)
-                {
-                    disp.setText(getString(R.string.ERROR));
-                }
-
-                 */
                 str = Calculate.compute(str);
                 if (str.equals("error"))
                 {
