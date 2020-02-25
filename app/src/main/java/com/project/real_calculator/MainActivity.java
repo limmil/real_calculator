@@ -15,7 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends Activity
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity
 {
 
     EditText disp;
@@ -293,10 +295,12 @@ public class MainActivity extends Activity
                 str = str.replace(getString((R.string.PowTen)), "*10^");
 
                 //postfix calculating
+                /*
                 try {
                     ShuntingYard a = new ShuntingYard();
                     Postfix q = new Postfix();
                     str = a.convert(str);
+
 
                     if (str.equals("error"))
                     {
@@ -319,6 +323,16 @@ public class MainActivity extends Activity
                     disp.setText(getString(R.string.ERROR));
                 }
 
+                 */
+                str = Calculate.compute(str);
+                if (str.equals("error"))
+                {
+                    disp.setText(getString(R.string.ERROR));
+                }
+                else
+                {
+                    disp.setText(str);
+                }
 
                 disp.setSelection(disp.getText().length());
                 setToAC();
