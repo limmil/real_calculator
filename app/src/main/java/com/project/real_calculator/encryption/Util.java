@@ -20,11 +20,11 @@ public class Util
         return sb.toString();
     }
 
-    public static String makeHashSha256(String password)
+    public static String makeHashSha(String password, String SHA)
     {
         MessageDigest md = null;
         try {
-            md = MessageDigest.getInstance("SHA-256");
+            md = MessageDigest.getInstance(SHA);
             md.update(password.getBytes());
         }
         catch (NoSuchAlgorithmException e)
@@ -43,10 +43,21 @@ public class Util
         return sb.toString();
     }
 
+    public static String makeHashSha256(String password)
+    {
+        return makeHashSha(password, "SHA-256");
+    }
+
+    public static String makeHashSha512(String password)
+    {
+        return makeHashSha(password, "SHA-512");
+    }
+
     public static void main(String[] args)
     {
         System.out.println(Util.makeRandomString(128));
         System.out.println(Util.makeHashSha256("123456"));
+        System.out.println(Util.makeHashSha512("123456"));
     }
 
 
