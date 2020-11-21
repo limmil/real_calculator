@@ -1,6 +1,5 @@
 package com.project.real_calculator.encryption;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +17,6 @@ public class AES
     //~~~setting data
     private static SecretKeySpec secretKey;
     private static IvParameterSpec iv;
-    private static byte[] key;
 
     private static byte[] decryptedBytes;
     private static byte[] encryptedBytes;
@@ -30,10 +28,10 @@ public class AES
     {
         MessageDigest sha = null;
         try{
-            key = myKey.getBytes(StandardCharsets.UTF_8);
-            sha = MessageDigest.getInstance("SHA-1"); // makes 160 bit hash
+            byte[] key = myKey.getBytes(StandardCharsets.UTF_8);
+            sha = MessageDigest.getInstance("SHA-256"); // makes 256 bit hash
             key = sha.digest(key);
-            key = Arrays.copyOf(key, 16); // use only first 128 bit
+            key = Arrays.copyOf(key, 32); // SecretKeySpec only supports 16, 24, 32 bytes
             secretKey = new SecretKeySpec(key, "AES");
         }
         catch (NoSuchAlgorithmException e)
@@ -129,11 +127,10 @@ public class AES
         // debug with println
         System.out.println("String to Encrypt: " + strToEncrypt);
         System.out.println("Encrypted: " + java.util.Arrays.toString(AES.getEncryptedBytes()));
-        String tmp = new String(AES.getEncryptedBytes(), StandardCharsets.UTF_8);
-        System.out.println("getEncryptedBytes: "+ new String(AES.getEncryptedBytes(), StandardCharsets.UTF_8));
-
+        String tmp = new String(AES.getEncryptedBytes(), StandardCharsets.ISO_8859_1);
+        System.out.println("getEncryptedBytes: "+ tmp);
         //decrypting, and debugging
-        AES.decrypt(AES.getEncryptedBytes());
+        AES.decrypt(tmp.getBytes(StandardCharsets.ISO_8859_1));
 
         byte[] d = AES.getDecryptedBytes();
         decoded = new String(d, StandardCharsets.UTF_8);
