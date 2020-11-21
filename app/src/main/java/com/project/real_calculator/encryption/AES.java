@@ -1,6 +1,7 @@
 package com.project.real_calculator.encryption;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -22,22 +23,20 @@ public class AES
     private static byte[] decryptedBytes;
     private static byte[] encryptedBytes;
 
+    private AES(){}
+
     //~~~set key method
     public static void setKey(String myKey)
     {
         MessageDigest sha = null;
         try{
-            key = myKey.getBytes("UTF-8");
+            key = myKey.getBytes(StandardCharsets.UTF_8);
             sha = MessageDigest.getInstance("SHA-1"); // makes 160 bit hash
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16); // use only first 128 bit
             secretKey = new SecretKeySpec(key, "AES");
         }
         catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
         }
@@ -50,7 +49,7 @@ public class AES
         {
             initVector = initVector.trim();
             initVector = initVector.substring(0,16);
-            iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            iv = new IvParameterSpec(initVector.getBytes(StandardCharsets.UTF_8));
         }
         catch (Exception e) {
             System.out.println("Error while setting " +
@@ -93,7 +92,7 @@ public class AES
     public static void encrypt(String str)
     {
         try {
-            encrypt(str.getBytes("UTF-8"));
+            encrypt(str.getBytes(StandardCharsets.UTF_8));
         }
         catch (Exception e) {
             System.out.println("Error occurred while " +
@@ -130,22 +129,14 @@ public class AES
         // debug with println
         System.out.println("String to Encrypt: " + strToEncrypt);
         System.out.println("Encrypted: " + java.util.Arrays.toString(AES.getEncryptedBytes()));
-        try {
-            System.out.println("getEncryptedBytes: "+ new String(AES.getEncryptedBytes(),"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String tmp = new String(AES.getEncryptedBytes(), StandardCharsets.UTF_8);
+        System.out.println("getEncryptedBytes: "+ new String(AES.getEncryptedBytes(), StandardCharsets.UTF_8));
 
         //decrypting, and debugging
         AES.decrypt(AES.getEncryptedBytes());
 
         byte[] d = AES.getDecryptedBytes();
-        try {
-            decoded = new String(d, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        decoded = new String(d, StandardCharsets.UTF_8);
         System.out.println("Decrypted Bytes: " + decoded);
 
         //encrypting byte array

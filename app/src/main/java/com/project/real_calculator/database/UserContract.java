@@ -1,0 +1,35 @@
+package com.project.real_calculator.database;
+
+import android.provider.BaseColumns;
+
+public final class UserContract {
+
+    // To prevent someone from instantiating the contract class
+    // make the constructor private
+    private UserContract() {}
+
+    /* Inner classes that defines the table contents */
+    public static class User implements BaseColumns {
+        public static final String TABLE_NAME = "USER";
+        public static final String COLUMN_PASSWORD = "PASSWORD";
+        public static final String COLUMN_IV = "IV";
+        public static final String COLUMN_MKEY = "MKEY";
+    }
+
+    public static class Album implements BaseColumns {
+        public static final String TABLE_NAME = "ALBUM";
+        public static final String COLUMN_NAME = "NAME";
+        public static final String COLUMN_THUMBNAIL = "THUMBNAIL";
+        public static final String COLUMN_COUNT = "COUNT";
+        public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+    }
+    public static class Photo implements BaseColumns {
+        public static final String TABLE_NAME = "PHOTOS";
+        public static final String COLUMN_NAME = "NAME";
+        public static final String COLUMN_CONTENT = "CONTENT";
+        public static final String COLUMN_THUMBNAIL = "THUMBNAIL";
+        public static final String COLUMN_EXTENSION = "EXTENSION";
+        public static final String COLUMN_ALBUM = "ALBUM";
+        public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+    }
+}
