@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity
     Button clear;
     private String str = "";
     boolean flag = true;
-    public static final String DEFAULT = "N/A";
-    String hash, salt, iv;
+    String hash, iv;
+    byte[] mkey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         disp = (EditText) findViewById(R.id.Text_Display);
         clear = (Button) findViewById(R.id.Clear_Button);
-        Log.d("startup1:","start");
         onStartUp();
     }
 
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity
                     newFolder.mkdirs();
                 }
 
-                File newFile = new File(dirPath, "myText2.txt");
+                File newFile = new File(dirPath, "myText.txt");
 
                 if(!newFile.exists()){
                     try {
@@ -95,9 +94,14 @@ public class MainActivity extends AppCompatActivity
                 }
                 try  {
                     FileOutputStream fOut = new FileOutputStream(newFile);
+                    byte[] tmp = {3,4,5,6,7,8,0};
+                    fOut.write(tmp);
+                    fOut.close();
+                    /*
                     OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
                     outputWriter.write("sadfds");
                     outputWriter.close();
+                    */
 
                     //display file saved message
                     //Toast.makeText(getBaseContext(), "File saved successfully!",
@@ -217,7 +221,7 @@ public class MainActivity extends AppCompatActivity
             case Percent_Button:
             {
                 final String pass = disp.getText().toString();
-                if( !(pass.equals(DEFAULT)) && Util.makeHashSha256( pass + salt ).equals(hash) )
+                if( Util.checkPassword(pass, hash) )
                 {
                     setDisp("",getString(R.string.Access_Granted));
                     setToAC();
@@ -225,8 +229,7 @@ public class MainActivity extends AppCompatActivity
                     Intent secret = new Intent();
                     secret.setClassName("com.project.real_calculator", "com.project.real_calculator.DrawerActivity");
                     startActivity(secret);
-                    AES.setKey(pass);
-                    AES.setIV(salt);
+                    Util.setMasterKey(pass, iv, mkey);
                 }
                 else
                 {
@@ -462,7 +465,7 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(getApplicationContext(), "Does not match.", Toast.LENGTH_SHORT).show();
                     }
                     //check password length
-                    else if(pas.length() < 6 || con.length() < 6)
+                    else if(pas.length() < 6)
                     {
                         Toast.makeText(getApplicationContext(), "Password needs to be at least 6 characters long.", Toast.LENGTH_SHORT).show();
                     }
@@ -473,7 +476,7 @@ public class MainActivity extends AppCompatActivity
                         iv = Util.makeRandomString(64);
                         hash = Util.makePasswordHash(pas);
                         // generate mkey and encrypt it
-                        String mkey = Util.makeRandomString(128);
+                        String mkey = Util.makeRandomString(1024);
                         byte[] bmkey = Util.encryptToByte(pas, iv, mkey);
 
                         // add user to db
@@ -515,6 +518,13 @@ public class MainActivity extends AppCompatActivity
 
                 }
             });
+        }
+        else{
+            // get hash and iv from database
+            List<UserModel> users = dbHelper.getUsers();
+            iv = users.get(0).getIv();
+            hash = users.get(0).getPassword();
+            mkey = users.get(0).getBmkey();
         }
     }
 }

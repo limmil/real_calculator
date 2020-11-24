@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.Nullable;
@@ -20,18 +21,32 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.project.real_calculator.MainActivity;
 import com.project.real_calculator.R;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.Util;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class GalleryFragment extends Fragment {
 
     private GalleryViewModel galleryViewModel;
 
-    private ImageSwitcher imgswitcher;
+    private ImageView imgswitcher;
     private Button random;
 
     //store image uris in this array list
@@ -51,14 +66,14 @@ public class GalleryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
 
         //init UI views
-        imgswitcher = root.findViewById(R.id.imgswitcher);
+        imgswitcher = root.findViewById(R.id.imgswitcher);/*
         imgswitcher.setFactory(new ViewSwitcher.ViewFactory(){
             @Override
             public View makeView(){
                 ImageView imageView = new ImageView(getActivity().getApplicationContext());
                 return imageView;
             }
-        });
+        });*/
         random = root.findViewById(R.id.random);
         //random button function
         random.setOnClickListener(new View.OnClickListener(){
@@ -67,7 +82,72 @@ public class GalleryFragment extends Fragment {
                 int size = imageUris.size()-1;
                 Random rand = new Random();
                 int randomNum = rand.nextInt((size - 0) + 1) + 0;
-                imgswitcher.setImageURI(imageUris.get(randomNum));
+                //imgswitcher.setImageURI(imageUris.get(randomNum));
+                InputStream iStream = null;
+                //==convert uri to bytes
+                try {
+                    iStream = getActivity().getApplicationContext().getContentResolver().openInputStream(imageUris.get(randomNum));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    byte[] inputData = getBytes(iStream);
+                    //==encrypt
+                    Util.encryptToByte(inputData);
+                    inputData = new byte[0];
+                    iStream.close();
+                    // test save
+                    String dirPath = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
+                    //String dirPath = getExternalFilesDir().getAbsolutePath() + File.separator + "testfolder";
+                    File newFolder = new File(dirPath);
+
+                    if (!newFolder.exists()){
+                        newFolder.mkdirs();
+                    }
+
+                    File newFile = new File(dirPath, "myText.txt");
+
+                    if(!newFile.exists()){
+                        try {
+                            newFile.createNewFile();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try  {
+                        FileOutputStream fOut = new FileOutputStream(newFile);
+                        byte[] tmp = {3,4,5,6,7,8,0};
+                        fOut.write(AES.getEncryptedBytes());
+                        AES.setEncryptedBytes(new byte[0]);
+                        fOut.close();
+                    /*
+                    OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
+                    outputWriter.write("sadfds");
+                    outputWriter.close();
+                    */
+
+                        //display file saved message
+                        //Toast.makeText(getBaseContext(), "File saved successfully!",
+                        //Toast.LENGTH_SHORT).show();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    // end test
+                    String dirPath2 = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
+                    File myExternalFile = new File(dirPath2, "myText.txt");
+                    //read from disk
+                    //Util.decryptToByte(fullyReadFileToBytes(myExternalFile));
+                    Util.decryptToByte(getBytes(new FileInputStream(myExternalFile)));
+                    AES.setEncryptedBytes(new byte[0]);
+                    //Glide.with(getActivity().getApplicationContext()).load(inputData).into(imgswitcher);
+                    Glide.with(getActivity().getApplicationContext()).load(AES.getDecryptedBytes()).diskCacheStrategy(DiskCacheStrategy.NONE).into(imgswitcher);
+                    // clear heap memory to avoid crash
+                    AES.setDecryptedBytes(new byte[0]);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -91,6 +171,42 @@ public class GalleryFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+    public byte[] fullyReadFileToBytes(File f) throws IOException {
+        int size = (int) f.length();
+        byte[] bytes = new byte[size];
+        byte[] tmpBuff = new byte[size];
+        FileInputStream fis= new FileInputStream(f);;
+        try {
+
+            int read = fis.read(bytes, 0, size);
+            if (read < size) {
+                int remain = size - read;
+                while (remain > 0) {
+                    read = fis.read(tmpBuff, 0, remain);
+                    System.arraycopy(tmpBuff, 0, bytes, size - remain, read);
+                    remain -= read;
+                }
+            }
+        }  catch (IOException e){
+            throw e;
+        } finally {
+            fis.close();
+        }
+
+        return bytes;
     }
 
     public void pickImagesIntent(){

@@ -58,11 +58,22 @@ public class Util
     }
 
     public static String makePasswordHash(String password){
-        return BCrypt.hashpw(password, BCrypt.gensalt(12));
+        return BCrypt.hashpw(password, BCrypt.gensalt(11));
     }
 
     public static boolean checkPassword(String password, String hash){
         return BCrypt.checkpw(password, hash);
+    }
+
+    public static void setMasterKey(String password, String iv, byte[] mkey){
+        // decrypt master key
+        AES.setKey(password);
+        AES.setIV(iv);
+        AES.decrypt(mkey);
+        // setup master key and derive iv from master key
+        String mk = new String(AES.getDecryptedBytes(), StandardCharsets.UTF_8);
+        AES.setKey(mk);
+        AES.setIV(Util.makeHashSha256(mk));
     }
 
     public static byte[] encryptToByte(String password, String iv, byte[] content){
@@ -77,17 +88,25 @@ public class Util
         AES.encrypt(content);
         return AES.getEncryptedBytes();
     }
+    public static byte[] encryptToByte(byte[] content){
+        AES.encrypt(content);
+        return AES.getEncryptedBytes();
+    }
 
+    public static byte[] decryptToByte(byte[] content){
+        AES.decrypt(content);
+        return AES.getDecryptedBytes();
+    }
     public static byte[] decryptToByte(String password, String iv, byte[] content){
         AES.setKey(password);
         AES.setIV(iv);
-        AES.encrypt(content);
+        AES.decrypt(content);
         return AES.getDecryptedBytes();
     }
     public static String decryptToString(String password, String iv, byte[] content){
         AES.setKey(password);
         AES.setIV(iv);
-        AES.encrypt(content);
+        AES.decrypt(content);
         return new String(AES.getDecryptedBytes(), StandardCharsets.UTF_8);
     }
 

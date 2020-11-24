@@ -78,7 +78,7 @@ public class AES
     public static void encrypt(byte[] arr)
     {
         try{
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
             setEncryptedBytes(c.doFinal(arr));
         }
@@ -86,6 +86,19 @@ public class AES
             System.out.println("Error occurred while " +
                     "encrypting: " + e.toString());
         }
+    }
+    public static byte[] encryptb(byte[] arr)
+    {
+        try{
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
+            c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
+            return c.doFinal(arr);
+        }
+        catch(Exception e){
+            System.out.println("Error occurred while " +
+                    "encrypting: " + e.toString());
+        }
+        return new byte[0];
     }
     public static void encrypt(String str)
     {
@@ -100,7 +113,7 @@ public class AES
     public static void decrypt(byte[] arr)
     {
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(Cipher.DECRYPT_MODE, secretKey, iv);
             setDecryptedBytes(c.doFinal(arr));
         }
@@ -108,6 +121,18 @@ public class AES
             System.out.println("Error occurred " +
                     "while decrypting: " + e.toString());
         }
+    }
+    public static byte[] decryptb(byte[] arr){
+        try {
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
+            c.init(Cipher.DECRYPT_MODE, secretKey, iv);
+            return c.doFinal(arr);
+        }
+        catch (Exception e) {
+            System.out.println("Error occurred " +
+                    "while decrypting: " + e.toString());
+        }
+        return new byte[0];
     }
 
     //~~~~Test Codes~~~~
