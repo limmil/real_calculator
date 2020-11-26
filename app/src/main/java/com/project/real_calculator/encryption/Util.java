@@ -1,5 +1,7 @@
 package com.project.real_calculator.encryption;
 
+import android.util.Log;
+
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -69,45 +71,33 @@ public class Util
         // decrypt master key
         AES.setKey(password);
         AES.setIV(iv);
-        AES.decrypt(mkey);
         // setup master key and derive iv from master key
-        String mk = new String(AES.getDecryptedBytes(), StandardCharsets.UTF_8);
+        String mk = new String(AES.decrypt(mkey), StandardCharsets.UTF_8);
         AES.setKey(mk);
         AES.setIV(Util.makeHashSha256(mk));
     }
 
-    public static byte[] encryptToByte(String password, String iv, byte[] content){
-        AES.setKey(password);
-        AES.setIV(iv);
-        AES.encrypt(content);
-        return AES.getEncryptedBytes();
-    }
+    // assuming password and iv is not known yet
     public static byte[] encryptToByte(String password, String iv, String content){
         AES.setKey(password);
         AES.setIV(iv);
-        AES.encrypt(content);
-        return AES.getEncryptedBytes();
+        return AES.encrypt(content.getBytes(StandardCharsets.UTF_8));
     }
+    // assuming password and iv is already set
     public static byte[] encryptToByte(byte[] content){
-        AES.encrypt(content);
-        return AES.getEncryptedBytes();
+        return AES.encrypt(content);
+    }
+    // assuming password and iv is already set
+    public static byte[] decryptToByte(byte[] content){
+        return AES.decrypt(content);
     }
 
-    public static byte[] decryptToByte(byte[] content){
-        AES.decrypt(content);
-        return AES.getDecryptedBytes();
+    public static String byteToString(byte[] content){
+        return new String(content, StandardCharsets.UTF_8);
     }
-    public static byte[] decryptToByte(String password, String iv, byte[] content){
-        AES.setKey(password);
-        AES.setIV(iv);
-        AES.decrypt(content);
-        return AES.getDecryptedBytes();
-    }
-    public static String decryptToString(String password, String iv, byte[] content){
-        AES.setKey(password);
-        AES.setIV(iv);
-        AES.decrypt(content);
-        return new String(AES.getDecryptedBytes(), StandardCharsets.UTF_8);
+
+    public static byte[] stringToByte(String content){
+        return content.getBytes(StandardCharsets.UTF_8);
     }
 
     public static void main(String[] args)

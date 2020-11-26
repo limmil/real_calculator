@@ -5,14 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.project.real_calculator.database.UserContract.*;
 import com.project.real_calculator.database.models.*;
+import com.project.real_calculator.encryption.Util;
 
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Album.TABLE_NAME + " (" +
             Album._ID + " INTEGER PRIMARY KEY, " +
             Album.COLUMN_NAME + " BLOB NOT NULL, " +
-            Album.COLUMN_THUMBNAIL + " BLOB NOT NULL, " +
+            Album.COLUMN_THUMBNAIL + " BLOB, " +
             Album.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             Album.COLUMN_COUNT + " INTEGER NOT NULL)";
     private static final String SQL_DELETE_ALBUM =
@@ -80,7 +81,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_DELETE_PHOTO);
     }
 
-    // USER TABLE
+    // USER TABLE __________________________________________________________________________________
     public boolean userExist(){
         SQLiteDatabase db = this.getReadableDatabase();
         String count = "SELECT COUNT(*) FROM " + User.TABLE_NAME;
@@ -92,8 +93,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
         return icount > 0; // first row returns 1
     }
-    /* CRUD */
-    // user table
+    /* USER CRUD */
     public boolean addUser(UserModel userModel){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -122,8 +122,70 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }while(cursor.moveToNext());
         }
         cursor.close();
-        //db.close();
+        db.close();
 
         return result;
+    }
+
+
+    // ALBUM TABLE _________________________________________________________________________________
+    /* ALBUM CRUD */
+    public boolean addAlbum(AlbumModel album){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        // encrypt name, thumbnail
+        byte[] albumName = Util.encryptToByte(album.getAlbumName().getBytes(StandardCharsets.UTF_8));
+        byte[] albumThumbnail = Util.encryptToByte(album.getCoverURI().getBytes(StandardCharsets.UTF_8));
+
+        cv.put(Album.COLUMN_NAME, albumName);
+        cv.put(Album.COLUMN_THUMBNAIL, albumThumbnail);
+        cv.put(Album.COLUMN_COUNT, album.getItemsCount());
+
+        long insert = db.insert(Album.TABLE_NAME, null, cv);
+        db.close();
+        return insert != -1;
+    }
+    public List<AlbumModel> getAlbums(){
+        List<AlbumModel> albumModels = new ArrayList<>();
+        String q = "SELECT * FROM " + Album.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+                byte[] bName = cursor.getBlob(1);
+                byte[] bUri = cursor.getBlob(2);
+                String time = cursor.getString(3);
+                int count = cursor.getInt(4);
+                //decrypt data
+                String name = Util.byteToString(Util.decryptToByte(bName));
+                String uri = Util.byteToString(Util.decryptToByte(bUri));
+
+                AlbumModel album = new AlbumModel(id, name, uri, time, count);
+                albumModels.add(album);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return albumModels;
+    }
+    public boolean updateAlbum(AlbumModel album){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(album.getId());
+        cv.put(Album.COLUMN_NAME, album.getAlbumName());
+        int updated = db.update(Album.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean deleteAlbum(AlbumModel album){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String id = String.valueOf(album.getId());
+        int deleted = db.delete(Album.TABLE_NAME, "_id = ?", new String[]{id});
+        db.close();
+
+        return deleted > 0;
     }
 }

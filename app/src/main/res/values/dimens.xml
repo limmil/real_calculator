@@ -5,4 +5,9 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="item_margin">1dp</dimen>
+    <dimen name="item_margin_half">1dp</dimen>
+    <dimen name="folder_column_width">120dp</dimen>
+    <dimen name="picture_column_width">90dp</dimen>
 </resources>

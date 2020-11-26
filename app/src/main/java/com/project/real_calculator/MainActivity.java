@@ -7,9 +7,7 @@ import com.project.real_calculator.database.models.UserModel;
 import com.project.real_calculator.encryption.*;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,49 +71,6 @@ public class MainActivity extends AppCompatActivity
         {
             case Zero_Button:
             {
-                // test
-                String dirPath = getExternalFilesDir("mydir/s").getAbsolutePath();
-                //String dirPath = getExternalFilesDir().getAbsolutePath() + File.separator + "testfolder";
-                File newFolder = new File(dirPath);
-                if (!newFolder.exists()){
-                    newFolder.mkdirs();
-                }
-
-                File newFile = new File(dirPath, "myText.txt");
-
-                if(!newFile.exists()){
-                    try {
-                        newFile.createNewFile();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                try  {
-                    FileOutputStream fOut = new FileOutputStream(newFile);
-                    byte[] tmp = {3,4,5,6,7,8,0};
-                    fOut.write(tmp);
-                    fOut.close();
-                    /*
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
-                    outputWriter.write("sadfds");
-                    outputWriter.close();
-                    */
-
-                    //display file saved message
-                    //Toast.makeText(getBaseContext(), "File saved successfully!",
-                            //Toast.LENGTH_SHORT).show();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-
-                DataBaseHelper dbHelper = new DataBaseHelper(MainActivity.this);
-                List<UserModel> e = dbHelper.getUsers();
-                String str = "id: "+e.get(0).getId()+" mkey: "+ Arrays.toString(e.get(0).getBmkey()) +" pw: "+e.get(0).getPassword();
-                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
-
-                // end test
-
                 final String temp = disp.getText().toString();
 
                 if(flag) {disp.setText("");}
@@ -432,8 +385,6 @@ public class MainActivity extends AppCompatActivity
     public void onStartUp()
     {
         final DataBaseHelper dbHelper = new DataBaseHelper(MainActivity.this);
-        //UserModel userModel = new UserModel(0,"iv","mkey","pw");
-        //boolean g = dbHelper.addUser(userModel);
 
         //check if user table first row exist
         if (!dbHelper.userExist()) //if user doesn't exist
@@ -441,7 +392,7 @@ public class MainActivity extends AppCompatActivity
             //open user input dialog
             final Dialog dialog = new Dialog(MainActivity.this);
             dialog.setTitle("Set a password");
-            dialog.setContentView(R.layout.setpass_dialog);
+            dialog.setContentView(R.layout.dialog_setpassword);
             dialog.show();
 
             //setting button and EditText from dialog
@@ -476,30 +427,21 @@ public class MainActivity extends AppCompatActivity
                         iv = Util.makeRandomString(64);
                         hash = Util.makePasswordHash(pas);
                         // generate mkey and encrypt it
-                        String mkey = Util.makeRandomString(1024);
-                        byte[] bmkey = Util.encryptToByte(pas, iv, mkey);
+                        String plainKey = Util.makeRandomString(4096);
+                        mkey = Util.encryptToByte(pas, iv, plainKey);
 
                         // add user to db
-                        UserModel newUser = new UserModel(iv, bmkey, hash);
+                        UserModel newUser = new UserModel(iv, mkey, hash);
                         boolean success = dbHelper.addUser(newUser);
-
-                        //List<UserModel> asdf = dbHelper.getUsers();
-                        //byte[] b = asdf.get(0).getBmkey();
                         if (success) {
                             Toast.makeText(getApplicationContext(), "Password set.", Toast.LENGTH_SHORT).show();
-                            /*
-                            Log.d("mkey",mkey);
-                            Log.d("bytestring", new String(b, StandardCharsets.UTF_8));
-                            Log.d("byte[]", Arrays.toString(b));
-                            AES.decrypt(b);
-                            Log.d("decypted", new String(AES.getDecryptedBytes(), StandardCharsets.ISO_8859_1));*/
                         }
                         dialog.cancel();
 
                         //make tip dialog
                         final Dialog td = new Dialog(MainActivity.this);
                         td.setTitle("Password set");
-                        td.setContentView(R.layout.setpass_successful_message);
+                        td.setContentView(R.layout.dialog_setpass_successful_message);
                         td.show();
 
                         //set ok button2
@@ -525,6 +467,7 @@ public class MainActivity extends AppCompatActivity
             iv = users.get(0).getIv();
             hash = users.get(0).getPassword();
             mkey = users.get(0).getBmkey();
+
         }
     }
 }

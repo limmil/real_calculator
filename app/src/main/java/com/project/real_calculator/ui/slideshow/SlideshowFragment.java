@@ -1,13 +1,18 @@
 package com.project.real_calculator.ui.slideshow;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -43,7 +49,7 @@ public class SlideshowFragment extends Fragment {
 
     private ImageView imgswitcher;
     private Button random;
-
+    private int count=1;
     //store image uris in this array list
     private ArrayList<Uri> imageUris;
     //request code to pick images
@@ -85,63 +91,66 @@ public class SlideshowFragment extends Fragment {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                try {
-                    byte[] inputData = getBytes(iStream);
-                    //==encrypt
-                    Util.encryptToByte(inputData);
-                    inputData = new byte[0];
-                    iStream.close();
-                    // test save
-                    String dirPath = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
-                    //String dirPath = getExternalFilesDir().getAbsolutePath() + File.separator + "testfolder";
-                    File newFolder = new File(dirPath);
+                //==encrypt
 
-                    if (!newFolder.exists()){
-                        newFolder.mkdirs();
-                    }
+                // test save
+                String dirPath = getActivity().getExternalFilesDir("media/1").getAbsolutePath();
+                //String dirPath = getExternalFilesDir().getAbsolutePath() + File.separator + "testfolder";
+                File newFolder = new File(dirPath);
 
-                    File newFile = new File(dirPath, "myText.txt");
+                if (!newFolder.exists()){
+                    newFolder.mkdirs();
+                }
 
-                    if(!newFile.exists()){
-                        try {
-                            newFile.createNewFile();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    try  {
-                        FileOutputStream fOut = new FileOutputStream(newFile);
-                        byte[] tmp = {3,4,5,6,7,8,0};
-                        fOut.write(AES.getEncryptedBytes());
-                        AES.setEncryptedBytes(new byte[0]);
-                        fOut.close();
-                    /*
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
-                    outputWriter.write("sadfds");
-                    outputWriter.close();
-                    */
+                File newFile = new File(dirPath, Integer.toString(count));
 
-                        //display file saved message
-                        //Toast.makeText(getBaseContext(), "File saved successfully!",
-                        //Toast.LENGTH_SHORT).show();
-                    }catch (Exception e){
+                if(!newFile.exists()){
+                    try {
+                        newFile.createNewFile();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    // end test
-                    String dirPath2 = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
-                    File myExternalFile = new File(dirPath2, "myText.txt");
-                    //read from disk
-                    //Util.decryptToByte(fullyReadFileToBytes(myExternalFile));
-                    Util.decryptToByte(getBytes(new FileInputStream(myExternalFile)));
-                    AES.setEncryptedBytes(new byte[0]);
-                    //Glide.with(getActivity().getApplicationContext()).load(inputData).into(imgswitcher);
-                    Glide.with(getActivity().getApplicationContext()).load(AES.getDecryptedBytes()).diskCacheStrategy(DiskCacheStrategy.NONE).into(imgswitcher);
-                    // clear heap memory to avoid crash
-                    AES.setDecryptedBytes(new byte[0]);
+                }
+                try  {
+                    FileOutputStream fOut = new FileOutputStream(newFile);
+                    byte[] tmp = {3,4,5,6,7,8,0};
+                    fOut.write(Util.encryptToByte(getBytes(iStream)));
+                    iStream.close();
+                    fOut.close();
+                /*
+                OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
+                outputWriter.write("sadfds");
+                outputWriter.close();
+                */
 
-                } catch (IOException e) {
+                    //display file saved message
+                    //Toast.makeText(getBaseContext(), "File saved successfully!",
+                    //Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
                     e.printStackTrace();
                 }
+                // end test
+                String dirPath2 = getActivity().getExternalFilesDir("media/1").getAbsolutePath();
+                File myExternalFile = new File(dirPath2, Integer.toString(count));
+                //read from disk
+                //Util.decryptToByte(fullyReadFileToBytes(myExternalFile));
+                //Util.decryptToByte(getBytes(new FileInputStream(myExternalFile)));
+                //AES.setEncryptedBytes(new byte[0]);
+                //Glide.with(getActivity().getApplicationContext()).load(inputData).into(imgswitcher)
+                /*
+                try {
+                    Glide.with(getActivity().getApplicationContext()).load(Util.decryptToByte(getBytes(new FileInputStream(myExternalFile)))).diskCacheStrategy(DiskCacheStrategy.NONE).into(imgswitcher);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
+                Glide.with(getActivity())
+                        .load(myExternalFile)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(imgswitcher);
+                count++;
+                // clear heap memory to avoid crash
+                //AES.setDecryptedBytes(new byte[0]);
 
             }
         });
@@ -196,10 +205,35 @@ public class SlideshowFragment extends Fragment {
         return bytes;
     }
 
+    public static String getMimeType(Context context, Uri uri) {
+        String type = context.getContentResolver().getType(uri);
+        // sometimes getType returns null
+        if(type == null){
+            type = uri.getPath();
+        }
+        // split by /
+        String[] arr = type.split("/");
+        // look for file type key words
+        for (String tmp : arr){
+            switch (tmp) {
+                case "images":
+                case "image":
+                    type = "image";
+                    break;
+                case "video":
+                    type = "video";
+                    break;
+            }
+        }
+        return type;
+    }
+
     public void pickImagesIntent(){
         Intent intent = new Intent();
-        intent.setType("image/*");
+        intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        String[] mimeTypes = {"image/*", "video/*"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Image(s)"), PICK_IMAGES_CODE);
     }
@@ -217,9 +251,8 @@ public class SlideshowFragment extends Fragment {
                         //get image uri at specific index
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
                         imageUris.add(imageUri);
-                        Log.d("pickedimgs","pickedimgs"+imageUri);
+                        Log.d("type",getMimeType(getActivity().getApplicationContext(), imageUri));
                     }
-                    // set image to something or save it to db
                     imgswitcher.setImageURI(imageUris.get(0));
                     position = 0;
 

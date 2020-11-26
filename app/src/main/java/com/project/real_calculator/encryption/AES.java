@@ -10,10 +10,14 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * AES encryption created by Quan on 6/1/2016.
+ * AES encryption
+ * Cipher is not thread safe
+ * Use encrypt and decrypt one at a time
  */
 public class AES
 {
+    //~~~thread flag
+    private static boolean running = false;
     //~~~setting data
     private static SecretKeySpec secretKey;
     private static IvParameterSpec iv;
@@ -75,24 +79,11 @@ public class AES
 
 
     //~~~Encrypt and Decrypt
-    public static void encrypt(byte[] arr)
-    {
+    public static byte[] doCrypto(byte[] content, int mode){
         try{
             Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            setEncryptedBytes(c.doFinal(arr));
-        }
-        catch(Exception e){
-            System.out.println("Error occurred while " +
-                    "encrypting: " + e.toString());
-        }
-    }
-    public static byte[] encryptb(byte[] arr)
-    {
-        try{
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            c.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            return c.doFinal(arr);
+            c.init(mode, secretKey, iv);
+            return c.doFinal(content);
         }
         catch(Exception e){
             System.out.println("Error occurred while " +
@@ -100,39 +91,11 @@ public class AES
         }
         return new byte[0];
     }
-    public static void encrypt(String str)
-    {
-        try {
-            encrypt(str.getBytes(StandardCharsets.UTF_8));
-        }
-        catch (Exception e) {
-            System.out.println("Error occurred while " +
-                    "encrypting: " + e.toString());
-        }
+    public static byte[] encrypt(byte[] content){
+        return doCrypto(content, Cipher.ENCRYPT_MODE);
     }
-    public static void decrypt(byte[] arr)
-    {
-        try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            c.init(Cipher.DECRYPT_MODE, secretKey, iv);
-            setDecryptedBytes(c.doFinal(arr));
-        }
-        catch (Exception e) {
-            System.out.println("Error occurred " +
-                    "while decrypting: " + e.toString());
-        }
-    }
-    public static byte[] decryptb(byte[] arr){
-        try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            c.init(Cipher.DECRYPT_MODE, secretKey, iv);
-            return c.doFinal(arr);
-        }
-        catch (Exception e) {
-            System.out.println("Error occurred " +
-                    "while decrypting: " + e.toString());
-        }
-        return new byte[0];
+    public static byte[] decrypt(byte[] content){
+        return doCrypto(content, Cipher.DECRYPT_MODE);
     }
 
     //~~~~Test Codes~~~~
@@ -148,27 +111,26 @@ public class AES
         //set key, set IV, encrypt string
         AES.setKey(strPassword);
         AES.setIV(iv);
-        AES.encrypt(strToEncrypt.trim());
+        byte[] b = AES.encrypt(strToEncrypt.trim().getBytes(StandardCharsets.UTF_8));
         // debug with println
         System.out.println("String to Encrypt: " + strToEncrypt);
-        System.out.println("Encrypted: " + java.util.Arrays.toString(AES.getEncryptedBytes()));
-        String tmp = new String(AES.getEncryptedBytes(), StandardCharsets.ISO_8859_1);
+        System.out.println("Encrypted: " + java.util.Arrays.toString(b));
+        String tmp = new String(b, StandardCharsets.ISO_8859_1);
         System.out.println("getEncryptedBytes: "+ tmp);
         //decrypting, and debugging
-        AES.decrypt(tmp.getBytes(StandardCharsets.ISO_8859_1));
+        b = AES.decrypt(tmp.getBytes(StandardCharsets.ISO_8859_1));
 
-        byte[] d = AES.getDecryptedBytes();
-        decoded = new String(d, StandardCharsets.UTF_8);
+        decoded = new String(b, StandardCharsets.UTF_8);
         System.out.println("Decrypted Bytes: " + decoded);
 
         //encrypting byte array
-        AES.encrypt(byteArrToEncrypt);
+        b = AES.encrypt(byteArrToEncrypt);
         System.out.println("Byte array to encrypt: " + java.util.Arrays.toString(byteArrToEncrypt));
-        System.out.println("Encrypted array: " + java.util.Arrays.toString(AES.getEncryptedBytes()));
+        System.out.println("Encrypted array: " + java.util.Arrays.toString(b));
 
         //decrypting byte array
-        AES.decrypt(AES.getEncryptedBytes());
-        System.out.println("Decrypted array: " + java.util.Arrays.toString(AES.getDecryptedBytes()));
+        b = AES.decrypt(b);
+        System.out.println("Decrypted array: " + java.util.Arrays.toString(b));
 
     }
 }

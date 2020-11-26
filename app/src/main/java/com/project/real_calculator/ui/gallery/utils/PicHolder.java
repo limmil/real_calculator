@@ -1,4 +1,4 @@
-package com.project.real_calculator.utils;
+package com.project.real_calculator.ui.gallery.utils;
 
 import android.view.View;
 import android.widget.ImageView;

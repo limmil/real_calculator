@@ -1,176 +1,155 @@
 package com.project.real_calculator.ui.gallery;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageSwitcher;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.project.real_calculator.MainActivity;
 import com.project.real_calculator.R;
-import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.database.DataBaseHelper;
+import com.project.real_calculator.database.models.AlbumModel;
+import com.project.real_calculator.database.models.PhotoModel;
 import com.project.real_calculator.encryption.Util;
+import com.project.real_calculator.interfaces.IClickListener;
+import com.project.real_calculator.ui.gallery.utils.AlbumAdapter;
+import com.project.real_calculator.ui.gallery.utils.MarginDecoration;
+import com.project.real_calculator.ui.gallery.utils.PicHolder;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.List;
 
-public class GalleryFragment extends Fragment {
+public class GalleryFragment extends Fragment implements IClickListener {
 
-    private GalleryViewModel galleryViewModel;
-
-    private ImageView imgswitcher;
-    private Button random;
-
-    //store image uris in this array list
-    private ArrayList<Uri> imageUris;
-    //request code to pick images
-    private static final int PICK_IMAGES_CODE = 0;
-    //position of selected image
-    int position = 0;
+    //private GalleryViewModel galleryViewModel;
+    private List<AlbumModel> albums;
+    RecyclerView albumRecycler;
+    AlbumAdapter albumAdapter;
+    TextView empty;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //init list
-        imageUris = new ArrayList<>();
+        //init albums list
+        final DataBaseHelper db = new DataBaseHelper(getActivity());
+        albums = db.getAlbums();
 
-        galleryViewModel =
-                new ViewModelProvider(this).get(GalleryViewModel.class);
+
+        //galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
 
-        //init UI views
-        imgswitcher = root.findViewById(R.id.imgswitcher);/*
-        imgswitcher.setFactory(new ViewSwitcher.ViewFactory(){
-            @Override
-            public View makeView(){
-                ImageView imageView = new ImageView(getActivity().getApplicationContext());
-                return imageView;
-            }
-        });*/
-        random = root.findViewById(R.id.random);
-        //random button function
-        random.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                int size = imageUris.size()-1;
-                Random rand = new Random();
-                int randomNum = rand.nextInt((size - 0) + 1) + 0;
-                //imgswitcher.setImageURI(imageUris.get(randomNum));
-                InputStream iStream = null;
-                //==convert uri to bytes
-                try {
-                    iStream = getActivity().getApplicationContext().getContentResolver().openInputStream(imageUris.get(randomNum));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    byte[] inputData = getBytes(iStream);
-                    //==encrypt
-                    Util.encryptToByte(inputData);
-                    inputData = new byte[0];
-                    iStream.close();
-                    // test save
-                    String dirPath = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
-                    //String dirPath = getExternalFilesDir().getAbsolutePath() + File.separator + "testfolder";
-                    File newFolder = new File(dirPath);
-
-                    if (!newFolder.exists()){
-                        newFolder.mkdirs();
-                    }
-
-                    File newFile = new File(dirPath, "myText.txt");
-
-                    if(!newFile.exists()){
-                        try {
-                            newFile.createNewFile();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    try  {
-                        FileOutputStream fOut = new FileOutputStream(newFile);
-                        byte[] tmp = {3,4,5,6,7,8,0};
-                        fOut.write(AES.getEncryptedBytes());
-                        AES.setEncryptedBytes(new byte[0]);
-                        fOut.close();
-                    /*
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fOut);
-                    outputWriter.write("sadfds");
-                    outputWriter.close();
-                    */
-
-                        //display file saved message
-                        //Toast.makeText(getBaseContext(), "File saved successfully!",
-                        //Toast.LENGTH_SHORT).show();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    // end test
-                    String dirPath2 = getActivity().getExternalFilesDir("mydir/s").getAbsolutePath();
-                    File myExternalFile = new File(dirPath2, "myText.txt");
-                    //read from disk
-                    //Util.decryptToByte(fullyReadFileToBytes(myExternalFile));
-                    Util.decryptToByte(getBytes(new FileInputStream(myExternalFile)));
-                    AES.setEncryptedBytes(new byte[0]);
-                    //Glide.with(getActivity().getApplicationContext()).load(inputData).into(imgswitcher);
-                    Glide.with(getActivity().getApplicationContext()).load(AES.getDecryptedBytes()).diskCacheStrategy(DiskCacheStrategy.NONE).into(imgswitcher);
-                    // clear heap memory to avoid crash
-                    AES.setDecryptedBytes(new byte[0]);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-
+        TextView albumName = root.findViewById(R.id.addAlbumName);
         FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
+
+        empty = root.findViewById(R.id.empty);
+
+        albumRecycler = root.findViewById(R.id.albumRecycler);
+        albumRecycler.addItemDecoration(new MarginDecoration(getActivity()));
+        albumRecycler.hasFixedSize();
+
+        if(albums.isEmpty()){
+            empty.setVisibility(View.VISIBLE);
+        }else{
+            albumAdapter = new AlbumAdapter(albums, getActivity(), this);
+            albumRecycler.setAdapter(albumAdapter);
+            // new thread for encrypting
+            //Runnable r_decrypt = new RunDecrypt();
+            //new Thread(r_decrypt).start();
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
-                Snackbar.make(view, "Replace with your gallery action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-                pickImagesIntent();
+                // create album
+                //open user input dialog
+                final Dialog dialog = new Dialog(getActivity());
+                dialog.setTitle("Add New Album");
+                dialog.setContentView(R.layout.dialog_add_album);
+                dialog.show();
+
+                //setting button and EditText from dialog
+                final EditText albumName = (EditText) dialog.findViewById(R.id.addAlbumName);
+                Button yesButton = (Button) dialog.findViewById(R.id.dialog_album_btn_yes);
+                Button noButton = (Button) dialog.findViewById(R.id.dialog_album_btn_no);
+
+                yesButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        // add new album to database
+                        String name = albumName.getText().toString().trim();
+                        boolean success = false;
+                        if(name.isEmpty()){
+                            Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
+                        }else{
+                            AlbumModel newAlbum = new AlbumModel(0,name,"N/A","",0);
+                            success = db.addAlbum(newAlbum);
+                        }
+                        if(success){
+                            // update view and see item added
+                            List<AlbumModel> tmp = db.getAlbums();
+                            // albumAdapter is null when adding the first one
+                            if (tmp.size()==1){
+                                albumAdapter = new AlbumAdapter(albums, getActivity(), GalleryFragment.this);
+                                albumRecycler.setAdapter(albumAdapter);
+                                empty.setVisibility(View.GONE);
+                            }
+                            albums.add(tmp.get(tmp.size()-1));
+                            albumAdapter.notifyDataSetChanged();
+                            Toast.makeText(getActivity(),"Created new album " + albums.size(),Toast.LENGTH_SHORT).show();
+                            dialog.cancel();
+                        }
+
+                    }
+                });
+
+                noButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+
             }
         });
 
         return root;
+    }
+
+    @Override
+    public void onPicClicked(PicHolder holder, int position, ArrayList<PhotoModel> pics) {
+
+    }
+
+    /**
+     * Each time an item in the RecyclerView is clicked this method from the implementation of the transitListerner
+     * in this activity is executed, this is possible because this class is passed as a parameter in the creation
+     * of the RecyclerView's Adapter, see the adapter class to understand better what is happening here
+     * @param pictureFolderPath a String corresponding to a album path on the device external storage
+     */
+    @Override
+    public void onPicClicked(String pictureFolderPath,String albumName) {
+        //Intent move = new Intent(MainActivity.this,ImageDisplay.class);
+        //move.putExtra("albumPath",pictureFolderPath);
+        //move.putExtra("albumName",albumName);
+
+        //move.putExtra("recyclerItemSize",getCardsOptimalWidth(4));
+        //startActivity(move);
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
@@ -209,43 +188,28 @@ public class GalleryFragment extends Fragment {
         return bytes;
     }
 
-    public void pickImagesIntent(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Image(s)"), PICK_IMAGES_CODE);
-    }
+    public class RunDecrypt implements Runnable{
+        @Override
+        public void run() {
+            for (int i=0; i<albums.size(); i++){
+                //TODO: write decryption here
+                //simulate decryption
+                Util.makePasswordHash("asdf");
+                Util.makePasswordHash("asdfd");
+                albums.get(i).setAlbumName("thread");
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
+                final int finalI = i;
+                getActivity().runOnUiThread(new Runnable() {
 
-        if (requestCode == PICK_IMAGES_CODE){
-            if (resultCode == Activity.RESULT_OK){
-                if (data.getClipData() != null){
-                    //picked multiple images
-                    int cout = data.getClipData().getItemCount();
-                    for (int i=0; i<cout; i++){
-                        //get image uri at specific index
-                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        imageUris.add(imageUri);
-                        Log.d("pickedimgs","pickedimgs"+imageUri);
+                    @Override
+                    public void run() {
+                        // Stuff that updates the UI
+                        albumAdapter.notifyItemChanged(finalI);
                     }
-                    // set image to something or save it to db
-                    imgswitcher.setImageURI(imageUris.get(0));
-                    position = 0;
-
-                }
-                else{
-                    //picked one image
-                    Uri imageUri = data.getData();
-                    imageUris.add(imageUri);
-                    // set image to something or save it to db
-                    Log.d("pickedimg","pickedimg");
-                    position = 0;
-                }
+                });
             }
+
         }
     }
+
 }

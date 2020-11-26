@@ -3,20 +3,22 @@ package com.project.real_calculator.database.models;
 public class AlbumModel {
 
     private int id;
-    private byte[] bAlbumName;
     private String albumName;
-    private byte[] bCoverURI;
     private String coverURI;
+    private byte[] byteData;
     private int itemsCount;
+    private String timestamp;
     private boolean isSelected;
 
     public AlbumModel(){
     }
-    public AlbumModel(int id, byte[] albumName, byte[] coverURI, int itemsCount){
+    public AlbumModel(int id, String albumName, String coverURI, String timestamp, int itemsCount){
         this.id = id;
-        this.bAlbumName = albumName;
-        this.bCoverURI = coverURI;
+        this.albumName = albumName;
+        this.coverURI = coverURI;
+        this.timestamp = timestamp;
         this.itemsCount = itemsCount;
+        this.byteData = new byte[0];
         this.isSelected = false;
     }
 
@@ -44,6 +46,22 @@ public class AlbumModel {
         this.coverURI = coverURI;
     }
 
+    public byte[] getByteData() {
+        return byteData;
+    }
+
+    public void setByteData(byte[] byteData) {
+        this.byteData = byteData;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public int getItemsCount() {
         return itemsCount;
     }
@@ -60,20 +78,5 @@ public class AlbumModel {
         isSelected = selected;
     }
 
-    public byte[] getbAlbumName() {
-        return bAlbumName;
-    }
-
-    public void setbAlbumName(byte[] bAlbumName) {
-        this.bAlbumName = bAlbumName;
-    }
-
-    public byte[] getbCoverURI() {
-        return bCoverURI;
-    }
-
-    public void setbCoverURI(byte[] bCoverURI) {
-        this.bCoverURI = bCoverURI;
-    }
 }
 
