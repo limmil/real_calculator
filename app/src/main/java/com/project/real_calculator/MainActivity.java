@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity
 {
 
     EditText disp;
-    Button clear;
+    Button clear, login;
     private String str = "";
     boolean flag = true;
     String hash, iv;
@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity
         disp = (EditText) findViewById(R.id.Text_Display);
         clear = (Button) findViewById(R.id.Clear_Button);
         onStartUp();
+        login = findViewById(R.id.Percent_Button);
+        setLoginButton(login);
     }
 
 
@@ -174,32 +176,20 @@ public class MainActivity extends AppCompatActivity
             case Percent_Button:
             {
                 final String pass = disp.getText().toString();
-                if( Util.checkPassword(pass, hash) )
+                if (!pass.equals("error"))
                 {
-                    setDisp("",getString(R.string.Access_Granted));
-                    setToAC();
-                    //opens a new activity
-                    Intent secret = new Intent();
-                    secret.setClassName("com.project.real_calculator", "com.project.real_calculator.DrawerActivity");
-                    startActivity(secret);
-                    Util.setMasterKey(pass, iv, mkey);
+
+                    if (!(pass.equals("")))
+                    {
+                        setDisp(pass, getString(R.string.percent_button));
+                    }
+                    setToCE();
                 }
                 else
                 {
-                    if (!pass.equals("error"))
-                    {
-
-                        if (!(pass.equals("")))
-                        {
-                            setDisp(pass, getString(R.string.percent_button));
-                        }
-                        setToCE();
-                    }
-                    else
-                    {
-                        setDisp("", getString(R.string.zero_button));
-                    }
+                    setDisp("", getString(R.string.zero_button));
                 }
+
             }
             break;
             case Clear_Button:
@@ -469,5 +459,25 @@ public class MainActivity extends AppCompatActivity
             mkey = users.get(0).getBmkey();
 
         }
+    }
+
+    public void setLoginButton(Button button){
+        button.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v) {
+                final String pass = disp.getText().toString();
+                if( Util.checkPassword(pass, hash) )
+                {
+                    setDisp("",getString(R.string.Access_Granted));
+                    setToAC();
+                    //opens a new activity
+                    Intent secret = new Intent();
+                    secret.setClassName("com.project.real_calculator", "com.project.real_calculator.DrawerActivity");
+                    startActivity(secret);
+                    Util.setMasterKey(pass, iv, mkey);
+                }
+                return true;
+            }
+        });
     }
 }
