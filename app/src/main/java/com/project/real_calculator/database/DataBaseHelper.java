@@ -49,12 +49,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Photo.COLUMN_NAME + " BLOB NOT NULL, " +
             Photo.COLUMN_CONTENT + " BLOB, " +
             Photo.COLUMN_THUMBNAIL + " BLOB, " +
-            Photo.COLUMN_EXTENSION + " BLOB, " +
+            Photo.COLUMN_FILETYPE + " BLOB, " +
             Photo.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             Photo.COLUMN_ALBUM + " INTEGER, " +
             " FOREIGN KEY ("+Photo.COLUMN_ALBUM+") REFERENCES "+Album.TABLE_NAME+"("+Album._ID+"))";
     private static final String SQL_DELETE_PHOTO =
             "DROP TABLE IF EXISTS " + Photo.TABLE_NAME;
+    // create album index on photo table
+    private static final String SQL_CREATE_PHOTO_ALBUM_INDEX = "CREATE INDEX " +
+            Photo.INDEX_ALBUM + " ON " +
+            Photo.TABLE_NAME + " (" +
+            Photo.COLUMN_ALBUM + ")";
+    private static final String SQL_DELETE_PHOTO_ALBUM_INDEX =
+            "DROP INDEX IF EXISTS " + Photo.INDEX_ALBUM;
 
 
 
@@ -72,13 +79,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_USER);
         sqLiteDatabase.execSQL(SQL_CREATE_ALBUM);
         sqLiteDatabase.execSQL(SQL_CREATE_PHOTO);
+        sqLiteDatabase.execSQL(SQL_CREATE_PHOTO_ALBUM_INDEX);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(SQL_DELETE_USER);
-        sqLiteDatabase.execSQL(SQL_DELETE_ALBUM);
+        sqLiteDatabase.execSQL(SQL_DELETE_PHOTO_ALBUM_INDEX);
         sqLiteDatabase.execSQL(SQL_DELETE_PHOTO);
+        sqLiteDatabase.execSQL(SQL_DELETE_ALBUM);
+
     }
 
     // USER TABLE __________________________________________________________________________________
@@ -134,8 +144,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         // encrypt name, thumbnail
-        byte[] albumName = Util.encryptToByte(album.getAlbumName().getBytes(StandardCharsets.UTF_8));
-        byte[] albumThumbnail = Util.encryptToByte(album.getCoverURI().getBytes(StandardCharsets.UTF_8));
+        byte[] albumName = Util.encryptToByte(album.getAlbumName());
+        byte[] albumThumbnail = Util.encryptToByte(album.getCoverURI());
 
         cv.put(Album.COLUMN_NAME, albumName);
         cv.put(Album.COLUMN_THUMBNAIL, albumThumbnail);
@@ -158,8 +168,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String time = cursor.getString(3);
                 int count = cursor.getInt(4);
                 //decrypt data
-                String name = Util.byteToString(Util.decryptToByte(bName));
-                String uri = Util.byteToString(Util.decryptToByte(bUri));
+                String name = Util.decryptToString(bName);
+                String uri = Util.decryptToString(bUri);
 
                 AlbumModel album = new AlbumModel(id, name, uri, time, count);
                 albumModels.add(album);
@@ -174,7 +184,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         String id = String.valueOf(album.getId());
-        cv.put(Album.COLUMN_NAME, album.getAlbumName());
+        // encrypt new name
+        cv.put(Album.COLUMN_NAME, Util.encryptToByte(album.getAlbumName()));
         int updated = db.update(Album.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
 
@@ -186,6 +197,97 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         int deleted = db.delete(Album.TABLE_NAME, "_id = ?", new String[]{id});
         db.close();
 
+        return deleted > 0;
+    }
+
+
+    // PHOTO TABLE _________________________________________________________________________________
+    /* PHOTO CRUD */
+    public boolean addPhotos(List<PhotoModel> photos, AlbumModel albumModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        for (PhotoModel tmp : photos){
+            // encrypt data
+            byte[] name = Util.encryptToByte(tmp.getName());
+            byte[] content = Util.encryptToByte(tmp.getContent());
+            byte[] fileType = Util.encryptToByte(tmp.getFileType());
+            byte[] thumbnail = Util.encryptToByte(tmp.getThumbnail());
+            int album = albumModel.getId();
+            // insert data
+            cv.put(Photo.COLUMN_NAME, name);
+            cv.put(Photo.COLUMN_CONTENT, content);
+            cv.put(Photo.COLUMN_FILETYPE, fileType);
+            cv.put(Photo.COLUMN_THUMBNAIL, thumbnail);
+            cv.put(Photo.COLUMN_ALBUM, album);
+
+            long insert = db.insert(Photo.TABLE_NAME, null, cv);
+            if (insert == -1){return false;}
+        }
+        db.close();
+        return true;
+    }
+    public List<PhotoModel> getPhotosFromAlbum(AlbumModel album){
+        List<PhotoModel> photos = new ArrayList<>();
+        String q = "SELECT * FROM " +
+                Photo.TABLE_NAME + "WHERE " +
+                Photo.COLUMN_ALBUM + " = " +
+                album.getId();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+                byte[] bName = cursor.getBlob(1);
+                byte[] bContent = cursor.getBlob(2);
+                byte[] bFileType = cursor.getBlob(3);
+                byte[] bThumbnail = cursor.getBlob(4);
+                String time = cursor.getString(5);
+                int albumId = cursor.getInt(6);
+                //decrypt data
+                String name = Util.decryptToString(bName);
+                String content = Util.decryptToString(bContent);
+                String fileType = Util.decryptToString(bFileType);
+                String thumbnail = Util.decryptToString(bThumbnail);
+
+                PhotoModel photo = new PhotoModel(id, name, content, thumbnail, fileType, time, albumId);
+                photos.add(photo);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return photos;
+    }
+    public boolean updatePhotoName(PhotoModel photoModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(photoModel.getId());
+        // encrypt updates
+        cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
+        int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean updatePhotoAlbum(PhotoModel photoModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(photoModel.getId());
+        // id is not encrypted
+        cv.put(Photo.COLUMN_ALBUM, photoModel.getId());
+        int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean deletePhotos(List<PhotoModel> photoModels){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] ids = new String[photoModels.size()];
+        for (int i=0; i<photoModels.size(); i++){
+            ids[i] = String.valueOf(photoModels.get(i).getId());
+        }
+        int deleted = db.delete(Photo.TABLE_NAME, "_id = ?", ids);
+        db.close();
         return deleted > 0;
     }
 }

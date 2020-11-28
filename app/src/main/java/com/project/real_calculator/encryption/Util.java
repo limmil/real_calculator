@@ -87,6 +87,9 @@ public class Util
     public static byte[] encryptToByte(byte[] content){
         return AES.encrypt(content);
     }
+    public static byte[] encryptToByte(String in){
+        return encryptToByte(stringToByte(in));
+    }
     // assuming password and iv is already set
     public static byte[] decryptToByte(byte[] content){
         return AES.decrypt(content);
@@ -94,6 +97,10 @@ public class Util
 
     public static String byteToString(byte[] content){
         return new String(content, StandardCharsets.UTF_8);
+    }
+
+    public static String decryptToString(byte[] content){
+        return byteToString(decryptToByte(content));
     }
 
     public static byte[] stringToByte(String content){

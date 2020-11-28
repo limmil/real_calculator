@@ -5,7 +5,6 @@ public class AlbumModel {
     private int id;
     private String albumName;
     private String coverURI;
-    private byte[] byteData;
     private int itemsCount;
     private String timestamp;
     private boolean isSelected;
@@ -18,7 +17,6 @@ public class AlbumModel {
         this.coverURI = coverURI;
         this.timestamp = timestamp;
         this.itemsCount = itemsCount;
-        this.byteData = new byte[0];
         this.isSelected = false;
     }
 
@@ -44,14 +42,6 @@ public class AlbumModel {
 
     public void setCoverURI(String coverURI) {
         this.coverURI = coverURI;
-    }
-
-    public byte[] getByteData() {
-        return byteData;
-    }
-
-    public void setByteData(byte[] byteData) {
-        this.byteData = byteData;
     }
 
     public String getTimestamp() {

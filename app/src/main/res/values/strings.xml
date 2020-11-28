@@ -50,4 +50,6 @@
     <string name="Notes">Notes</string>
     <string name="title_activity_drawer">DrawerActivity</string>
 
+    <string name="edit_album">Edit Album</string>
+
 </resources>

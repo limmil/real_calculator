@@ -1,21 +1,29 @@
 package com.project.real_calculator.ui.gallery;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
@@ -52,7 +60,6 @@ public class GalleryFragment extends Fragment implements IClickListener {
         //galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
 
-        TextView albumName = root.findViewById(R.id.addAlbumName);
         FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
 
         empty = root.findViewById(R.id.empty);
@@ -111,8 +118,10 @@ public class GalleryFragment extends Fragment implements IClickListener {
                             albums.add(tmp.get(tmp.size()-1));
                             albumAdapter.notifyDataSetChanged();
                             Toast.makeText(getActivity(),"Created new album " + albums.size(),Toast.LENGTH_SHORT).show();
-                            dialog.cancel();
+                        }else{
+                            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_SHORT).show();
                         }
+                        dialog.cancel();
 
                     }
                 });
@@ -123,8 +132,6 @@ public class GalleryFragment extends Fragment implements IClickListener {
                         dialog.cancel();
                     }
                 });
-
-
             }
         });
 
@@ -140,16 +147,120 @@ public class GalleryFragment extends Fragment implements IClickListener {
      * Each time an item in the RecyclerView is clicked this method from the implementation of the transitListerner
      * in this activity is executed, this is possible because this class is passed as a parameter in the creation
      * of the RecyclerView's Adapter, see the adapter class to understand better what is happening here
-     * @param pictureFolderPath a String corresponding to a album path on the device external storage
+     * @param pictureAlbumPath a String corresponding to a album path on the device external storage
      */
     @Override
-    public void onPicClicked(String pictureFolderPath,String albumName) {
+    public void onPicClicked(String pictureAlbumPath,String albumName) {
         //Intent move = new Intent(MainActivity.this,ImageDisplay.class);
         //move.putExtra("albumPath",pictureFolderPath);
         //move.putExtra("albumName",albumName);
-
         //move.putExtra("recyclerItemSize",getCardsOptimalWidth(4));
         //startActivity(move);
+    }
+
+    @Override
+    public void onPicHeld(final AlbumModel album, View v, final int position) {
+        PopupMenu popup = new PopupMenu(getActivity(), v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.album_popup, popup.getMenu());
+        popup.setForceShowIcon(true);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                final int delete = R.id.action_delete;
+                final int edit = R.id.action_edit;
+                switch (item.getItemId()){
+                    case delete:
+                        // delete button clicked
+                        dialogDelete(getContext(), album);
+                        break;
+                    case edit:
+                        // edit button clicked
+                        editAlbumName(album, position);
+                        break;
+                }
+                return true;
+            }
+        });
+        popup.show();
+    }
+
+    public void dialogDelete(Context context, final AlbumModel album){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    // clicked yes
+                    case DialogInterface.BUTTON_POSITIVE:
+                        // TODO: delete photos from album
+                        // delete album
+                        DataBaseHelper db = new DataBaseHelper(getActivity());
+                        boolean success = db.deleteAlbum(album);
+                        // remove album from albums array
+                        if(success){
+                            albums.remove(album);
+                            albumAdapter.notifyDataSetChanged();
+                        }
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure? All contents in this album will be deleted.")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    public void editAlbumName(final AlbumModel albumModel, final int position){
+        // show dialog
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.dialog_add_album);
+
+        TextView title = dialog.findViewById(R.id.addNewAlbum);
+        final EditText albumName = dialog.findViewById(R.id.addAlbumName);
+        Button yesButton = dialog.findViewById(R.id.dialog_album_btn_yes);
+        Button noButton = dialog.findViewById(R.id.dialog_album_btn_no);
+
+        dialog.setTitle("Edit Album");
+        title.setText(getString(R.string.edit_album));
+        albumName.setText(albumModel.getAlbumName());
+        dialog.show();
+        // buttons
+        yesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataBaseHelper db = new DataBaseHelper(getActivity());
+                // get text from albumName
+                // update name in album
+                String newName = albumName.getText().toString().trim();
+                // save change to db and albums array
+                boolean success = false;
+                if(newName.isEmpty()){
+                    Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
+                }else{
+                    albumModel.setAlbumName(newName);
+                    success = db.updateAlbum(albumModel);
+                }
+                if(success){
+                    albums.get(position).setAlbumName(newName);
+                    albumAdapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(),"Updated album name",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getActivity(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                }
+                dialog.cancel();
+            }
+        });
+        noButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
@@ -167,7 +278,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
         int size = (int) f.length();
         byte[] bytes = new byte[size];
         byte[] tmpBuff = new byte[size];
-        FileInputStream fis= new FileInputStream(f);;
+        FileInputStream fis= new FileInputStream(f);
         try {
 
             int read = fis.read(bytes, 0, size);

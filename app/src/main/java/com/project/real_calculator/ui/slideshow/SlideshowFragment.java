@@ -147,6 +147,7 @@ public class SlideshowFragment extends Fragment {
                 Glide.with(getActivity())
                         .load(myExternalFile)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .thumbnail(Glide.with(getActivity()).load(R.drawable.spin))
                         .into(imgswitcher);
                 count++;
                 // clear heap memory to avoid crash

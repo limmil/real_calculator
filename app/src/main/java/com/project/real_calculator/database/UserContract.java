@@ -28,8 +28,9 @@ public final class UserContract {
         public static final String COLUMN_NAME = "NAME";
         public static final String COLUMN_CONTENT = "CONTENT";
         public static final String COLUMN_THUMBNAIL = "THUMBNAIL";
-        public static final String COLUMN_EXTENSION = "EXTENSION";
+        public static final String COLUMN_FILETYPE = "FILETYPE";
         public static final String COLUMN_ALBUM = "ALBUM";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+        public static final String INDEX_ALBUM = "PHOTOS_ALBUM_IDX";
     }
 }

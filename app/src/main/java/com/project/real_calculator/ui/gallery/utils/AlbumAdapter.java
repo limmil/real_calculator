@@ -52,10 +52,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AlbumHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlbumHolder holder, final int position) {
         final AlbumModel album = albums.get(position);
-        // decrypted data will be store into byteData
-        if (album.getByteData().length == 0){ // if there is data inside byteData
+
+        // load album thumbnail
+        if (true){
             String dirPath2 = albumContx.getExternalFilesDir("media/1").getAbsolutePath();
             Random rand = new Random();
             int randomNum = rand.nextInt((5 - 1) + 1) + 1;
@@ -64,16 +65,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
             Glide.with(albumContx)
                     .load(myExternalFile)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.drawable.ic_baseline_album)
                     .apply(new RequestOptions().centerCrop())
                     .into(holder.albumPic);
-        }else{
-            Glide.with(albumContx)
-                    .load(album.getByteData())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .apply(new RequestOptions().centerCrop())
-                    .into(holder.albumPic);
-            // free memory in album array
-            album.setByteData(new byte[0]);
         }
 
         //setting the number of images
@@ -92,7 +86,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         holder.albumPic.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Toast.makeText(albumContx,"you held me", Toast.LENGTH_SHORT).show();
+                listenToClick.onPicHeld(album,v,position);
                 return true;
             }
         });

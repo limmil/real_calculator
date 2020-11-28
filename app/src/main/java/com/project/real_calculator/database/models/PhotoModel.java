@@ -3,22 +3,21 @@ package com.project.real_calculator.database.models;
 public class PhotoModel {
 
     private int id;
-    private byte[] bName;
-    private String name;
-    private byte[] bContent;
-    private String content;
-    private byte[] bThumbnail;
-    private String thumbnail;
-    private byte[] bExtension;
-    private String extension;
     private int album;
+    private String name;
+    private String content;
+    private String thumbnail;
+    private String fileType;
     private String albumName;
+    private String timeStamp;
 
-    public PhotoModel(int id, byte[] name, byte[] content, byte[] thumbnail, byte[] extension, int album){
-        this.bName = name;
-        this.bContent = content;
-        this.bThumbnail = thumbnail;
-        this.bExtension = extension;
+    public PhotoModel(int id, String name, String content, String thumbnail, String fileType, String timeStamp, int album){
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        this.thumbnail = thumbnail;
+        this.fileType = fileType;
+        this.timeStamp = timeStamp;
         this.album = album;
     }
 
@@ -30,14 +29,6 @@ public class PhotoModel {
         this.id = id;
     }
 
-    public byte[] getbName() {
-        return bName;
-    }
-
-    public void setbName(byte[] bName) {
-        this.bName = bName;
-    }
-
     public String getName() {
         return name;
     }
@@ -46,28 +37,12 @@ public class PhotoModel {
         this.name = name;
     }
 
-    public byte[] getbContent() {
-        return bContent;
-    }
-
-    public void setbContent(byte[] bContent) {
-        this.bContent = bContent;
-    }
-
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public byte[] getbThumbnail() {
-        return bThumbnail;
-    }
-
-    public void setbThumbnail(byte[] bThumbnail) {
-        this.bThumbnail = bThumbnail;
     }
 
     public String getThumbnail() {
@@ -94,19 +69,19 @@ public class PhotoModel {
         this.albumName = albumName;
     }
 
-    public byte[] getbExtension() {
-        return bExtension;
+    public String getFileType() {
+        return fileType;
     }
 
-    public void setbExtension(byte[] bExtension) {
-        this.bExtension = bExtension;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

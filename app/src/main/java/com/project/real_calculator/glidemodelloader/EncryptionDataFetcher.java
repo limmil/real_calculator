@@ -27,9 +27,7 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         // open file
         byte[] data = new byte[0];
         try { // decrypt
-            //FileInputStream fis = new FileInputStream(file);
             data = Util.decryptToByte(getBytes(new FileInputStream(file)));
-            //fis.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
