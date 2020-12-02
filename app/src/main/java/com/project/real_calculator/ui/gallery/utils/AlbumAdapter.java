@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
+import com.project.real_calculator.database.models.PhotoModel;
 import com.project.real_calculator.encryption.Util;
 import com.project.real_calculator.interfaces.IClickListener;
 import com.project.real_calculator.R;
@@ -57,10 +59,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
 
         // load album thumbnail
         if (true){
-            String dirPath2 = albumContx.getExternalFilesDir("media/1").getAbsolutePath();
-            Random rand = new Random();
-            int randomNum = rand.nextInt((5 - 1) + 1) + 1;
-            File myExternalFile = new File(dirPath2, Integer.toString(randomNum));
+            String dirPath = albumContx.getExternalFilesDir("media/t").getAbsolutePath();
+            DataBaseHelper db = new DataBaseHelper(albumContx);
+            List<PhotoModel> photoIds= db.getPhotoIdFromAlbum(album);
+            String thumbnail = "temp";
+            if (photoIds.size()>0){
+                thumbnail = Integer.toString(photoIds.get(photoIds.size()-1).getId());
+            }
+            File myExternalFile = new File(dirPath, thumbnail);
 
             Glide.with(albumContx)
                     .load(myExternalFile)
@@ -79,8 +85,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         holder.albumPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //listenToClick.onPicClicked(album.getPath(),album.getAlbumName());
-                Toast.makeText(albumContx,"you clicked me", Toast.LENGTH_SHORT).show();
+                listenToClick.onPicClicked(album);
             }
         });
         holder.albumPic.setOnLongClickListener(new View.OnLongClickListener() {

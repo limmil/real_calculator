@@ -4,7 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,11 +44,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GalleryFragment extends Fragment implements IClickListener {
 
     //private GalleryViewModel galleryViewModel;
-    private List<AlbumModel> albums;
+    private List<AlbumModel> allAlbums;
     RecyclerView albumRecycler;
     AlbumAdapter albumAdapter;
     TextView empty;
@@ -54,7 +58,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                              ViewGroup container, Bundle savedInstanceState) {
         //init albums list
         final DataBaseHelper db = new DataBaseHelper(getActivity());
-        albums = db.getAlbums();
+        allAlbums = db.getAlbums();
 
 
         //galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
@@ -65,13 +69,13 @@ public class GalleryFragment extends Fragment implements IClickListener {
         empty = root.findViewById(R.id.empty);
 
         albumRecycler = root.findViewById(R.id.albumRecycler);
-        albumRecycler.addItemDecoration(new MarginDecoration(getActivity()));
+        albumRecycler.addItemDecoration(new MarginDecoration(requireActivity()));
         albumRecycler.hasFixedSize();
 
-        if(albums.isEmpty()){
+        if(allAlbums.isEmpty()){
             empty.setVisibility(View.VISIBLE);
         }else{
-            albumAdapter = new AlbumAdapter(albums, getActivity(), this);
+            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
             albumRecycler.setAdapter(albumAdapter);
             // new thread for encrypting
             //Runnable r_decrypt = new RunDecrypt();
@@ -103,7 +107,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                         if(name.isEmpty()){
                             Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
                         }else{
-                            AlbumModel newAlbum = new AlbumModel(0,name,"N/A","",0);
+                            AlbumModel newAlbum = new AlbumModel(0,name,"N/A",0);
                             success = db.addAlbum(newAlbum);
                         }
                         if(success){
@@ -111,13 +115,13 @@ public class GalleryFragment extends Fragment implements IClickListener {
                             List<AlbumModel> tmp = db.getAlbums();
                             // albumAdapter is null when adding the first one
                             if (tmp.size()==1){
-                                albumAdapter = new AlbumAdapter(albums, getActivity(), GalleryFragment.this);
+                                albumAdapter = new AlbumAdapter(allAlbums, getActivity(), GalleryFragment.this);
                                 albumRecycler.setAdapter(albumAdapter);
                                 empty.setVisibility(View.GONE);
                             }
-                            albums.add(tmp.get(tmp.size()-1));
+                            allAlbums.add(tmp.get(tmp.size()-1));
                             albumAdapter.notifyDataSetChanged();
-                            Toast.makeText(getActivity(),"Created new album " + albums.size(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Created new album " + allAlbums.size(),Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_SHORT).show();
                         }
@@ -139,7 +143,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
     }
 
     @Override
-    public void onPicClicked(PicHolder holder, int position, ArrayList<PhotoModel> pics) {
+    public void onPicClicked(PicHolder holder, int position, List<PhotoModel> pics) {
 
     }
 
@@ -147,15 +151,15 @@ public class GalleryFragment extends Fragment implements IClickListener {
      * Each time an item in the RecyclerView is clicked this method from the implementation of the transitListerner
      * in this activity is executed, this is possible because this class is passed as a parameter in the creation
      * of the RecyclerView's Adapter, see the adapter class to understand better what is happening here
-     * @param pictureAlbumPath a String corresponding to a album path on the device external storage
+     * @param albumModel a String corresponding to a album path on the device external storage
      */
     @Override
-    public void onPicClicked(String pictureAlbumPath,String albumName) {
-        //Intent move = new Intent(MainActivity.this,ImageDisplay.class);
-        //move.putExtra("albumPath",pictureFolderPath);
-        //move.putExtra("albumName",albumName);
-        //move.putExtra("recyclerItemSize",getCardsOptimalWidth(4));
-        //startActivity(move);
+    public void onPicClicked(AlbumModel albumModel) {
+        Intent move = new Intent(getActivity(), ImageBrowseActivity.class);
+        move.putExtra("albumId", albumModel.getId());
+        move.putExtra("albumName", albumModel.getAlbumName());
+
+        startActivity(move);
     }
 
     @Override
@@ -198,7 +202,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                         boolean success = db.deleteAlbum(album);
                         // remove album from albums array
                         if(success){
-                            albums.remove(album);
+                            allAlbums.remove(album);
                             albumAdapter.notifyDataSetChanged();
                         }
                         break;
@@ -246,7 +250,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                     success = db.updateAlbum(albumModel);
                 }
                 if(success){
-                    albums.get(position).setAlbumName(newName);
+                    allAlbums.get(position).setAlbumName(newName);
                     albumAdapter.notifyDataSetChanged();
                     Toast.makeText(getActivity(),"Updated album name",Toast.LENGTH_SHORT).show();
                 }else{
@@ -302,12 +306,12 @@ public class GalleryFragment extends Fragment implements IClickListener {
     public class RunDecrypt implements Runnable{
         @Override
         public void run() {
-            for (int i=0; i<albums.size(); i++){
+            for (int i=0; i<allAlbums.size(); i++){
                 //TODO: write decryption here
                 //simulate decryption
                 Util.makePasswordHash("asdf");
                 Util.makePasswordHash("asdfd");
-                albums.get(i).setAlbumName("thread");
+                allAlbums.get(i).setAlbumName("thread");
 
                 final int finalI = i;
                 getActivity().runOnUiThread(new Runnable() {
@@ -321,6 +325,12 @@ public class GalleryFragment extends Fragment implements IClickListener {
             }
 
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        albumAdapter.notifyDataSetChanged();
     }
 
 }

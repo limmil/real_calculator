@@ -10,6 +10,7 @@ public class PhotoModel {
     private String fileType;
     private String albumName;
     private String timeStamp;
+    private boolean selected;
 
     public PhotoModel(int id, String name, String content, String thumbnail, String fileType, String timeStamp, int album){
         this.id = id;
@@ -83,5 +84,13 @@ public class PhotoModel {
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

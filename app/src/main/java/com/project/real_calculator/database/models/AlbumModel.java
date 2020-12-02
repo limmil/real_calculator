@@ -4,17 +4,13 @@ public class AlbumModel {
 
     private int id;
     private String albumName;
-    private String coverURI;
     private int itemsCount;
     private String timestamp;
     private boolean isSelected;
 
-    public AlbumModel(){
-    }
-    public AlbumModel(int id, String albumName, String coverURI, String timestamp, int itemsCount){
+    public AlbumModel(int id, String albumName, String timestamp, int itemsCount){
         this.id = id;
         this.albumName = albumName;
-        this.coverURI = coverURI;
         this.timestamp = timestamp;
         this.itemsCount = itemsCount;
         this.isSelected = false;
@@ -34,14 +30,6 @@ public class AlbumModel {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
-    }
-
-    public String getCoverURI() {
-        return coverURI;
-    }
-
-    public void setCoverURI(String coverURI) {
-        this.coverURI = coverURI;
     }
 
     public String getTimestamp() {

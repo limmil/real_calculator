@@ -238,7 +238,7 @@ public class SlideshowFragment extends Fragment {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Image(s)"), PICK_IMAGES_CODE);
     }
-
+/*
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
         super.onActivityResult(requestCode, resultCode, data);
@@ -268,5 +268,5 @@ public class SlideshowFragment extends Fragment {
                 }
             }
         }
-    }
+    }*/
 }

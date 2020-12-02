@@ -13,7 +13,6 @@ import com.project.real_calculator.encryption.Util;
 import androidx.annotation.Nullable;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,10 +144,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         // encrypt name, thumbnail
         byte[] albumName = Util.encryptToByte(album.getAlbumName());
-        byte[] albumThumbnail = Util.encryptToByte(album.getCoverURI());
 
         cv.put(Album.COLUMN_NAME, albumName);
-        cv.put(Album.COLUMN_THUMBNAIL, albumThumbnail);
         cv.put(Album.COLUMN_COUNT, album.getItemsCount());
 
         long insert = db.insert(Album.TABLE_NAME, null, cv);
@@ -164,14 +161,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             do{
                 int id = cursor.getInt(0);
                 byte[] bName = cursor.getBlob(1);
-                byte[] bUri = cursor.getBlob(2);
                 String time = cursor.getString(3);
                 int count = cursor.getInt(4);
                 //decrypt data
                 String name = Util.decryptToString(bName);
-                String uri = Util.decryptToString(bUri);
 
-                AlbumModel album = new AlbumModel(id, name, uri, time, count);
+                AlbumModel album = new AlbumModel(id, name, time, count);
                 albumModels.add(album);
             }while(cursor.moveToNext());
         }
@@ -203,9 +198,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // PHOTO TABLE _________________________________________________________________________________
     /* PHOTO CRUD */
-    public boolean addPhotos(List<PhotoModel> photos, AlbumModel albumModel){
+    public long addPhoto(PhotoModel photoModel, AlbumModel albumModel){
+        List<PhotoModel> tmp = new ArrayList<>();
+        tmp.add(photoModel);
+        return addPhotos(tmp, albumModel);
+    }
+    public long addPhotos(List<PhotoModel> photos, AlbumModel albumModel){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        long insert = -1;
         for (PhotoModel tmp : photos){
             // encrypt data
             byte[] name = Util.encryptToByte(tmp.getName());
@@ -220,16 +221,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(Photo.COLUMN_THUMBNAIL, thumbnail);
             cv.put(Photo.COLUMN_ALBUM, album);
 
-            long insert = db.insert(Photo.TABLE_NAME, null, cv);
-            if (insert == -1){return false;}
+            insert = db.insert(Photo.TABLE_NAME, null, cv);
+            if (insert == -1){return insert;}
         }
         db.close();
-        return true;
+        return insert;
     }
     public List<PhotoModel> getPhotosFromAlbum(AlbumModel album){
         List<PhotoModel> photos = new ArrayList<>();
         String q = "SELECT * FROM " +
-                Photo.TABLE_NAME + "WHERE " +
+                Photo.TABLE_NAME + " WHERE " +
                 Photo.COLUMN_ALBUM + " = " +
                 album.getId();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -258,6 +259,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return photos;
     }
+    public List<PhotoModel> getPhotoIdFromAlbum(AlbumModel album){
+        List<com.project.real_calculator.database.models.PhotoModel> photos = new ArrayList<>();
+        String q = "SELECT " + Photo._ID + " FROM " +
+                Photo.TABLE_NAME + " WHERE " +
+                Photo.COLUMN_ALBUM + " = " +
+                album.getId();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+
+                PhotoModel photo = new PhotoModel(id, "", "", "", "", "", 0);
+                photos.add(photo);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return photos;
+    }
     public boolean updatePhotoName(PhotoModel photoModel){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -269,12 +291,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return updated > 0;
     }
-    public boolean updatePhotoAlbum(PhotoModel photoModel){
+    public boolean updatePhotoAlbumId(PhotoModel photoModel){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         String id = String.valueOf(photoModel.getId());
         // id is not encrypted
         cv.put(Photo.COLUMN_ALBUM, photoModel.getId());
+        int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean updatePhoto(PhotoModel photoModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(photoModel.getId());
+
+        cv.put(Photo.COLUMN_ALBUM, photoModel.getId());
+        cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
+        cv.put(Photo.COLUMN_THUMBNAIL, Util.encryptToByte(photoModel.getThumbnail()));
+        cv.put(Photo.COLUMN_CONTENT, Util.encryptToByte(photoModel.getContent()));
         int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
 
