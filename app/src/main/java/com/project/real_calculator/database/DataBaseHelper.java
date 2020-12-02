@@ -296,7 +296,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(photoModel.getId());
         // id is not encrypted
-        cv.put(Photo.COLUMN_ALBUM, photoModel.getId());
+        cv.put(Photo.COLUMN_ALBUM, photoModel.getAlbum());
         int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
 
@@ -307,7 +307,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(photoModel.getId());
 
-        cv.put(Photo.COLUMN_ALBUM, photoModel.getId());
+        cv.put(Photo.COLUMN_ALBUM, photoModel.getAlbum());
         cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
         cv.put(Photo.COLUMN_THUMBNAIL, Util.encryptToByte(photoModel.getThumbnail()));
         cv.put(Photo.COLUMN_CONTENT, Util.encryptToByte(photoModel.getContent()));

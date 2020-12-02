@@ -58,27 +58,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         final AlbumModel album = albums.get(position);
 
         // load album thumbnail
-        if (true){
-            String dirPath = albumContx.getExternalFilesDir("media/t").getAbsolutePath();
-            DataBaseHelper db = new DataBaseHelper(albumContx);
-            List<PhotoModel> photoIds= db.getPhotoIdFromAlbum(album);
-            String thumbnail = "temp";
-            if (photoIds.size()>0){
-                thumbnail = Integer.toString(photoIds.get(photoIds.size()-1).getId());
-            }
-            File myExternalFile = new File(dirPath, thumbnail);
-
-            Glide.with(albumContx)
-                    .load(myExternalFile)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .placeholder(R.drawable.ic_baseline_album)
-                    .apply(new RequestOptions().centerCrop())
-                    .into(holder.albumPic);
+        String dirPath = albumContx.getExternalFilesDir("media/t").getAbsolutePath();
+        DataBaseHelper db = new DataBaseHelper(albumContx);
+        List<PhotoModel> photoIds= db.getPhotoIdFromAlbum(album);
+        String thumbnail = "temp";
+        if (photoIds.size()>0){
+            thumbnail = Integer.toString(photoIds.get(photoIds.size()-1).getId());
         }
+        File myExternalFile = new File(dirPath, thumbnail);
+
+        Glide.with(albumContx)
+                .load(myExternalFile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.drawable.ic_baseline_album)
+                .apply(new RequestOptions().centerCrop())
+                .into(holder.albumPic);
+
 
         //setting the number of images
         String text = ""+album.getAlbumName();
-        String albumSizeString=""+album.getItemsCount()+" Media";
+        String albumSizeString=""+photoIds.size()+" Media";
         holder.albumSize.setText(albumSizeString);
         holder.albumName.setText(text);
 

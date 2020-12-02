@@ -19,6 +19,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
@@ -205,7 +206,9 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             File myExternalFile = new File(imageDir, String.valueOf(id));
             Glide.with(animeContx)
                     .load(myExternalFile)
+                    .thumbnail(Glide.with(animeContx).load(R.drawable.spin))
                     .apply(new RequestOptions().fitCenter())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(image);
 
             image.setOnClickListener(new View.OnClickListener() {

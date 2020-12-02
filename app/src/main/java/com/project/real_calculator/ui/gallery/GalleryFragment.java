@@ -77,9 +77,6 @@ public class GalleryFragment extends Fragment implements IClickListener {
         }else{
             albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
             albumRecycler.setAdapter(albumAdapter);
-            // new thread for encrypting
-            //Runnable r_decrypt = new RunDecrypt();
-            //new Thread(r_decrypt).start();
         }
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -303,34 +300,12 @@ public class GalleryFragment extends Fragment implements IClickListener {
         return bytes;
     }
 
-    public class RunDecrypt implements Runnable{
-        @Override
-        public void run() {
-            for (int i=0; i<allAlbums.size(); i++){
-                //TODO: write decryption here
-                //simulate decryption
-                Util.makePasswordHash("asdf");
-                Util.makePasswordHash("asdfd");
-                allAlbums.get(i).setAlbumName("thread");
-
-                final int finalI = i;
-                getActivity().runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        // Stuff that updates the UI
-                        albumAdapter.notifyItemChanged(finalI);
-                    }
-                });
-            }
-
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        albumAdapter.notifyDataSetChanged();
+        if(albumAdapter != null){
+            albumAdapter.notifyDataSetChanged();
+        }
     }
 
 }
