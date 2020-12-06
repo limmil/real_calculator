@@ -6,10 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,17 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.encryption.Util;
 import com.project.real_calculator.interfaces.IClickListener;
 import com.project.real_calculator.ui.gallery.utils.AlbumAdapter;
 import com.project.real_calculator.ui.gallery.utils.MarginDecoration;
@@ -42,9 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GalleryFragment extends Fragment implements IClickListener {
 
@@ -306,6 +299,12 @@ public class GalleryFragment extends Fragment implements IClickListener {
         if(albumAdapter != null){
             albumAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Glide.get(requireContext()).clearMemory();
     }
 
 }

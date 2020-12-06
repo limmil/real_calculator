@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -18,13 +17,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.encryption.Util;
 import com.project.real_calculator.interfaces.IClickListener;
 import com.project.real_calculator.R;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>{
 

@@ -1,13 +1,16 @@
 package com.project.real_calculator.ui.gallery;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -23,20 +26,30 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
+import com.project.real_calculator.encryption.AES;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
 import com.project.real_calculator.ui.gallery.utils.RecyclerViewPagerImageIndicator;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.CipherInputStream;
+
 import static androidx.core.view.ViewCompat.setTransitionName;
+import static java.lang.Thread.sleep;
 
 public class ImageBrowserFragment extends Fragment implements IImageIndicatorListener {
     private List<PhotoModel> allImages = new ArrayList<>();
     private int position;
     private Context animeContx;
     private ImageView image;
+    private ImageButton playButton;
     private ViewPager imagePager;
     private RecyclerView indicatorRecycler;
     private int viewVisibilityController;
@@ -68,7 +81,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if(allImages.isEmpty())
@@ -85,7 +98,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
         imagePager = view.findViewById(R.id.imagePager);
         pagingImages = new ImagesPagerAdapter();
         imagePager.setAdapter(pagingImages);
-        imagePager.setOffscreenPageLimit(3);
+        imagePager.setOffscreenPageLimit(1);
         imagePager.setCurrentItem(position);//displaying the image at the current position passed by the ImageDisplay Activity
 
 
@@ -100,6 +113,9 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
         //adjusting the recyclerView indicator to the current position of the viewPager, also highlights the image in recyclerView with respect to the
         //viewPager's position
+        // random crash if allImages size went to 0
+        if(allImages.size()==0){requireActivity().finish();}
+
         allImages.get(position).setSelected(true);
         previousSelected = position;
         indicatorAdapter.notifyDataSetChanged();
@@ -193,22 +209,46 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
         @NonNull
         @Override
-        public Object instantiateItem(@NonNull ViewGroup containerCollection, int position) {
+        public Object instantiateItem(@NonNull ViewGroup containerCollection, final int position) {
             LayoutInflater layoutinflater = (LayoutInflater) containerCollection.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutinflater.inflate(R.layout.fragment_gallery_browser_pager,null);
             image = view.findViewById(R.id.image);
+            playButton = view.findViewById(R.id.playButton);
 
             setTransitionName(image, String.valueOf(position)+"picture");
 
-            String imageDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
+            String[] arr = allImages.get(position).getFileType().split("/");
+            File myExternalFile;
             int id = allImages.get(position).getId();
-            File myExternalFile = new File(imageDir, String.valueOf(id));
+            String fileType = "N/A";
+            String fileExtension = "N/A";
+            if (arr.length==2){
+                fileType = arr[0];
+                fileExtension = arr[1];
+                if (fileType.equals("image")){
+                    String imageDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
+                    myExternalFile = new File(imageDir, String.valueOf(id));
+                } else if (fileType.equals("video")){
+                    playButton.setVisibility(View.VISIBLE);
+                    String imageDir = animeContx.getExternalFilesDir("media/t").getAbsolutePath();
+                    myExternalFile = new File(imageDir, String.valueOf(id));
+                } else{
+                    String imageDir = animeContx.getExternalFilesDir("media/t").getAbsolutePath();
+                    myExternalFile = new File(imageDir, String.valueOf(id));
+                }
+            } else{
+                String imageDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
+                myExternalFile = new File(imageDir, String.valueOf(id));
+            }
+
+
             Glide.with(animeContx)
                     .load(myExternalFile)
                     .thumbnail(Glide.with(animeContx).load(R.drawable.spin))
                     .apply(new RequestOptions().fitCenter())
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(image);
 
             image.setOnClickListener(new View.OnClickListener() {
@@ -226,11 +266,76 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                      * when image is clicked
                      */
                     /*if(viewVisibilityController == 0){
-                     indicatorRecycler.setVisibility(View.VISIBLE);
-                     visibiling();
-                 }else{
-                     viewVisibilitylooper++;
-                 }*/
+                        indicatorRecycler.setVisibility(View.VISIBLE);
+                        visibiling();
+                    }else{
+                        viewVisibilitylooper++;
+                    }*/
+
+
+
+                }
+            });
+
+            final String finalFileExtension = fileExtension.toLowerCase();
+            playButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Glide.get(requireActivity()).clearMemory();
+                    try {
+                        sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    // TODO: progress dialog
+                    // get the file and decrypt in onto disk
+                    String sourceVideoDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
+                    String sourceFileName = String.valueOf(allImages.get(position).getId());
+                    final File sourceVideoFile = new File(sourceVideoDir, sourceFileName);
+
+                    String tempFileDir = animeContx.getFilesDir().getAbsolutePath();
+                    final File tempVideoFile = new File(tempFileDir, "temp." + finalFileExtension);
+
+                    final ProgressDialog dialog = ProgressDialog.show(getActivity(),
+                            "Loading", "Decrypting video.", true);
+
+                    new Thread() {
+                        public void run() {
+                            FileInputStream fis;
+                            FileOutputStream out;
+                            try {
+                                fis = new FileInputStream(sourceVideoFile);
+                                CipherInputStream cis = new CipherInputStream(fis, AES.getDecryptionCipher());
+                                out = new FileOutputStream(tempVideoFile);
+
+                                byte[] buffer = new byte[1024 * 1024];
+
+                                int len = 0;
+                                while ((len=cis.read(buffer)) != -1) {
+                                    out.write(buffer, 0, len);
+                                }
+                                // fast but uses too much memory
+                                //out.write(Util.decryptToByte(getBytes(fis)));
+                                cis.close();
+                                out.close();
+                                fis.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            Intent move = new Intent(getActivity(), VideoPlayerActivity.class);
+                            move.putExtra("tempVideoFile", tempVideoFile.getAbsolutePath());
+
+                            startActivity(move);
+
+                            requireActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    }.start();
 
                 }
             });
@@ -271,5 +376,22 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                 }
             }
         }, 4000);
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+
+        int len = 0;
+        while ((len=inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Glide.get(requireContext()).clearMemory();
     }
 }

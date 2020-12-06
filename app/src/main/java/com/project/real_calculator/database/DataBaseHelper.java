@@ -198,9 +198,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // PHOTO TABLE _________________________________________________________________________________
     /* PHOTO CRUD */
-    public long addPhoto(PhotoModel photoModel, AlbumModel albumModel){
+    public long addPhoto(PhotoModel photo, AlbumModel albumModel){
         List<PhotoModel> tmp = new ArrayList<>();
-        tmp.add(photoModel);
+        tmp.add(photo);
         return addPhotos(tmp, albumModel);
     }
     public long addPhotos(List<PhotoModel> photos, AlbumModel albumModel){
@@ -240,8 +240,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 int id = cursor.getInt(0);
                 byte[] bName = cursor.getBlob(1);
                 byte[] bContent = cursor.getBlob(2);
-                byte[] bFileType = cursor.getBlob(3);
-                byte[] bThumbnail = cursor.getBlob(4);
+                byte[] bThumbnail = cursor.getBlob(3);
+                byte[] bFileType = cursor.getBlob(4);
                 String time = cursor.getString(5);
                 int albumId = cursor.getInt(6);
                 //decrypt data
@@ -310,6 +310,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(Photo.COLUMN_ALBUM, photoModel.getAlbum());
         cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
         cv.put(Photo.COLUMN_THUMBNAIL, Util.encryptToByte(photoModel.getThumbnail()));
+        cv.put(Photo.COLUMN_FILETYPE, Util.encryptToByte(photoModel.getFileType()));
         cv.put(Photo.COLUMN_CONTENT, Util.encryptToByte(photoModel.getContent()));
         int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();

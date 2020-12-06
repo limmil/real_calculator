@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -79,7 +80,7 @@ public class AES
 
 
     //~~~Encrypt and Decrypt
-    public static byte[] doCrypto(byte[] content, int mode){
+    private static byte[] doCrypto(byte[] content, int mode){
         try{
             Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(mode, secretKey, iv);
@@ -96,6 +97,32 @@ public class AES
     }
     public static byte[] decrypt(byte[] content){
         return doCrypto(content, Cipher.DECRYPT_MODE);
+    }
+
+    private static Cipher getCipher(int mode) throws Exception {
+        Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        c.init(mode, secretKey, iv);
+        return c;
+    }
+    public static Cipher getEncryptionCipher(){
+        try{
+            return getCipher(Cipher.ENCRYPT_MODE);
+        }
+        catch(Exception e){
+            System.out.println("Error occurred while " +
+                    "encrypting: " + e.toString());
+        }
+        return null;
+    }
+    public static Cipher getDecryptionCipher(){
+        try{
+            return getCipher(Cipher.DECRYPT_MODE);
+        }
+        catch(Exception e){
+            System.out.println("Error occurred while " +
+                    "decrypting: " + e.toString());
+        }
+        return null;
     }
 
     //~~~~Test Codes~~~~

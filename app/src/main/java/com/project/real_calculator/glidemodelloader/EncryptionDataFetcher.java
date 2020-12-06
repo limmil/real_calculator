@@ -2,17 +2,22 @@ package com.project.real_calculator.glidemodelloader;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
+import com.project.real_calculator.encryption.AES;
 import com.project.real_calculator.encryption.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+
+import javax.crypto.CipherInputStream;
 
 public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
 
@@ -26,25 +31,50 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
     public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super ByteBuffer> callback) {
         // open file
         byte[] data = new byte[0];
+        ByteBuffer byteBuffer = ByteBuffer.wrap(data);
+
         try { // decrypt
             data = Util.decryptToByte(getBytes(new FileInputStream(file)));
+            byteBuffer = ByteBuffer.wrap(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+        } catch (OutOfMemoryError e){
+            FileInputStream fis;
+            CipherInputStream cis;
+            try {
+                fis = new FileInputStream(file);
+                cis = new CipherInputStream(fis, AES.getDecryptionCipher());
+                MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)file.length());
+                byte[] buffer = new byte[1024*1024];
+
+                int len = 0;
+                while ((len=cis.read(buffer)) != -1) {
+                    bos.write(buffer, 0, len);
+                }
+                byteBuffer = ByteBuffer.wrap(bos.getBuf());
+                fis.close();
+                cis.close();
+                bos.close();
+            } catch (IOException | OutOfMemoryError ex) {
+                //ex.printStackTrace();
+            }
         }
-        ByteBuffer byteBuffer = ByteBuffer.wrap(data);
+
         callback.onDataReady(byteBuffer);
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
+        MyByteArrayOutputStream byteBuffer = new MyByteArrayOutputStream((int)file.length());
+        int bufferSize = 16 * 1024;
         byte[] buffer = new byte[bufferSize];
 
         int len;
         while ((len = inputStream.read(buffer)) != -1) {
             byteBuffer.write(buffer, 0, len);
         }
-        return byteBuffer.toByteArray();
+        inputStream.close();
+        byteBuffer.close();
+        return byteBuffer.getBuf();
     }
 
     @Override
@@ -67,5 +97,22 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
     @Override
     public DataSource getDataSource() {
         return DataSource.LOCAL;
+    }
+
+    public class MyByteArrayOutputStream extends ByteArrayOutputStream {
+        public MyByteArrayOutputStream() {
+        }
+
+        public MyByteArrayOutputStream(int size) {
+            super(size);
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public byte[] getBuf() {
+            return buf;
+        }
     }
 }

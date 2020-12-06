@@ -21,6 +21,11 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".ui.gallery.VideoPlayerActivity"
+            android:label="VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|layoutDirection"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">

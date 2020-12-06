@@ -41,8 +41,8 @@
     <string name="EnterPass">Enter Password</string>
     <string name="Confirm">Confirm Password</string>
     <string name="OK">OK</string>
-    <string name="warning">Warning: Your files will be encrypted with your password. You cannot change your password later.</string>
-    <string name="message">Enter the password then use the % button to access hidden files.</string>
+    <string name="warning">Warning: Your files will be encrypted with your password. You can still change your password later.</string>
+    <string name="message">Enter the password then HOLD the % button to access hidden files.</string>
     <string name="title_activity_navigation">SneakyCal</string>
     <string name="action_delete">Delete</string>
     <string name="Access_Granted">Access Granted</string>

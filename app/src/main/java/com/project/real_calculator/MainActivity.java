@@ -9,7 +9,6 @@ import com.project.real_calculator.encryption.*;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,9 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -403,12 +399,16 @@ public class MainActivity extends AppCompatActivity
                     //see if passwords match
                     if(!pas.equals(con))
                     {
-                        Toast.makeText(getApplicationContext(), "Does not match.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "Does not match.",
+                                Toast.LENGTH_SHORT).show();
                     }
                     //check password length
                     else if(pas.length() < 6)
                     {
-                        Toast.makeText(getApplicationContext(), "Password needs to be at least 6 characters long.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "Password needs to be at least 6 characters long.",
+                                Toast.LENGTH_SHORT).show();
                     }
                     //set passwords
                     else
@@ -472,7 +472,8 @@ public class MainActivity extends AppCompatActivity
                     setToAC();
                     //opens a new activity
                     Intent secret = new Intent();
-                    secret.setClassName("com.project.real_calculator", "com.project.real_calculator.DrawerActivity");
+                    secret.setClassName("com.project.real_calculator",
+                            "com.project.real_calculator.DrawerActivity");
                     startActivity(secret);
                     Util.setMasterKey(pass, iv, mkey);
                 }
