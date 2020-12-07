@@ -39,6 +39,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
@@ -66,7 +67,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
     private List<PhotoModel> allImages = new ArrayList<>();
     private int position;
     private Context animeContx;
-    private ImageView image;
+    private PhotoView image;
     private ImageButton playButton;
     private ViewPager imagePager;
     private CardView header;
@@ -197,7 +198,6 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 // update the viewing position
                 ImageBrowserFragment.this.position = position;
-                Log.d("adsf","asdf "+allImages.get(position).getId());
             }
 
             @Override
