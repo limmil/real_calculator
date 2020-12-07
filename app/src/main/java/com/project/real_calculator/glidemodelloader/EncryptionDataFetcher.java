@@ -62,7 +62,6 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
             byteBuffer.write(buffer, 0, len);
         }
         inputStream.close();
-        byteBuffer.close();
         return byteBuffer.getBuf();
     }
 
