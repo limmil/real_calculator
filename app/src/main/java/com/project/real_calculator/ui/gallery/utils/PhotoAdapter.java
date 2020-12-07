@@ -58,6 +58,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
         Glide.with(contx)
                 .load(myExternalFile)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .apply(new RequestOptions().centerCrop())
                 .into(holder.picture);
 

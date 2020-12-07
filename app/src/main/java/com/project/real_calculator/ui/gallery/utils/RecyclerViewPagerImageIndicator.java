@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
@@ -58,6 +59,7 @@ public class RecyclerViewPagerImageIndicator extends RecyclerView.Adapter<Indica
 
         Glide.with(pictureContx)
                 .load(myExternalFile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .apply(new RequestOptions().centerCrop())
                 .into(holder.image);
 

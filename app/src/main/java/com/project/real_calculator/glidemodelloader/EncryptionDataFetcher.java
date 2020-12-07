@@ -30,35 +30,24 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
     @Override
     public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super ByteBuffer> callback) {
         // open file
+
         byte[] data = new byte[0];
         ByteBuffer byteBuffer = ByteBuffer.wrap(data);
 
-        try { // decrypt
+        try {
+            // faster decryption method more ram
             data = Util.decryptToByte(getBytes(new FileInputStream(file)));
             byteBuffer = ByteBuffer.wrap(data);
         } catch (IOException e) {
             //e.printStackTrace();
         } catch (OutOfMemoryError e){
-            FileInputStream fis;
-            CipherInputStream cis;
-            try {
-                fis = new FileInputStream(file);
-                cis = new CipherInputStream(fis, AES.getDecryptionCipher());
-                MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)file.length());
-                byte[] buffer = new byte[1024*1024];
-
-                int len = 0;
-                while ((len=cis.read(buffer)) != -1) {
-                    bos.write(buffer, 0, len);
-                }
-                byteBuffer = ByteBuffer.wrap(bos.getBuf());
-                fis.close();
-                cis.close();
-                bos.close();
-            } catch (IOException | OutOfMemoryError ex) {
-                //ex.printStackTrace();
-            }
+            // slower decryption method less ram
+            byteBuffer = decryptFile(file);
         }
+
+
+
+
 
         callback.onDataReady(byteBuffer);
     }
@@ -75,6 +64,32 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         inputStream.close();
         byteBuffer.close();
         return byteBuffer.getBuf();
+    }
+
+    public static ByteBuffer decryptFile(File f){
+        FileInputStream fis;
+        CipherInputStream cis;
+        ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[0]);
+        try {
+            fis = new FileInputStream(f);
+            cis = new CipherInputStream(fis, AES.getDecryptionCipher());
+            MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)f.length());
+            byte[] buffer = new byte[1024*1024];
+
+            int len = 0;
+            while ((len=cis.read(buffer)) != -1) {
+                bos.write(buffer, 0, len);
+            }
+            byteBuffer = ByteBuffer.wrap(bos.getBuf());
+            fis.close();
+            cis.close();
+            bos.close();
+        } catch (IOException | OutOfMemoryError ex) {
+            //ex.printStackTrace();
+        } catch (Exception e){
+            //e.printStackTrace();
+        }
+        return byteBuffer;
     }
 
     @Override
@@ -99,7 +114,7 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         return DataSource.LOCAL;
     }
 
-    public class MyByteArrayOutputStream extends ByteArrayOutputStream {
+    public static class MyByteArrayOutputStream extends ByteArrayOutputStream {
         public MyByteArrayOutputStream() {
         }
 

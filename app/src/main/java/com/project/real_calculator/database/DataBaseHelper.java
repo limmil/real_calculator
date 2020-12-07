@@ -317,6 +317,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return updated > 0;
     }
+    public boolean deletePhoto(PhotoModel photoModel){
+        List<PhotoModel> temp = new ArrayList<>();
+        temp.add(photoModel);
+        return deletePhotos(temp);
+    }
     public boolean deletePhotos(List<PhotoModel> photoModels){
         SQLiteDatabase db = this.getWritableDatabase();
         String[] ids = new String[photoModels.size()];

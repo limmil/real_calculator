@@ -186,7 +186,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                 switch (which){
                     // clicked yes
                     case DialogInterface.BUTTON_POSITIVE:
-                        // TODO: delete photos from album
+                        // TODO: delete all photos from album
                         // delete album
                         DataBaseHelper db = new DataBaseHelper(getActivity());
                         boolean success = db.deleteAlbum(album);
