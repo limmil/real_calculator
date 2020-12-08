@@ -119,10 +119,21 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"/>
 
+
+
     </RelativeLayout>
 
 
-
+    <TextView
+        android:id="@+id/iEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:text="No Images"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <ProgressBar
         android:id="@+id/loader"

@@ -43,9 +43,9 @@ import com.project.real_calculator.R;
 import java.io.File;
 
 public class VideoPlayerActivity extends AppCompatActivity {
-    private String tempVideoFile;
+
     private File videoFile;
-    private VideoView videoView;
+    private ImageView backButton;
 
     private PlayerView playerView;
     private ProgressBar progressBar;
@@ -64,6 +64,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         if (!videoFile.exists()){finish();}
 
         setContentView(R.layout.activity_videoplayer);
+        backButton = findViewById(R.id.exo_back);
         playerView = findViewById(R.id.exoplayer);
         progressBar = findViewById(R.id.exo_progress_bar);
         fullscreenButton = findViewById(R.id.exo_fullscreen);
@@ -175,6 +176,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     fullscreenSwitch = true;
                 }
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoFile.delete();
+                simpleExoPlayer.stop();
+                simpleExoPlayer.release();
+                finish();
             }
         });
         /*

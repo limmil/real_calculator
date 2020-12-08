@@ -57,19 +57,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         // load album thumbnail
         String dirPath = albumContx.getExternalFilesDir("media/t").getAbsolutePath();
         DataBaseHelper db = new DataBaseHelper(albumContx);
-        List<PhotoModel> photoIds= db.getPhotoIdFromAlbum(album);
+        List<PhotoModel> photoIds= db.getPhotoIdsFromAlbum(album);
         String thumbnail = "temp";
         if (photoIds.size()>0){
             thumbnail = Integer.toString(photoIds.get(photoIds.size()-1).getId());
         }
         File myExternalFile = new File(dirPath, thumbnail);
 
-        Glide.with(albumContx)
-                .load(myExternalFile)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .placeholder(R.drawable.ic_baseline_album)
-                .apply(new RequestOptions().centerCrop())
-                .into(holder.albumPic);
+        if (myExternalFile.exists()){
+            Glide.with(albumContx)
+                    .load(myExternalFile)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.drawable.ic_baseline_album)
+                    .apply(new RequestOptions().centerCrop())
+                    .into(holder.albumPic);
+        }else{
+            Glide.with(albumContx)
+                    .load(R.drawable.ic_baseline_album)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(holder.albumPic);
+        }
 
 
         //setting the number of images

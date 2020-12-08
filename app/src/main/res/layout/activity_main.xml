@@ -16,20 +16,33 @@
         android:focusableInTouchMode="true">
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/Text_Display"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
-        android:background="#000"
-        android:cursorVisible="false"
-        android:gravity="bottom|end"
-        android:inputType="none"
-        android:maxLength="200"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"
-        android:textSize="48sp"
-        android:textStyle="normal" />
+        android:background="#000">
+
+
+        <EditText
+            android:id="@+id/Text_Display"
+            android:cursorVisible="false"
+            android:gravity="bottom|end"
+            android:inputType="none"
+            android:maxLength="200"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white"
+            android:textSize="48sp"
+            android:textStyle="normal"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/Verify_Progress"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/Row_1"

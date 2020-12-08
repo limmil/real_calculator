@@ -51,14 +51,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
         final PhotoModel photo = photoList.get(position);
         String thumbnailDir = contx.getExternalFilesDir("media/t").getAbsolutePath();
         File myExternalFile = new File(thumbnailDir, String.valueOf(photo.getId()));
-        if(!myExternalFile.exists()){
-            // TODO: make new thumbnail
-            // update db
-        }
+
+
         Glide.with(contx)
                 .load(myExternalFile)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
+                .placeholder(R.drawable.ic_baseline_image)
                 .apply(new RequestOptions().centerCrop())
                 .into(holder.picture);
 

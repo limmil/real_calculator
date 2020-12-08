@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -109,7 +110,6 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
         super.onViewCreated(view, savedInstanceState);
 
         if(allImages.isEmpty())
-
         /**
          * initialisation of the recyclerView visibility control integers
          */
@@ -168,7 +168,9 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                         switch (item.getItemId()){
                             case delete:
                                 // delete button clicked
-                                dialogDeleteCurrentImage(getContext(),allImages.get(position));
+                                if (!allImages.isEmpty()){
+                                    dialogDeleteCurrentImage(getContext(),allImages.get(position));
+                                }
                                 break;
                             case edit:
                                 // edit button clicked
@@ -506,6 +508,10 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                             File deleteThumb = new File(thumbPath, name);
                             deleteFile.delete();
                             deleteThumb.delete();
+                            if(allImages.isEmpty()){
+                                requireActivity().onBackPressed();
+                                ((ImageBrowseActivity)getActivity()).empty.setVisibility(View.VISIBLE);
+                            }
                         }
                         break;
 
@@ -531,7 +537,6 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
         }
         return byteBuffer.toByteArray();
     }
-
 
 
     @Override

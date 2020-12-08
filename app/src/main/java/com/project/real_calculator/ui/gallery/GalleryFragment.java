@@ -111,7 +111,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                             }
                             allAlbums.add(tmp.get(tmp.size()-1));
                             albumAdapter.notifyDataSetChanged();
-                            Toast.makeText(getActivity(),"Created new album " + allAlbums.size(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Created new album",Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_SHORT).show();
                         }
@@ -186,14 +186,33 @@ public class GalleryFragment extends Fragment implements IClickListener {
                 switch (which){
                     // clicked yes
                     case DialogInterface.BUTTON_POSITIVE:
-                        // TODO: delete all photos from album
-                        // delete album
+                        // file paths
+                        String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
+                        String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
+                        // delete all photos in album
                         DataBaseHelper db = new DataBaseHelper(getActivity());
+                        List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
+                        if (!photoIds.isEmpty()){
+                            boolean result = db.deletePhotosFromAlbum(album);
+                            if (result){
+                                for (PhotoModel photoModel : photoIds){
+                                    String name = String.valueOf(photoModel.getId());
+                                    File deleteFile = new File(filePath, name);
+                                    File deleteThumb = new File(thumbPath, name);
+                                    deleteFile.delete();
+                                    deleteThumb.delete();
+                                }
+                            }
+                        }
+                        // delete album
                         boolean success = db.deleteAlbum(album);
                         // remove album from albums array
                         if(success){
                             allAlbums.remove(album);
                             albumAdapter.notifyDataSetChanged();
+                            if (allAlbums.isEmpty()){
+                                empty.setVisibility(View.VISIBLE);
+                            }
                         }
                         break;
 

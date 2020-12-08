@@ -259,7 +259,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return photos;
     }
-    public List<PhotoModel> getPhotoIdFromAlbum(AlbumModel album){
+    public List<PhotoModel> getPhotoIdsFromAlbum(AlbumModel album){
         List<com.project.real_calculator.database.models.PhotoModel> photos = new ArrayList<>();
         String q = "SELECT " + Photo._ID + " FROM " +
                 Photo.TABLE_NAME + " WHERE " +
@@ -317,19 +317,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return updated > 0;
     }
+
+    /**
+     * @param photoModel only needs id fields within each PhotoModel object
+     * @return true if deleted
+     */
     public boolean deletePhoto(PhotoModel photoModel){
-        List<PhotoModel> temp = new ArrayList<>();
-        temp.add(photoModel);
-        return deletePhotos(temp);
-    }
-    public boolean deletePhotos(List<PhotoModel> photoModels){
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] ids = new String[photoModels.size()];
-        for (int i=0; i<photoModels.size(); i++){
-            ids[i] = String.valueOf(photoModels.get(i).getId());
-        }
-        int deleted = db.delete(Photo.TABLE_NAME, "_id = ?", ids);
+        String[] id = { String.valueOf(photoModel.getId()) };
+        int deleted = db.delete(Photo.TABLE_NAME, "_id = ?", id);
+
         db.close();
         return deleted > 0;
+    }
+    public boolean deletePhotosFromAlbum(AlbumModel albumModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String albumId = String.valueOf(albumModel.getId());
+
+        // Define 'where' part of query.
+        String selection = Photo.COLUMN_ALBUM + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { albumId };
+        // Issue SQL statement.
+        int deletedRows = db.delete(Photo.TABLE_NAME, selection, selectionArgs);
+        db.close();
+        return deletedRows > 0;
     }
 }

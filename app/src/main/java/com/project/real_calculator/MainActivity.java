@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +24,10 @@ public class MainActivity extends AppCompatActivity
 
     EditText disp;
     Button clear, login;
+    ProgressBar progressBar;
     private String str = "";
     boolean flag = true;
+    boolean threadRunning = false;
     String hash, iv;
     byte[] mkey;
 
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         disp = (EditText) findViewById(R.id.Text_Display);
         clear = (Button) findViewById(R.id.Clear_Button);
+        progressBar = findViewById(R.id.Verify_Progress);
         onStartUp();
         login = findViewById(R.id.Percent_Button);
         setLoginButton(login);
@@ -466,17 +470,47 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onLongClick(View v) {
                 final String pass = disp.getText().toString();
-                if( Util.checkPassword(pass, hash) )
-                {
-                    setDisp("",getString(R.string.Access_Granted));
-                    setToAC();
-                    //opens a new activity
-                    Intent secret = new Intent();
-                    secret.setClassName("com.project.real_calculator",
-                            "com.project.real_calculator.DrawerActivity");
-                    startActivity(secret);
-                    Util.setMasterKey(pass, iv, mkey);
-                }
+                new Thread(){
+                    public void run(){
+                        if (!threadRunning) {
+                            // run thread one at a time
+                            threadRunning = true;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setVisibility(View.VISIBLE);
+                                }
+                            });
+                            // heavy lifting
+                            boolean result = Util.checkPassword(pass, hash);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            });
+                            // password matches
+                            if (result) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setDisp("", getString(R.string.Access_Granted));
+                                        setToAC();
+                                    }
+                                });
+                                //opens a new activity
+                                Intent secret = new Intent();
+                                secret.setClassName("com.project.real_calculator",
+                                        "com.project.real_calculator.DrawerActivity");
+                                startActivity(secret);
+                                Util.setMasterKey(pass, iv, mkey);
+                            }
+                            // switch off flag
+                            threadRunning = false;
+                        }
+                    }
+                }.start();
+
                 return true;
             }
         });

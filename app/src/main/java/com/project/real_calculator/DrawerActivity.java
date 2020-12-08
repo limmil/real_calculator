@@ -72,29 +72,4 @@ public class DrawerActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-    @Override
-    protected void onUserLeaveHint()
-    {
-        Log.d("onUserLeaveHint","Home button pressed");
-        super.onUserLeaveHint();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("onPause","onPause");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("onStop","onStop");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d("onDestory","onDestroy");
-        super.onDestroy();
-    }
 }
