@@ -52,5 +52,11 @@
     <string name="ImageBrowseActivity">ImageBrowseActivity</string>
 
     <string name="edit_album">Edit Album</string>
+    <string name="undo">undo</string>
+    <string name="album_name">Album Name</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="move">Move</string>
+    <string name="export">Export</string>
 
 </resources>

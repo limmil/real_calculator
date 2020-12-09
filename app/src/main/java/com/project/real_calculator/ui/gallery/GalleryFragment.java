@@ -193,7 +193,7 @@ public class GalleryFragment extends Fragment implements IClickListener {
                         DataBaseHelper db = new DataBaseHelper(getActivity());
                         List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
                         if (!photoIds.isEmpty()){
-                            boolean result = db.deletePhotosFromAlbum(album);
+                            boolean result = db.deleteAllPhotosFromAlbum(album);
                             if (result){
                                 for (PhotoModel photoModel : photoIds){
                                     String name = String.valueOf(photoModel.getId());

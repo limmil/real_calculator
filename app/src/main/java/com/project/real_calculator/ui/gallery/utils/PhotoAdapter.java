@@ -1,6 +1,7 @@
 package com.project.real_calculator.ui.gallery.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
     @Override
     public void onBindViewHolder(@NonNull final PicHolder holder, final int position) {
         final PhotoModel photo = photoList.get(position);
+
+        holder.checkBox.setVisibility(photo.getCheckBoxVisibility() ? View.VISIBLE : View.GONE);
+        holder.checkBox.setChecked(photo.getCheckBox());
+
+        // load thumbnail
         String thumbnailDir = contx.getExternalFilesDir("media/t").getAbsolutePath();
         File myExternalFile = new File(thumbnailDir, String.valueOf(photo.getId()));
 

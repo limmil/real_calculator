@@ -11,6 +11,8 @@ public class PhotoModel {
     private String albumName;
     private String timeStamp;
     private boolean selected;
+    private boolean checkBoxVisibility = false;
+    private boolean checkBox = false;
 
     public PhotoModel(int id, String name, String content, String thumbnail, String fileType, String timeStamp, int album){
         this.id = id;
@@ -92,5 +94,21 @@ public class PhotoModel {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean getCheckBoxVisibility() {
+        return checkBoxVisibility;
+    }
+
+    public void setCheckBoxVisibility(boolean checkBoxVisibility) {
+        this.checkBoxVisibility = checkBoxVisibility;
+    }
+
+    public boolean getCheckBox() {
+        return checkBox;
+    }
+
+    public void setCheckBox(boolean checkBox) {
+        this.checkBox = checkBox;
     }
 }

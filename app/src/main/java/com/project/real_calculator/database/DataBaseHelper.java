@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.project.real_calculator.database.UserContract.*;
 import com.project.real_calculator.database.models.*;
@@ -330,7 +331,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.close();
         return deleted > 0;
     }
-    public boolean deletePhotosFromAlbum(AlbumModel albumModel){
+    public boolean deletePhotos(List<PhotoModel> photoModels){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] ids = new String[photoModels.size()];
+        for (int i=0; i<photoModels.size(); i++){
+            ids[i] = String.valueOf(photoModels.get(i).getId());
+        }
+
+        String whereClause = Photo._ID + " IN (" + TextUtils.join(",", ids) + ")";
+        int deleted = db.delete(Photo.TABLE_NAME, whereClause, null);
+
+        db.close();
+        return  deleted > 0;
+    }
+    public boolean deleteAllPhotosFromAlbum(AlbumModel albumModel){
         SQLiteDatabase db = this.getWritableDatabase();
         String albumId = String.valueOf(albumModel.getId());
 

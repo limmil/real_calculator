@@ -36,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|start"
-                    android:text="Album Name"
+                    android:text="@string/album_name"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -55,43 +55,52 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
-                <ImageButton
-                    android:id="@+id/delete_many"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_delete"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:padding="12dp"
-                    android:visibility="gone" />
-                <ImageButton
-                    android:id="@+id/move_many"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_delete"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:padding="12dp"
-                    android:visibility="gone" />
-                <ImageButton
-                    android:id="@+id/export_many"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_delete"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    android:padding="12dp"
-                    android:visibility="gone" />
                 <Button
-                    android:id="@+id/select_many"
+                    android:id="@+id/undo_select"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_baseline_delete"
-                    android:text="select"
+                    android:text="@string/undo"
                     android:textColor="@color/white"
                     android:layout_gravity="end"
                     android:background="@android:color/transparent"
+                    android:padding="12dp"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/browseMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_menu"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
                     android:padding="12dp" />
+                <ImageButton
+                    android:id="@+id/browse_delete_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_delete"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
+                    android:padding="12dp"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/browse_move_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_album"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
+                    android:padding="12dp"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/browse_export_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_export"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
+                    android:padding="12dp"
+                    android:visibility="gone"/>
 
 
             </LinearLayout>

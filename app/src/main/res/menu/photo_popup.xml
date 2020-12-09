@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_delete"
+        android:id="@+id/photo_action_delete"
         android:icon="@drawable/ic_baseline_delete"
         android:title="@string/delete"
         app:showAsAction="ifRoom">
     </item>
     <item
-        android:id="@+id/action_edit"
+        android:id="@+id/photo_action_edit"
         android:icon="@drawable/ic_baseline_edit"
         android:title="@string/edit"
         app:showAsAction="ifRoom">

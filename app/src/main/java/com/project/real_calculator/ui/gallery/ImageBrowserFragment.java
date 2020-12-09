@@ -158,13 +158,13 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(getActivity(), v);
                 MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.album_popup, popup.getMenu());
+                inflater.inflate(R.menu.photo_popup, popup.getMenu());
                 popup.setForceShowIcon(true);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        final int delete = R.id.action_delete;
-                        final int edit = R.id.action_edit;
+                        final int delete = R.id.photo_action_delete;
+                        final int edit = R.id.photo_action_edit;
                         switch (item.getItemId()){
                             case delete:
                                 // delete button clicked
@@ -317,49 +317,51 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             }
 
 
-            Glide.with(animeContx)
-                    .load(myExternalFile)
-                    .apply(new RequestOptions().fitCenter())
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .listener(new RequestListener<Drawable>(){
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e,
-                                                    Object model,
-                                                    Target<Drawable> target,
-                                                    boolean isFirstResource) {
-                            loadImageProgress.setVisibility(View.GONE);
-                            return false;
+            if(myExternalFile.exists()) {
+                Glide.with(animeContx)
+                        .load(myExternalFile)
+                        .apply(new RequestOptions().fitCenter())
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .placeholder(R.drawable.ic_baseline_image)
+                        .skipMemoryCache(true)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e,
+                                                        Object model,
+                                                        Target<Drawable> target,
+                                                        boolean isFirstResource) {
+                                loadImageProgress.setVisibility(View.GONE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource,
+                                                           Object model,
+                                                           Target<Drawable> target,
+                                                           DataSource dataSource,
+                                                           boolean isFirstResource) {
+                                loadImageProgress.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .into(image);
+
+                image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if (indicatorRecycler.getVisibility() == View.GONE) {
+                            indicatorRecycler.setVisibility(View.VISIBLE);
+                            header.setVisibility(View.VISIBLE);
+                        } else {
+                            indicatorRecycler.setVisibility(View.GONE);
+                            header.setVisibility(View.GONE);
                         }
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource,
-                                                       Object model,
-                                                       Target<Drawable> target,
-                                                       DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            loadImageProgress.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(image);
-
-            image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(indicatorRecycler.getVisibility() == View.GONE){
-                        indicatorRecycler.setVisibility(View.VISIBLE);
-                        header.setVisibility(View.VISIBLE);
-                    }else{
-                        indicatorRecycler.setVisibility(View.GONE);
-                        header.setVisibility(View.GONE);
-                    }
-
-                    /**
-                     * uncomment the below condition and comment the one above to control recyclerView visibility automatically
-                     * when image is clicked
-                     */
+                        /**
+                         * uncomment the below condition and comment the one above to control recyclerView visibility automatically
+                         * when image is clicked
+                         */
                     /*if(viewVisibilityController == 0){
                         indicatorRecycler.setVisibility(View.VISIBLE);
                         header.setVisibility(View.VISIBLE);
@@ -369,10 +371,14 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                     }*/
 
 
-
-                }
-            });
-
+                    }
+                });
+            }else{
+                Glide.with(animeContx)
+                        .load(R.drawable.ic_baseline_broken_image)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(image);
+            }
 
             final String finalFileExtension = fileExtension.toLowerCase();
             playButton.setOnClickListener(new View.OnClickListener() {

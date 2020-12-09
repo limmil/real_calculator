@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/browser_action_delete"
+        android:icon="@drawable/ic_baseline_delete"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom">
+    </item>
+    <item
+        android:id="@+id/browser_action_move"
+        android:icon="@drawable/ic_baseline_album"
+        android:title="@string/move"
+        app:showAsAction="ifRoom">
+    </item>
+    <item
+        android:id="@+id/browser_action_export"
+        android:icon="@drawable/ic_baseline_export"
+        android:title="@string/export"
+        app:showAsAction="ifRoom">
+    </item>
+</menu>
