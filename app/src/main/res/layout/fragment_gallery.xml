@@ -7,8 +7,6 @@
     tools:context=".DrawerActivity">
 
 
-
-
     <com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView
         android:id="@+id/albumRecycler"
         android:layout_width="match_parent"

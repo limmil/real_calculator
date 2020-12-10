@@ -2,7 +2,6 @@ package com.project.real_calculator.ui.gallery;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -90,12 +88,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         );
         simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
 
-        /*
-        MediaSource mediaSource = new ExtractorMediaSource(Uri.fromFile(videoFile),
-                new DefaultDataSourceFactory(this,"exo_player"),
-                new DefaultExtractorsFactory(),null,null);
-
-         */
         MediaSource mediaSource = new ExtractorMediaSource
                 .Factory(new DefaultDataSourceFactory(this,"exo_player"))
                 .createMediaSource(Uri.fromFile(videoFile));
@@ -188,21 +180,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 finish();
             }
         });
-        /*
-        setContentView(R.layout.activity_video_player);
-
-        videoView = findViewById(R.id.videoPlayer);
-        videoView.setVideoPath(tempVideoFile);
-
-        MediaController mediaController = new MediaController(this);
-
-        videoView.setMediaController(mediaController);
-        mediaController.setAnchorView(videoView);
-
-
-        videoView.start();
-
-         */
 
     }
 

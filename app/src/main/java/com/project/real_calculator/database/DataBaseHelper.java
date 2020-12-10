@@ -303,6 +303,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return updated > 0;
     }
+    public boolean updatePhotoAlbumIds(List<PhotoModel> photoModels, int albumId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(Photo.COLUMN_ALBUM, albumId);
+
+        String[] ids = new String[photoModels.size()];
+        for (int i=0; i<photoModels.size(); i++){
+            ids[i] = String.valueOf(photoModels.get(i).getId());
+        }
+
+        String whereClause = Photo._ID + " IN (" + TextUtils.join(",", ids) + ")";
+        int deleted = db.update(Photo.TABLE_NAME, cv, whereClause, null);
+
+        db.close();
+        return  deleted > 0;
+
+    }
     public boolean updatePhoto(PhotoModel photoModel){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();

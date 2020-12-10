@@ -41,7 +41,6 @@ import java.util.List;
 
 public class GalleryFragment extends Fragment implements IClickListener {
 
-    //private GalleryViewModel galleryViewModel;
     private List<AlbumModel> allAlbums;
     RecyclerView albumRecycler;
     AlbumAdapter albumAdapter;
@@ -54,7 +53,6 @@ public class GalleryFragment extends Fragment implements IClickListener {
         allAlbums = db.getAlbums();
 
 
-        //galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
 
         FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
@@ -186,34 +184,45 @@ public class GalleryFragment extends Fragment implements IClickListener {
                 switch (which){
                     // clicked yes
                     case DialogInterface.BUTTON_POSITIVE:
-                        // file paths
-                        String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
-                        String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
-                        // delete all photos in album
-                        DataBaseHelper db = new DataBaseHelper(getActivity());
-                        List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
-                        if (!photoIds.isEmpty()){
-                            boolean result = db.deleteAllPhotosFromAlbum(album);
-                            if (result){
-                                for (PhotoModel photoModel : photoIds){
-                                    String name = String.valueOf(photoModel.getId());
-                                    File deleteFile = new File(filePath, name);
-                                    File deleteThumb = new File(thumbPath, name);
-                                    deleteFile.delete();
-                                    deleteThumb.delete();
+                        new Thread(){
+                            public void run(){
+                                // file paths
+                                String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
+                                String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
+                                // delete all photos in album
+                                DataBaseHelper db = new DataBaseHelper(getActivity());
+                                List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
+                                if (!photoIds.isEmpty()){
+                                    boolean result = db.deleteAllPhotosFromAlbum(album);
+                                    if (result){
+                                        for (PhotoModel photoModel : photoIds){
+                                            String name = String.valueOf(photoModel.getId());
+                                            File deleteFile = new File(filePath, name);
+                                            File deleteThumb = new File(thumbPath, name);
+                                            deleteFile.delete();
+                                            deleteThumb.delete();
+                                        }
+                                    }
+                                }
+                                // delete album
+                                boolean success = db.deleteAlbum(album);
+                                // remove album from albums array
+                                if(success){
+                                    allAlbums.remove(album);
+                                    requireActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            albumAdapter.notifyDataSetChanged();
+                                            if (allAlbums.isEmpty()){
+                                                empty.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+                                    });
+
                                 }
                             }
-                        }
-                        // delete album
-                        boolean success = db.deleteAlbum(album);
-                        // remove album from albums array
-                        if(success){
-                            allAlbums.remove(album);
-                            albumAdapter.notifyDataSetChanged();
-                            if (allAlbums.isEmpty()){
-                                empty.setVisibility(View.VISIBLE);
-                            }
-                        }
+                        }.start();
+
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -274,42 +283,6 @@ public class GalleryFragment extends Fragment implements IClickListener {
                 dialog.cancel();
             }
         });
-    }
-
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
-    }
-    public byte[] fullyReadFileToBytes(File f) throws IOException {
-        int size = (int) f.length();
-        byte[] bytes = new byte[size];
-        byte[] tmpBuff = new byte[size];
-        FileInputStream fis= new FileInputStream(f);
-        try {
-
-            int read = fis.read(bytes, 0, size);
-            if (read < size) {
-                int remain = size - read;
-                while (remain > 0) {
-                    read = fis.read(tmpBuff, 0, remain);
-                    System.arraycopy(tmpBuff, 0, bytes, size - remain, read);
-                    remain -= read;
-                }
-            }
-        }  catch (IOException e){
-            throw e;
-        } finally {
-            fis.close();
-        }
-
-        return bytes;
     }
 
     @Override

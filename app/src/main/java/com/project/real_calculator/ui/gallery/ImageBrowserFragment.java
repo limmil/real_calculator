@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,15 +18,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.view.MotionEventCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +40,6 @@ import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
-import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
 import com.project.real_calculator.encryption.AES;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
@@ -63,7 +58,6 @@ import java.util.List;
 import javax.crypto.CipherInputStream;
 
 import static androidx.core.view.ViewCompat.setTransitionName;
-import static java.lang.Thread.sleep;
 
 public class ImageBrowserFragment extends Fragment implements IImageIndicatorListener {
     private List<PhotoModel> allImages = new ArrayList<>();
@@ -536,16 +530,6 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-
-        int len = 0;
-        while ((len=inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
-    }
 
 
     @Override

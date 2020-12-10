@@ -17,7 +17,6 @@ import com.project.real_calculator.database.models.PhotoModel;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerViewPagerImageIndicator extends RecyclerView.Adapter<IndicatorHolder>{
