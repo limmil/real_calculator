@@ -17,11 +17,12 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class AES
 {
-    //~~~thread flag
-    private static boolean running = false;
     //~~~setting data
     private static SecretKeySpec secretKey;
     private static IvParameterSpec iv;
+
+    public static final String AES_TRANSFORMATION_CTR = "AES/CTR/NoPadding";
+    public static final String AES_TRANSFORMATION_CBC = "AES/CBC/PKCS7Padding";
 
     private static byte[] decryptedBytes;
     private static byte[] encryptedBytes;
@@ -77,12 +78,18 @@ public class AES
     {
         AES.encryptedBytes = arr;
     }
+    public static SecretKeySpec getSecretKey(){
+        return secretKey;
+    }
+    public static IvParameterSpec getIv(){
+        return iv;
+    }
 
 
     //~~~Encrypt and Decrypt
     private static byte[] doCrypto(byte[] content, int mode){
         try{
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
+            Cipher c = Cipher.getInstance(AES_TRANSFORMATION_CTR);
             c.init(mode, secretKey, iv);
             return c.doFinal(content);
         }
@@ -100,7 +107,7 @@ public class AES
     }
 
     private static Cipher getCipher(int mode) throws Exception {
-        Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        Cipher c = Cipher.getInstance(AES_TRANSFORMATION_CTR);
         c.init(mode, secretKey, iv);
         return c;
     }

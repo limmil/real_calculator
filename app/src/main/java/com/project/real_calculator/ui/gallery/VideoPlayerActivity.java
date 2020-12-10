@@ -33,16 +33,16 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.project.real_calculator.R;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.ui.gallery.utils.EncryptedFileDataSourceFactory;
 
 import java.io.File;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
-    private File videoFile;
+    private File sourceVideoFile;
     private ImageView backButton;
 
     private PlayerView playerView;
@@ -58,8 +58,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
         // if file not found
-        videoFile = new File(getIntent().getStringExtra("tempVideoFile"));
-        if (!videoFile.exists()){finish();}
+        sourceVideoFile = new File(getIntent().getStringExtra("sourceVideoPath"));
+        if (!sourceVideoFile.exists()){finish();}
 
         setContentView(R.layout.activity_videoplayer);
         backButton = findViewById(R.id.exo_back);
@@ -82,15 +82,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         LoadControl loadControl = new DefaultLoadControl();
         RenderersFactory renderersFactory = new DefaultRenderersFactory(VideoPlayerActivity.this);
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
         TrackSelector trackSelector = new DefaultTrackSelector(
                 new AdaptiveTrackSelection.Factory(bandwidthMeter)
         );
         simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
 
         MediaSource mediaSource = new ExtractorMediaSource
-                .Factory(new DefaultDataSourceFactory(this,"exo_player"))
-                .createMediaSource(Uri.fromFile(videoFile));
+                .Factory(new EncryptedFileDataSourceFactory(AES.getDecryptionCipher(),AES.getSecretKey(),AES.getIv(), bandwidthMeter))
+                .createMediaSource(Uri.fromFile(sourceVideoFile));
 
         playerView.setPlayer(simpleExoPlayer);
         playerView.setKeepScreenOn(true);
@@ -174,7 +174,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                videoFile.delete();
                 simpleExoPlayer.stop();
                 simpleExoPlayer.release();
                 finish();
@@ -186,7 +185,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        videoFile.delete();
         simpleExoPlayer.stop();
         simpleExoPlayer.release();
         finish();

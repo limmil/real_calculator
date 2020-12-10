@@ -2,7 +2,6 @@ package com.project.real_calculator.ui.gallery;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,17 +40,11 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.encryption.AES;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
 import com.project.real_calculator.ui.gallery.utils.PhotoAdapter;
 import com.project.real_calculator.ui.gallery.utils.RecyclerViewPagerImageIndicator;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +101,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
         /**
          * initialisation of the recyclerView visibility control integers
          */
-        viewVisibilityController = 0;
+            viewVisibilityController = 0;
         viewVisibilitylooper = 0;
 
         /**
@@ -387,50 +380,10 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                     String sourceFileName = String.valueOf(allImages.get(position).getId());
                     final File sourceVideoFile = new File(sourceVideoDir, sourceFileName);
 
-                    String tempFileDir = animeContx.getFilesDir().getAbsolutePath();
-                    final File tempVideoFile = new File(tempFileDir, "temp." + finalFileExtension);
+                    Intent move = new Intent(getActivity(), VideoPlayerActivity.class);
+                    move.putExtra("sourceVideoPath", sourceVideoFile.getAbsolutePath());
 
-                    final ProgressDialog dialog = ProgressDialog.show(getActivity(),
-                            "Loading", "Decrypting video", true);
-
-                    new Thread() {
-                        public void run() {
-                            FileInputStream fis;
-                            FileOutputStream out;
-                            try {
-                                fis = new FileInputStream(sourceVideoFile);
-                                CipherInputStream cis = new CipherInputStream(fis, AES.getDecryptionCipher());
-                                out = new FileOutputStream(tempVideoFile);
-
-                                byte[] buffer = new byte[64 * 1024];
-
-                                int len = 0;
-                                while ((len=cis.read(buffer)) != -1) {
-                                    out.write(buffer, 0, len);
-                                }
-                                // fast but uses too much memory
-                                //out.write(Util.decryptToByte(getBytes(fis)));
-                                cis.close();
-                                out.close();
-                                fis.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            Intent move = new Intent(getActivity(), VideoPlayerActivity.class);
-                            move.putExtra("tempVideoFile", tempVideoFile.getAbsolutePath());
-
-                            startActivity(move);
-
-                            requireActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                    }.start();
-
+                    startActivity(move);
                 }
             });
 
