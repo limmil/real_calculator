@@ -24,6 +24,11 @@ public class AES
     public static final String AES_TRANSFORMATION_CTR = "AES/CTR/NoPadding";
     public static final String AES_TRANSFORMATION_CBC = "AES/CBC/PKCS7Padding";
 
+    // some Intend within the app calls the AppController background method unintentionally
+    // allowClearing set to false right before the intend is called
+    // when the activity is done, set allowClear back to true
+    private static boolean allowClearing = true;
+
     private static byte[] decryptedBytes;
     private static byte[] encryptedBytes;
 
@@ -85,6 +90,13 @@ public class AES
         return iv;
     }
 
+    public static boolean getAllowClearing() {
+        return allowClearing;
+    }
+
+    public static void setAllowClearing(boolean allowClearing) {
+        AES.allowClearing = allowClearing;
+    }
 
     //~~~Encrypt and Decrypt
     private static byte[] doCrypto(byte[] content, int mode){
@@ -133,8 +145,10 @@ public class AES
     }
 
     public static void clear(){
-        secretKey = null;
-        iv = null;
+        if (allowClearing) {
+            secretKey = null;
+            iv = null;
+        }
     }
 
     //~~~~Test Codes~~~~

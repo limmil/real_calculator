@@ -146,15 +146,16 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(getActivity(), v);
                 MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.photo_popup, popup.getMenu());
+                inflater.inflate(R.menu.image_browser_popup, popup.getMenu());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     popup.setForceShowIcon(true);
                 }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        final int delete = R.id.photo_action_delete;
-                        final int edit = R.id.photo_action_edit;
+                        final int delete = R.id.browser_action_delete;
+                        final int move = R.id.browser_action_move;
+                        final int export = R.id.browser_action_export;
                         switch (item.getItemId()){
                             case delete:
                                 // delete button clicked
@@ -162,8 +163,11 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                                     dialogDeleteCurrentImage(getContext(),allImages.get(position));
                                 }
                                 break;
-                            case edit:
-                                // edit button clicked
+                            case move:
+                                // move button clicked
+                                break;
+                            case export:
+                                // export button clicked
                                 break;
                         }
                         return true;
