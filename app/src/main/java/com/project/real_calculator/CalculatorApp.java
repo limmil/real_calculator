@@ -25,7 +25,7 @@ public class CalculatorApp extends Application implements LifecycleObserver {
         AES.clear();
         isAppInBackground(true);
     }
-///////////////////////////////////////////////
+    ///////////////////////////////////////////////
 
 
 
