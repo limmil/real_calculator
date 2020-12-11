@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -36,6 +37,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.project.real_calculator.R;
 import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.Util;
 import com.project.real_calculator.ui.gallery.utils.EncryptedFileDataSourceFactory;
 
 import java.io.File;
@@ -180,6 +182,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AES.getSecretKey()==null){
+            finish();
+        }
     }
 
     @Override

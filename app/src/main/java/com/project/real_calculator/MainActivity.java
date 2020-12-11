@@ -9,6 +9,7 @@ import com.project.real_calculator.encryption.*;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -514,5 +515,14 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (disp.getText().toString().equals(getString(R.string.Access_Granted))){
+            disp.setText("");
+            AES.clear();
+        }
     }
 }

@@ -132,6 +132,11 @@ public class AES
         return null;
     }
 
+    public static void clear(){
+        secretKey = null;
+        iv = null;
+    }
+
     //~~~~Test Codes~~~~
     public static void main(String[]args)
     {

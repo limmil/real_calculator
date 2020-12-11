@@ -10,6 +10,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.Util;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -72,4 +74,13 @@ public class DrawerActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (AES.getSecretKey()==null){
+            finish();
+        }
+    }
+
 }
