@@ -60,7 +60,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
     private ImageButton playButton;
     private ViewPager imagePager;
     private CardView header;
-    private ImageButton backButton, menuButton;
+    private ImageButton backButton, deleteButton;
     private RecyclerView indicatorRecycler;
     private int viewVisibilityController;
     private int viewVisibilitylooper;
@@ -136,46 +136,20 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
         header = view.findViewById(R.id.imageHead);
         backButton = view.findViewById(R.id.iBrowseBack);
-        menuButton = view.findViewById(R.id.imageMenu);
+        deleteButton = view.findViewById(R.id.imageDelete);
 
         /**
          * set header button controls
          */
-        menuButton.setOnClickListener(new View.OnClickListener() {
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(getActivity(), v);
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.image_browser_popup, popup.getMenu());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    popup.setForceShowIcon(true);
+                if (!allImages.isEmpty()){
+                    dialogDeleteCurrentImage(getContext(),allImages.get(position));
                 }
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        final int delete = R.id.browser_action_delete;
-                        final int move = R.id.browser_action_move;
-                        final int export = R.id.browser_action_export;
-                        switch (item.getItemId()){
-                            case delete:
-                                // delete button clicked
-                                if (!allImages.isEmpty()){
-                                    dialogDeleteCurrentImage(getContext(),allImages.get(position));
-                                }
-                                break;
-                            case move:
-                                // move button clicked
-                                break;
-                            case export:
-                                // export button clicked
-                                break;
-                        }
-                        return true;
-                    }
-                });
-                popup.show();
             }
         });
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -434,6 +408,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             }
         }, 4000);
     }
+
 
     // delete one image
     public void dialogDeleteCurrentImage(Context context, final PhotoModel photoModel){
