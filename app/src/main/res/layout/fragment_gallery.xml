@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textColor="@color/white"
-        android:text="No Albums"
+        android:text="@string/no_albums"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="gone"/>

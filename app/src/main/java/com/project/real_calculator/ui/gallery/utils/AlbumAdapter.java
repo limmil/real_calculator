@@ -17,7 +17,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.interfaces.IClickListener;
+import com.project.real_calculator.interfaces.IGalleryClickListener;
 import com.project.real_calculator.R;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
 
     private List<AlbumModel> albums;
     private Context albumContx;
-    private IClickListener listenToClick;
+    private IGalleryClickListener listenToClick;
 
     /**
      *
@@ -35,7 +35,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
      * @param albumContx The Activity or fragment Context
      * @param listen interFace for communication between adapter and fragment or activity
      */
-    public AlbumAdapter(List<AlbumModel> albums, Context albumContx, IClickListener listen) {
+    public AlbumAdapter(List<AlbumModel> albums, Context albumContx, IGalleryClickListener listen) {
         this.albums = albums;
         this.albumContx = albumContx;
         this.listenToClick = listen;

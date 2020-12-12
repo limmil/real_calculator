@@ -6,19 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".DrawerActivity">
 
-    <ImageView
-        android:id="@+id/imgswitcher"
-        android:layout_width="match_parent"
-        android:layout_height="400dp" />
 
-    <Button
-        android:id="@+id/random"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="random" />
+    <com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView
+        android:id="@+id/folderRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:columnWidth="120dp"
+        android:clipToPadding="false"
+        android:layout_below="@id/folder_fab">
+
+    </com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/folder_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -26,4 +27,17 @@
         app:srcCompat="@drawable/ic_my_plus"
         tools:layout_editor_absoluteX="321dp"
         tools:layout_editor_absoluteY="636dp" />
+
+    <TextView
+        android:id="@+id/folder_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:text="@string/no_folders"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

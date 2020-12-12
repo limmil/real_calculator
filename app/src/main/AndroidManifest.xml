@@ -27,10 +27,6 @@
 
 
         <activity
-            android:name=".DrawerActivity"
-            android:label="@string/title_activity_drawer"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ui.gallery.ImageBrowseActivity"
             android:label="@string/ImageBrowseActivity"
             android:configChanges="orientation|screenSize"
@@ -40,6 +36,16 @@
             android:label="VideoPlayerActivity"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.files.FilesActivity"
+            android:label="FilesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".DrawerActivity"
+            android:label="@string/title_activity_drawer"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

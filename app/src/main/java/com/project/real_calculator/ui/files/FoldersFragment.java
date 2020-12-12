@@ -1,4 +1,4 @@
-package com.project.real_calculator.ui.gallery;
+package com.project.real_calculator.ui.files;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,63 +21,68 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
+import com.project.real_calculator.database.models.FolderModel;
+import com.project.real_calculator.database.models.MyFileModel;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.interfaces.IGalleryClickListener;
-import com.project.real_calculator.ui.gallery.utils.AlbumAdapter;
+import com.project.real_calculator.interfaces.IFilesClickListener;
+import com.project.real_calculator.ui.gallery.ImageBrowseActivity;
 import com.project.real_calculator.ui.gallery.utils.MarginDecoration;
 import com.project.real_calculator.ui.gallery.utils.PicHolder;
 
 import java.io.File;
 import java.util.List;
 
-public class GalleryFragment extends Fragment implements IGalleryClickListener {
+public class FoldersFragment extends Fragment implements IFilesClickListener {
 
-    private List<AlbumModel> allAlbums;
-    RecyclerView albumRecycler;
-    AlbumAdapter albumAdapter;
+    private List<FolderModel> allFolders;
+    RecyclerView folderRecycler;
+    FolderAdapter folderAdapter;
     TextView empty;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        //init albums list
+
+        View root = inflater.inflate(R.layout.fragment_folders, container, false);
+        //init folders list
         final DataBaseHelper db = new DataBaseHelper(getActivity());
-        allAlbums = db.getAlbums();
+        allFolders = db.getFolders();
+        
 
+        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.folder_fab);
 
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        empty = root.findViewById(R.id.folder_empty);
 
-        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
+        folderRecycler = root.findViewById(R.id.folderRecycler);
+        folderRecycler.addItemDecoration(new MarginDecoration(requireActivity()));
+        folderRecycler.hasFixedSize();
 
-        empty = root.findViewById(R.id.empty);
-
-        albumRecycler = root.findViewById(R.id.albumRecycler);
-        albumRecycler.addItemDecoration(new MarginDecoration(requireActivity()));
-        albumRecycler.hasFixedSize();
-
-        if(allAlbums.isEmpty()){
+        if(allFolders.isEmpty()){
             empty.setVisibility(View.VISIBLE);
         }else{
-            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
-            albumRecycler.setAdapter(albumAdapter);
+            folderAdapter = new FolderAdapter(allFolders, getActivity(), this);
+            folderRecycler.setAdapter(folderAdapter);
         }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // create album
+                // create folder
                 //open user input dialog
                 final Dialog dialog = new Dialog(getActivity());
-                dialog.setTitle("Add New Album");
+                dialog.setTitle("Add New Folder");
                 dialog.setContentView(R.layout.dialog_add_album);
+                // reusing dialog_add_album
+                TextView title = dialog.findViewById(R.id.addNewAlbum);
+                title.setText(getString(R.string.add_new_folder));
                 dialog.show();
 
                 //setting button and EditText from dialog
-                final EditText albumName = (EditText) dialog.findViewById(R.id.addAlbumName);
+                final EditText folderName = (EditText) dialog.findViewById(R.id.addAlbumName);
+                folderName.setHint("Folder Name");
                 Button yesButton = (Button) dialog.findViewById(R.id.dialog_album_btn_yes);
                 Button noButton = (Button) dialog.findViewById(R.id.dialog_album_btn_no);
 
@@ -85,28 +90,28 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
 
                     @Override
                     public void onClick(View v) {
-                        // add new album to database
-                        String name = albumName.getText().toString().trim();
+                        // add new folder to database
+                        String name = folderName.getText().toString().trim();
                         boolean success = false;
                         if(name.isEmpty()){
                             Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
                         }else{
-                            AlbumModel newAlbum = new AlbumModel(0,name,"N/A",0);
-                            success = db.addAlbum(newAlbum);
+                            FolderModel newFolder = new FolderModel(0,name,"N/A",0);
+                            success = db.addFolder(newFolder);
                         }
                         if(success){
                             // update view and see item added
-                            List<AlbumModel> tmp = db.getAlbums();
-                            // albumAdapter is null when adding the first one
+                            List<FolderModel> tmp = db.getFolders();
+                            // folderAdapter is null when adding the first one
                             if (tmp.size()==1){
-                                albumAdapter = new AlbumAdapter(allAlbums, getActivity(), GalleryFragment.this);
-                                albumRecycler.setAdapter(albumAdapter);
+                                folderAdapter = new FolderAdapter(allFolders, getActivity(), FoldersFragment.this);
+                                folderRecycler.setAdapter(folderAdapter);
                                 empty.setVisibility(View.GONE);
                             }
                             if (!tmp.isEmpty()) {
-                                allAlbums.add(tmp.get(tmp.size() - 1));
-                                albumAdapter.notifyDataSetChanged();
-                                Toast.makeText(getActivity(), "Created new album", Toast.LENGTH_SHORT).show();
+                                allFolders.add(tmp.get(tmp.size() - 1));
+                                folderAdapter.notifyDataSetChanged();
+                                Toast.makeText(getActivity(), "Created new folder", Toast.LENGTH_SHORT).show();
                             }
                         }else{
                             Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_SHORT).show();
@@ -125,32 +130,33 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
             }
         });
 
+
         return root;
     }
 
+
     @Override
-    public void onPicClicked(PicHolder holder, int position, List<PhotoModel> pics) {
+    public void onPicClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
 
     }
 
-    /**
-     * Each time an item in the RecyclerView is clicked this method from the implementation of the transitListerner
-     * in this activity is executed, this is possible because this class is passed as a parameter in the creation
-     * of the RecyclerView's Adapter, see the adapter class to understand better what is happening here
-     * @param albumModel a String corresponding to a album path on the device external storage
-     */
     @Override
-    public void onPicClicked(AlbumModel albumModel) {
-        Intent move = new Intent(getActivity(), ImageBrowseActivity.class);
-        move.putExtra("albumId", albumModel.getId());
-        move.putExtra("albumName", albumModel.getAlbumName());
+    public void onPicClicked(FolderModel folder) {
+        Intent move = new Intent(getActivity(), FilesActivity.class);
+        move.putExtra("folderId", folder.getId());
+        move.putExtra("folderName", folder.getFolderName());
 
         startActivity(move);
     }
 
     @Override
-    public void onPicHeld(final AlbumModel album, View v, final int position) {
-        PopupMenu popup = new PopupMenu(getActivity(), v);
+    public void onPicClicked(MyFileModel myFileModel) {
+
+    }
+
+    @Override
+    public void onPicHeld(final FolderModel folder, View view, final int position) {
+        PopupMenu popup = new PopupMenu(getActivity(), view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.album_popup, popup.getMenu());
         popup.setForceShowIcon(true);
@@ -162,11 +168,11 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                 switch (item.getItemId()){
                     case delete:
                         // delete button clicked
-                        dialogDelete(getContext(), album);
+                        dialogDelete(getContext(), folder);
                         break;
                     case edit:
                         // edit button clicked
-                        editAlbumName(album, position);
+                        editFolderName(folder, position);
                         break;
                 }
                 return true;
@@ -175,7 +181,7 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         popup.show();
     }
 
-    public void dialogDelete(Context context, final AlbumModel album){
+    public void dialogDelete(Context context, final FolderModel folder){
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -185,33 +191,30 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                         new Thread(){
                             public void run(){
                                 // file paths
-                                String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
-                                String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
-                                // delete all photos in album
+                                String filePath = getActivity().getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
+                                // delete all files in folder
                                 DataBaseHelper db = new DataBaseHelper(getActivity());
-                                List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
-                                if (!photoIds.isEmpty()){
-                                    boolean result = db.deleteAllPhotosFromAlbum(album);
+                                List<MyFileModel> fileIds = db.getFileIdsFromFolder(folder);
+                                if (!fileIds.isEmpty()){
+                                    boolean result = db.deleteAllFilesFromFolder(folder);
                                     if (result){
-                                        for (PhotoModel photoModel : photoIds){
-                                            String name = String.valueOf(photoModel.getId());
+                                        for (MyFileModel fileModel : fileIds){
+                                            String name = String.valueOf(fileModel.getId());
                                             File deleteFile = new File(filePath, name);
-                                            File deleteThumb = new File(thumbPath, name);
                                             deleteFile.delete();
-                                            deleteThumb.delete();
                                         }
                                     }
                                 }
-                                // delete album
-                                boolean success = db.deleteAlbum(album);
+                                // delete folder
+                                boolean success = db.deleteFolder(folder);
                                 // remove album from albums array
                                 if(success){
-                                    allAlbums.remove(album);
+                                    allFolders.remove(folder);
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            albumAdapter.notifyDataSetChanged();
-                                            if (allAlbums.isEmpty()){
+                                            folderAdapter.notifyDataSetChanged();
+                                            if (allFolders.isEmpty()){
                                                 empty.setVisibility(View.VISIBLE);
                                             }
                                         }
@@ -230,45 +233,45 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("Are you sure? All contents in this album will be deleted.")
+        builder.setMessage("Are you sure? All contents in this folder will be deleted.")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
-    public void editAlbumName(final AlbumModel albumModel, final int position){
+    public void editFolderName(final FolderModel folderModel, final int position){
         // show dialog
         final Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.dialog_add_album);
 
         TextView title = dialog.findViewById(R.id.addNewAlbum);
-        final EditText albumName = dialog.findViewById(R.id.addAlbumName);
+        final EditText folderName = dialog.findViewById(R.id.addAlbumName);
         Button yesButton = dialog.findViewById(R.id.dialog_album_btn_yes);
         Button noButton = dialog.findViewById(R.id.dialog_album_btn_no);
 
-        dialog.setTitle("Edit Album");
-        title.setText(getString(R.string.edit_album));
-        albumName.setText(albumModel.getAlbumName());
+        dialog.setTitle("Edit Folder");
+        title.setText(getString(R.string.edit_folder));
+        folderName.setText(folderModel.getFolderName());
         dialog.show();
         // buttons
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DataBaseHelper db = new DataBaseHelper(getActivity());
-                // get text from albumName
-                // update name in album
-                String newName = albumName.getText().toString().trim();
+                // get text from folderName
+                // update name in folder
+                String newName = folderName.getText().toString().trim();
                 // save change to db and albums array
                 boolean success = false;
                 if(newName.isEmpty()){
                     Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
                 }else{
-                    albumModel.setAlbumName(newName);
-                    success = db.updateAlbum(albumModel);
+                    folderModel.setFolderName(newName);
+                    success = db.updateFolder(folderModel);
                 }
                 if(success){
-                    allAlbums.get(position).setAlbumName(newName);
-                    albumAdapter.notifyDataSetChanged();
-                    Toast.makeText(getActivity(),"Updated album name",Toast.LENGTH_SHORT).show();
+                    allFolders.get(position).setFolderName(newName);
+                    folderAdapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(),"Updated folder name",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getActivity(),"Something went wrong",Toast.LENGTH_SHORT).show();
                 }
@@ -286,15 +289,8 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        if(albumAdapter != null){
-            albumAdapter.notifyDataSetChanged();
+        if(folderAdapter != null){
+            folderAdapter.notifyDataSetChanged();
         }
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Glide.get(requireContext()).clearMemory();
-    }
-
 }

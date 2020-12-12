@@ -13,7 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.interfaces.IClickListener;
+import com.project.real_calculator.interfaces.IGalleryClickListener;
 
 import java.io.File;
 import java.util.List;
@@ -24,7 +24,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
 
     private List<PhotoModel> photoList;
     private Context contx;
-    private final IClickListener listerner;
+    private final IGalleryClickListener listerner;
 
     /**
      *
@@ -32,7 +32,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
      * @param contx The Activities Context
      * @param listerner An interface for listening to clicks on the RecyclerView's items
      */
-    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IClickListener listerner){
+    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IGalleryClickListener listerner){
         this.photoList = photoList;
         this.contx = contx;
         this.listerner = listerner;

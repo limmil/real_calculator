@@ -31,6 +31,24 @@ public final class UserContract {
         public static final String COLUMN_FILETYPE = "FILETYPE";
         public static final String COLUMN_ALBUM = "ALBUM";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+        public static final String COLUMN_SIZE = "SIZE";
         public static final String INDEX_ALBUM = "PHOTOS_ALBUM_IDX";
+    }
+
+    public static class Folder implements  BaseColumns {
+        public static final String TABLE_NAME = "FOLDER";
+        public static final String COLUMN_NAME = "NAME";
+        public static final String COLUMN_COUNT = "COUNT";
+        public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+    }
+    public static class MyFile implements BaseColumns {
+        public static final String TABLE_NAME = "FILES";
+        public static final String COLUMN_NAME = "NAME";
+        public static final String COLUMN_CONTENT = "CONTENT";
+        public static final String COLUMN_FILETYPE = "FILETYPE";
+        public static final String COLUMN_FOLDER = "FOLDER";
+        public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+        public static final String COLUMN_SIZE = "SIZE";
+        public static final String INDEX_FOLDER = "PHOTOS_FOLDER_IDX";
     }
 }

@@ -19,7 +19,7 @@ import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
-import com.project.real_calculator.interfaces.IClickListener;
+import com.project.real_calculator.interfaces.IGalleryClickListener;
 import com.project.real_calculator.ui.gallery.utils.AlbumAdapter;
 import com.project.real_calculator.ui.gallery.utils.MarginDecoration;
 import com.project.real_calculator.ui.gallery.utils.PhotoAdapter;
@@ -27,7 +27,7 @@ import com.project.real_calculator.ui.gallery.utils.PicHolder;
 
 import java.util.List;
 
-public class SelectAlbumFragment extends Fragment implements IClickListener {
+public class SelectAlbumFragment extends Fragment implements IGalleryClickListener {
 
     private Context context;
     private List<AlbumModel> allAlbums;

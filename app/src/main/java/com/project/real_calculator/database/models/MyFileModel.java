@@ -1,28 +1,26 @@
 package com.project.real_calculator.database.models;
 
-public class PhotoModel {
+public class MyFileModel {
 
     private int id;
-    private int album;
+    private int folder;
     private String name;
     private String content;
-    private String thumbnail;
     private String fileType;
-    private String albumName;
+    private String folderName;
     private String timeStamp;
     private String size;
     private boolean selected;
     private boolean checkBoxVisibility = false;
     private boolean checkBox = false;
 
-    public PhotoModel(int id, String name, String content, String thumbnail, String fileType, String timeStamp, int album){
+    public MyFileModel(int id, String name, String content, String fileType, String timeStamp, int folder){
         this.id = id;
         this.name = name;
         this.content = content;
-        this.thumbnail = thumbnail;
         this.fileType = fileType;
         this.timeStamp = timeStamp;
-        this.album = album;
+        this.folder = folder;
         this.size = "unknown";
     }
 
@@ -50,28 +48,20 @@ public class PhotoModel {
         this.content = content;
     }
 
-    public String getThumbnail() {
-        return thumbnail;
+    public int getFolder() {
+        return folder;
     }
 
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setFolder(int folder) {
+        this.folder = folder;
     }
 
-    public int getAlbum() {
-        return album;
+    public String getFolderName() {
+        return folderName;
     }
 
-    public void setAlbum(int album) {
-        this.album = album;
-    }
-
-    public String getAlbumName() {
-        return albumName;
-    }
-
-    public void setAlbumName(String albumName) {
-        this.albumName = albumName;
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
 
     public String getFileType() {

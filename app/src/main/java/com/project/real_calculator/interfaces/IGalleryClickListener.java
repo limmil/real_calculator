@@ -8,7 +8,7 @@ import com.project.real_calculator.ui.gallery.utils.PicHolder;
 
 import java.util.List;
 
-public interface IClickListener {
+public interface IGalleryClickListener {
     void onPicClicked(PicHolder holder, int position, List<PhotoModel> pics);
     void onPicClicked(AlbumModel album);
     void onPicHeld(AlbumModel album, View view, int position);

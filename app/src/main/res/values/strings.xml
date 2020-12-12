@@ -58,5 +58,15 @@
     <string name="edit">Edit</string>
     <string name="move">Move</string>
     <string name="export">Export</string>
+    <string name="notes">Notes</string>
+    <string name="files">Files</string>
+    <string name="no_folders">No Folders</string>
+    <string name="no_albums">No Albums</string>
+    <string name="add_new_folder">Add New Folder</string>
+    <string name="add_new_album">Add New Album</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_files">No Files</string>
+    <string name="edit_folder">Edit Folder</string>
 
 </resources>

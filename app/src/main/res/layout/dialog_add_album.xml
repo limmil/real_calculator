@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:text="Add New Album"
+        android:text="@string/add_new_album"
         android:textColor="@android:color/white"
         android:textSize="15sp"
         android:textStyle="bold"/>
@@ -25,7 +25,7 @@
         android:maxLength="200"
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:hint="Album Name"/>
+        android:hint="@string/album_name"/>
 
 
     <LinearLayout
@@ -39,7 +39,7 @@
             android:id="@+id/dialog_album_btn_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Yes"
+            android:text="@string/yes"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
             android:id="@+id/dialog_album_btn_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No"
+            android:text="@string/no"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />
     </LinearLayout>

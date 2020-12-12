@@ -52,6 +52,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Photo.COLUMN_FILETYPE + " BLOB, " +
             Photo.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             Photo.COLUMN_ALBUM + " INTEGER, " +
+            Photo.COLUMN_SIZE + " BLOB, " +
             " FOREIGN KEY ("+Photo.COLUMN_ALBUM+") REFERENCES "+Album.TABLE_NAME+"("+Album._ID+"))";
     private static final String SQL_DELETE_PHOTO =
             "DROP TABLE IF EXISTS " + Photo.TABLE_NAME;
@@ -62,6 +63,35 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Photo.COLUMN_ALBUM + ")";
     private static final String SQL_DELETE_PHOTO_ALBUM_INDEX =
             "DROP INDEX IF EXISTS " + Photo.INDEX_ALBUM;
+
+    private static final String SQL_CREATE_FOLDER = "CREATE TABLE " +
+            Folder.TABLE_NAME + " (" +
+            Folder._ID + " INTEGER PRIMARY KEY, " +
+            Folder.COLUMN_NAME + " BLOB NOT NULL, " +
+            Folder.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+            Folder.COLUMN_COUNT + " INTEGER NOT NULL)";
+    private static final String SQL_DELETE_FOLDER =
+            "DROP TABLE IF EXISTS " + Folder.TABLE_NAME;
+    // files has foreign key from folder
+    private static final String SQL_CREATE_FILE = "CREATE TABLE " +
+            MyFile.TABLE_NAME + " (" +
+            MyFile._ID + " INTEGER PRIMARY KEY, " +
+            MyFile.COLUMN_NAME + " BLOB NOT NULL, " +
+            MyFile.COLUMN_CONTENT + " BLOB, " +
+            MyFile.COLUMN_FILETYPE + " BLOB, " +
+            MyFile.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+            MyFile.COLUMN_FOLDER + " INTEGER, " +
+            MyFile.COLUMN_SIZE + " BLOB, " +
+            " FOREIGN KEY ("+MyFile.COLUMN_FOLDER+") REFERENCES "+Folder.TABLE_NAME+"("+Folder._ID+"))";
+    private static final String SQL_DELETE_FILE =
+            "DROP TABLE IF EXISTS " + MyFile.TABLE_NAME;
+    // create folder index on file table
+    private static final String SQL_CREATE_FILE_FOLDER_INDEX = "CREATE INDEX " +
+            MyFile.INDEX_FOLDER + " ON " +
+            MyFile.TABLE_NAME + " (" +
+            MyFile.COLUMN_FOLDER + ")";
+    private static final String SQL_DELETE_FILE_FOLDER_INDEX =
+            "DROP INDEX IF EXISTS " + MyFile.INDEX_FOLDER;
 
 
 
@@ -77,18 +107,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(SQL_CREATE_USER);
+        
         sqLiteDatabase.execSQL(SQL_CREATE_ALBUM);
         sqLiteDatabase.execSQL(SQL_CREATE_PHOTO);
         sqLiteDatabase.execSQL(SQL_CREATE_PHOTO_ALBUM_INDEX);
+        
+        sqLiteDatabase.execSQL(SQL_CREATE_FOLDER);
+        sqLiteDatabase.execSQL(SQL_CREATE_FILE);
+        sqLiteDatabase.execSQL(SQL_CREATE_FILE_FOLDER_INDEX);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(SQL_DELETE_USER);
+        
         sqLiteDatabase.execSQL(SQL_DELETE_PHOTO_ALBUM_INDEX);
         sqLiteDatabase.execSQL(SQL_DELETE_PHOTO);
         sqLiteDatabase.execSQL(SQL_DELETE_ALBUM);
 
+        sqLiteDatabase.execSQL(SQL_DELETE_FILE_FOLDER_INDEX);
+        sqLiteDatabase.execSQL(SQL_DELETE_FILE);
+        sqLiteDatabase.execSQL(SQL_DELETE_FOLDER);
     }
 
     // USER TABLE __________________________________________________________________________________
@@ -214,6 +253,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             byte[] content = Util.encryptToByte(tmp.getContent());
             byte[] fileType = Util.encryptToByte(tmp.getFileType());
             byte[] thumbnail = Util.encryptToByte(tmp.getThumbnail());
+            byte[] size = Util.encryptToByte(tmp.getSize());
             int album = albumModel.getId();
             // insert data
             cv.put(Photo.COLUMN_NAME, name);
@@ -221,6 +261,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(Photo.COLUMN_FILETYPE, fileType);
             cv.put(Photo.COLUMN_THUMBNAIL, thumbnail);
             cv.put(Photo.COLUMN_ALBUM, album);
+            cv.put(Photo.COLUMN_SIZE, size);
 
             insert = db.insert(Photo.TABLE_NAME, null, cv);
             if (insert == -1){return insert;}
@@ -245,13 +286,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 byte[] bFileType = cursor.getBlob(4);
                 String time = cursor.getString(5);
                 int albumId = cursor.getInt(6);
+                byte[] bSize = cursor.getBlob(7);
                 //decrypt data
                 String name = Util.decryptToString(bName);
                 String content = Util.decryptToString(bContent);
                 String fileType = Util.decryptToString(bFileType);
                 String thumbnail = Util.decryptToString(bThumbnail);
+                String size = Util.decryptToString(bSize);
 
                 PhotoModel photo = new PhotoModel(id, name, content, thumbnail, fileType, time, albumId);
+                photo.setSize(size);
+
                 photos.add(photo);
             }while(cursor.moveToNext());
         }
@@ -261,7 +306,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return photos;
     }
     public List<PhotoModel> getPhotoIdsFromAlbum(AlbumModel album){
-        List<com.project.real_calculator.database.models.PhotoModel> photos = new ArrayList<>();
+        List<PhotoModel> photos = new ArrayList<>();
         String q = "SELECT " + Photo._ID + " FROM " +
                 Photo.TABLE_NAME + " WHERE " +
                 Photo.COLUMN_ALBUM + " = " +
@@ -314,10 +359,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
 
         String whereClause = Photo._ID + " IN (" + TextUtils.join(",", ids) + ")";
-        int deleted = db.update(Photo.TABLE_NAME, cv, whereClause, null);
+        int updated = db.update(Photo.TABLE_NAME, cv, whereClause, null);
 
         db.close();
-        return  deleted > 0;
+        return  updated > 0;
 
     }
     public boolean updatePhoto(PhotoModel photoModel){
@@ -330,6 +375,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(Photo.COLUMN_THUMBNAIL, Util.encryptToByte(photoModel.getThumbnail()));
         cv.put(Photo.COLUMN_FILETYPE, Util.encryptToByte(photoModel.getFileType()));
         cv.put(Photo.COLUMN_CONTENT, Util.encryptToByte(photoModel.getContent()));
+        cv.put(Photo.COLUMN_SIZE, Util.encryptToByte(photoModel.getSize()));
         int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
 
@@ -371,6 +417,245 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String[] selectionArgs = { albumId };
         // Issue SQL statement.
         int deletedRows = db.delete(Photo.TABLE_NAME, selection, selectionArgs);
+        db.close();
+        return deletedRows > 0;
+    }
+
+
+    // FOLDER TABLE ________________________________________________________________________________
+    /* FOLDER CRUD */
+    public boolean addFolder(FolderModel folder){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        // encrypt name
+        byte[] folderName = Util.encryptToByte(folder.getFolderName());
+
+        cv.put(Folder.COLUMN_NAME, folderName);
+        cv.put(Folder.COLUMN_COUNT, folder.getItemsCount());
+
+        long insert = db.insert(Folder.TABLE_NAME, null, cv);
+        db.close();
+        return insert != -1;
+    }
+    public List<FolderModel> getFolders(){
+        List<FolderModel> folderModels = new ArrayList<>();
+        String q = "SELECT * FROM " + Folder.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+                byte[] bName = cursor.getBlob(1);
+                String time = cursor.getString(2);
+                int count = cursor.getInt(3);
+                //decrypt data
+                String name = Util.decryptToString(bName);
+
+                FolderModel folder = new FolderModel(id, name, time, count);
+                folderModels.add(folder);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return folderModels;
+    }
+    public boolean updateFolder(FolderModel folder){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(folder.getId());
+        // encrypt new name
+        cv.put(Folder.COLUMN_NAME, Util.encryptToByte(folder.getFolderName()));
+        int updated = db.update(Folder.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean deleteFolder(FolderModel folder){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String id = String.valueOf(folder.getId());
+        int deleted = db.delete(Folder.TABLE_NAME, "_id = ?", new String[]{id});
+        db.close();
+
+        return deleted > 0;
+    }
+
+    // FILE TABLE __________________________________________________________________________________
+    /* FILE CRUD */
+    public long addFile(MyFileModel file, FolderModel folder){
+        List<MyFileModel> tmp = new ArrayList<>();
+        tmp.add(file);
+        return addFiles(tmp, folder);
+    }
+    public long addFiles(List<MyFileModel> files, FolderModel folder){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        long insert = -1;
+        for (MyFileModel tmp : files){
+            // encrypt data
+            byte[] name = Util.encryptToByte(tmp.getName());
+            byte[] content = Util.encryptToByte(tmp.getContent());
+            byte[] fileType = Util.encryptToByte(tmp.getFileType());
+            byte[] size = Util.encryptToByte(tmp.getSize());
+            int folderIn = folder.getId();
+            // insert data
+            cv.put(MyFile.COLUMN_NAME, name);
+            cv.put(MyFile.COLUMN_CONTENT, content);
+            cv.put(MyFile.COLUMN_FILETYPE, fileType);
+            cv.put(MyFile.COLUMN_FOLDER, folderIn);
+            cv.put(MyFile.COLUMN_SIZE, size);
+
+            insert = db.insert(MyFile.TABLE_NAME, null, cv);
+            if (insert == -1){return insert;}
+        }
+        db.close();
+        return insert;
+    }
+    public List<MyFileModel> getFilesFromFolder(FolderModel folderModel){
+        List<MyFileModel> files = new ArrayList<>();
+        String q = "SELECT * FROM " +
+                MyFile.TABLE_NAME + " WHERE " +
+                MyFile.COLUMN_FOLDER + " = " +
+                folderModel.getId();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+                byte[] bName = cursor.getBlob(1);
+                byte[] bContent = cursor.getBlob(2);
+                byte[] bFileType = cursor.getBlob(3);
+                String time = cursor.getString(4);
+                int folderId = cursor.getInt(5);
+                byte[] bSize = cursor.getBlob(6);
+                //decrypt data
+                String name = Util.decryptToString(bName);
+                String content = Util.decryptToString(bContent);
+                String fileType = Util.decryptToString(bFileType);
+                String size = Util.decryptToString(bSize);
+
+                MyFileModel file = new MyFileModel(id, name, content, fileType, time, folderId);
+                file.setSize(size);
+
+                files.add(file);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return files;
+    }
+    public List<MyFileModel> getFileIdsFromFolder(FolderModel folder){
+        List<MyFileModel> files = new ArrayList<>();
+        String q = "SELECT " + MyFile._ID + " FROM " +
+                MyFile.TABLE_NAME + " WHERE " +
+                MyFile.COLUMN_FOLDER + " = " +
+                folder.getId();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+
+                MyFileModel file = new MyFileModel(id, "", "", "", "", 0);
+                files.add(file);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return files;
+    }
+    public boolean updateFileName(MyFileModel myFileModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(myFileModel.getId());
+        // encrypt updates
+        cv.put(Photo.COLUMN_NAME, Util.encryptToByte(myFileModel.getName()));
+        int updated = db.update(MyFile.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean updateFileFolderId(MyFileModel myFileModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(myFileModel.getId());
+        // id is not encrypted
+        cv.put(MyFile.COLUMN_FOLDER, myFileModel.getFolder());
+        int updated = db.update(MyFile.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+    public boolean updateFileFolderIds(List<MyFileModel> myFileModels, int folderId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(MyFile.COLUMN_FOLDER, folderId);
+
+        String[] ids = new String[myFileModels.size()];
+        for (int i = 0; i< myFileModels.size(); i++){
+            ids[i] = String.valueOf(myFileModels.get(i).getId());
+        }
+
+        String whereClause = MyFile._ID + " IN (" + TextUtils.join(",", ids) + ")";
+        int updated = db.update(MyFile.TABLE_NAME, cv, whereClause, null);
+
+        db.close();
+        return  updated > 0;
+
+    }
+    public boolean updateFile(MyFileModel myFileModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        String id = String.valueOf(myFileModel.getId());
+
+        cv.put(MyFile.COLUMN_FOLDER, myFileModel.getFolder());
+        cv.put(MyFile.COLUMN_NAME, Util.encryptToByte(myFileModel.getName()));
+        cv.put(MyFile.COLUMN_FILETYPE, Util.encryptToByte(myFileModel.getFileType()));
+        cv.put(MyFile.COLUMN_CONTENT, Util.encryptToByte(myFileModel.getContent()));
+        cv.put(MyFile.COLUMN_SIZE, Util.encryptToByte(myFileModel.getSize()));
+        int updated = db.update(MyFile.TABLE_NAME, cv, "_id = ?", new String[]{id});
+        db.close();
+
+        return updated > 0;
+    }
+
+    /**
+     * @param myFileModel only needs id fields within each PhotoModel object
+     * @return true if deleted
+     */
+    public boolean deleteFile(MyFileModel myFileModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] id = { String.valueOf(myFileModel.getId()) };
+        int deleted = db.delete(MyFile.TABLE_NAME, "_id = ?", id);
+
+        db.close();
+        return deleted > 0;
+    }
+    public boolean deleteFiles(List<MyFileModel> myFileModels){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] ids = new String[myFileModels.size()];
+        for (int i=0; i<myFileModels.size(); i++){
+            ids[i] = String.valueOf(myFileModels.get(i).getId());
+        }
+
+        String whereClause = MyFile._ID + " IN (" + TextUtils.join(",", ids) + ")";
+        int deleted = db.delete(MyFile.TABLE_NAME, whereClause, null);
+
+        db.close();
+        return  deleted > 0;
+    }
+    public boolean deleteAllFilesFromFolder(FolderModel folderModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String folderId = String.valueOf(folderModel.getId());
+
+        // Define 'where' part of query.
+        String selection = MyFile.COLUMN_FOLDER + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { folderId };
+        // Issue SQL statement.
+        int deletedRows = db.delete(MyFile.TABLE_NAME, selection, selectionArgs);
         db.close();
         return deletedRows > 0;
     }
