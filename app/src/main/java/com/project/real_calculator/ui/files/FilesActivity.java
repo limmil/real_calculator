@@ -300,7 +300,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                 if(success){
                     allFiles.get(position).setName(finalName);
                     fileAdapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(),"Updated folder name",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Updated file name",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
                 }
