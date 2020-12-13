@@ -175,6 +175,11 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         popup.show();
     }
 
+    @Override
+    public void onPicHeld(PhotoModel photo, View view, int position) {
+
+    }
+
     public void dialogDelete(Context context, final AlbumModel album){
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override

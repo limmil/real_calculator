@@ -125,6 +125,11 @@ public class SelectAlbumFragment extends Fragment implements IGalleryClickListen
 
     }
 
+    @Override
+    public void onPicHeld(PhotoModel photo, View view, int position) {
+
+    }
+
     public void moveImagesToAlbum(Context context, final List<PhotoModel> selectedPhotos, final int intoAlbum){
         final ProgressDialog dialog = ProgressDialog.show(context,
                 "Loading", "Moving", true);

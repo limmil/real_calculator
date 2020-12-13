@@ -201,10 +201,10 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                                 DataBaseHelper db = new DataBaseHelper(context);
                                 String name = String.valueOf(file.getId());
                                 File deleteFile = new File(filePath, name);
+                                deleteFile.delete();
 
                                 boolean success = db.deleteFile(file);
                                 if (success){
-                                    deleteFile.delete();
                                     allFiles.remove(file);
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -614,19 +614,19 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                                 for (Integer i : positions){
                                     selectedFiles.add(fileModels.get(i));
                                 }
+                                // remove files from allImage array
+                                // delete file on disk
+                                String filePath = getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
+
+                                for (MyFileModel fileModel : selectedFiles){
+                                    allFiles.remove(fileModel);
+                                    String name = String.valueOf(fileModel.getId());
+                                    File deleteFile = new File(filePath, name);
+                                    deleteFile.delete();
+                                }
+
                                 boolean success = db.deleteFiles(selectedFiles);
-
                                 if(success){
-                                    // remove files from allImage array
-                                    // delete file on disk
-                                    String filePath = getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
-
-                                    for (MyFileModel fileModel : selectedFiles){
-                                        allFiles.remove(fileModel);
-                                        String name = String.valueOf(fileModel.getId());
-                                        File deleteFile = new File(filePath, name);
-                                        deleteFile.delete();
-                                    }
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {

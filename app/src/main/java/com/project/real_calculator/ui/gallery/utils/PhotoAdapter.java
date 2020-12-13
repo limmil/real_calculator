@@ -74,6 +74,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
                 listerner.onPicClicked(holder, position, photoList);
             }
         });
+        holder.picture.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                listerner.onPicHeld(photo,v,position);
+                return true;
+            }
+        });
     }
 
     @Override

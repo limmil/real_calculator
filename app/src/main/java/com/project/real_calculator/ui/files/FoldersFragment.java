@@ -196,24 +196,23 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
                         new Thread(){
                             public void run(){
                                 // file paths
-                                String filePath = getActivity().getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
+                                String filePath = requireActivity().getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
                                 // delete all files in folder
                                 DataBaseHelper db = new DataBaseHelper(getActivity());
                                 List<MyFileModel> fileIds = db.getFileIdsFromFolder(folder);
                                 if (!fileIds.isEmpty()){
-                                    boolean result = db.deleteAllFilesFromFolder(folder);
-                                    if (result){
-                                        for (MyFileModel fileModel : fileIds){
-                                            String name = String.valueOf(fileModel.getId());
-                                            File deleteFile = new File(filePath, name);
-                                            deleteFile.delete();
-                                        }
+                                    for (MyFileModel fileModel : fileIds){
+                                        String name = String.valueOf(fileModel.getId());
+                                        File deleteFile = new File(filePath, name);
+                                        deleteFile.delete();
                                     }
                                 }
+                                // delete all files
+                                boolean result = db.deleteAllFilesFromFolder(folder);
                                 // delete folder
                                 boolean success = db.deleteFolder(folder);
                                 // remove album from albums array
-                                if(success){
+                                if(success && result){
                                     allFolders.remove(folder);
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override

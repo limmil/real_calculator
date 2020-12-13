@@ -420,6 +420,15 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                     case DialogInterface.BUTTON_POSITIVE:
                         // delete photo
                         DataBaseHelper db = new DataBaseHelper(getActivity());
+                        // delete file on disk
+                        String filePath = requireActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
+                        String thumbPath = requireActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
+                        String name = String.valueOf(photoModel.getId());
+                        File deleteFile = new File(filePath, name);
+                        File deleteThumb = new File(thumbPath, name);
+                        deleteFile.delete();
+                        deleteThumb.delete();
+                        // delete photo in database
                         boolean success = db.deletePhoto(photoModel);
                         // remove album from albums array
                         if(success){
@@ -435,17 +444,10 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                             if (position<allImages.size()){
                                 allImages.get(position).setSelected(true);
                             }
-                            // delete file on disk
-                            String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
-                            String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
-                            String name = String.valueOf(photoModel.getId());
-                            File deleteFile = new File(filePath, name);
-                            File deleteThumb = new File(thumbPath, name);
-                            deleteFile.delete();
-                            deleteThumb.delete();
+
                             if(allImages.isEmpty()){
                                 requireActivity().onBackPressed();
-                                ((ImageBrowseActivity)getActivity()).empty.setVisibility(View.VISIBLE);
+                                ((ImageBrowseActivity)requireActivity()).empty.setVisibility(View.VISIBLE);
                             }
                         }
                         break;

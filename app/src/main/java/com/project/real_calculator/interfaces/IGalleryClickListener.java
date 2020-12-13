@@ -12,4 +12,5 @@ public interface IGalleryClickListener {
     void onPicClicked(PicHolder holder, int position, List<PhotoModel> pics);
     void onPicClicked(AlbumModel album);
     void onPicHeld(AlbumModel album, View view, int position);
+    void onPicHeld(PhotoModel photo, View view, int position);
 }

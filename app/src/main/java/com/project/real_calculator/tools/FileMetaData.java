@@ -75,7 +75,7 @@ public class FileMetaData {
                     cursor.close();
             }
 
-            return null;
+            return fileMetaData;
         }
     }
 }
