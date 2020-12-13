@@ -37,18 +37,19 @@ public class SelectFolderFragment extends Fragment implements IFilesClickListene
     MyFileAdapter fileAdapter;
     RecyclerView folderRecycler;
     FolderAdapter folderAdapter;
-    TextView empty;
+    TextView empty, fileEmpty;
 
-    public SelectFolderFragment (Context context, List<MyFileModel> selectedMyFiles, MyFileAdapter fileAdapter, List<MyFileModel> allFiles, int currentFolderId){
+    public SelectFolderFragment (Context context, List<MyFileModel> selectedMyFiles, MyFileAdapter fileAdapter, List<MyFileModel> allFiles, int currentFolderId, TextView fileEmpty){
         this.context = context;
         this.selectedMyFiles = selectedMyFiles;
         this.allFiles = allFiles;
         this.fileAdapter = fileAdapter;
         this.currentFolderId = currentFolderId;
+        this.fileEmpty = fileEmpty;
     }
 
-    public static SelectFolderFragment newInstance(Context context, List<MyFileModel> selectedMyFiles, MyFileAdapter fileAdapter, List<MyFileModel> allFiles, int currentFolderId){
-        return new SelectFolderFragment(context, selectedMyFiles, fileAdapter, allFiles, currentFolderId);
+    public static SelectFolderFragment newInstance(Context context, List<MyFileModel> selectedMyFiles, MyFileAdapter fileAdapter, List<MyFileModel> allFiles, int currentFolderId, TextView fileEmpty){
+        return new SelectFolderFragment(context, selectedMyFiles, fileAdapter, allFiles, currentFolderId, fileEmpty);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -89,12 +90,12 @@ public class SelectFolderFragment extends Fragment implements IFilesClickListene
     }
     
     @Override
-    public void onPicClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
+    public void onFileClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
         
     }
 
     @Override
-    public void onPicClicked(FolderModel folder) {
+    public void onFolderClicked(FolderModel folder) {
         final int id = folder.getId();
         // code in here
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -119,12 +120,17 @@ public class SelectFolderFragment extends Fragment implements IFilesClickListene
     }
 
     @Override
-    public void onPicClicked(MyFileModel myFileModel) {
+    public void onFileClicked(MyFileModel myFileModel) {
 
     }
 
     @Override
-    public void onPicHeld(FolderModel folder, View view, int position) {
+    public void onFolderHeld(FolderModel folder, View view, int position) {
+
+    }
+
+    @Override
+    public void onFileHeld(MyFileModel file, View view, int position) {
 
     }
 
@@ -145,6 +151,10 @@ public class SelectFolderFragment extends Fragment implements IFilesClickListene
                             fileAdapter.notifyDataSetChanged();
                         }
                         dialog.dismiss();
+                        fileAdapter.notifyDataSetChanged();
+                        if (allFiles.isEmpty()){
+                            fileEmpty.setVisibility(View.VISIBLE);
+                        }
                         requireActivity().onBackPressed();
                     }
                 });

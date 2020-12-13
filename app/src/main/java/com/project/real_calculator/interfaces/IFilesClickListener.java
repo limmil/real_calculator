@@ -9,8 +9,9 @@ import com.project.real_calculator.ui.files.MyFileAdapter;
 import java.util.List;
 
 public interface IFilesClickListener {
-    void onPicClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files);
-    void onPicClicked(FolderModel folder);
-    void onPicClicked(MyFileModel myFileModel);
-    void onPicHeld(FolderModel folder, View view, int position);
+    void onFileClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files);
+    void onFolderClicked(FolderModel folder);
+    void onFileClicked(MyFileModel myFileModel);
+    void onFolderHeld(FolderModel folder, View view, int position);
+    void onFileHeld(MyFileModel file, View view, int position);
 }

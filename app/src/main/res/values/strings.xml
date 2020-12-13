@@ -68,5 +68,7 @@
     <string name="no">No</string>
     <string name="no_files">No Files</string>
     <string name="edit_folder">Edit Folder</string>
+    <string name="edit_file">Edit File</string>
+    <string name="update">Update</string>
 
 </resources>

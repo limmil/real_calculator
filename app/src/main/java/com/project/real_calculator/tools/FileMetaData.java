@@ -9,10 +9,10 @@ import android.provider.OpenableColumns;
 import java.io.File;
 
 public class FileMetaData {
-    public String displayName;
-    public long size;
-    public String mimeType;
-    public String path;
+    public String displayName = "";
+    public long size = 0;
+    public String mimeType = "";
+    public String path = "";
 
     @Override
     public String toString()

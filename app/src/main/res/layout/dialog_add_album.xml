@@ -23,9 +23,30 @@
         android:inputType="text"
         android:ems="10"
         android:maxLength="200"
+        android:textColor="@android:color/white"
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:hint="@string/album_name"/>
+    <TextView
+        android:id="@+id/fileSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_margin="10dp"
+        android:paddingStart="10dp"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/fileType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_margin="10dp"
+        android:paddingStart="10dp"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:visibility="gone"/>
 
 
     <LinearLayout

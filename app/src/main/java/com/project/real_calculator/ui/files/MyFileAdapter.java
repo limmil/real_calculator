@@ -60,12 +60,17 @@ public class MyFileAdapter extends RecyclerView.Adapter<MyFileAdapter.MyFileHold
 
 
         //setting the number of files
-        String fileName = myFile.getName();
+        StringBuffer fileName = new StringBuffer(myFile.getName());
         String myFileTypeString = "unknown";
         if (myFile.getName().contains(".")){
             String[] splits = myFile.getName().split("\\.");
-            fileName = splits[0];
-            myFileTypeString = splits[1];
+            fileName = new StringBuffer();
+            int i = 0;
+            do{
+                fileName.append(splits[i]);
+                i++;
+            }while(i<splits.length-1);
+            myFileTypeString = splits[splits.length-1];
         }
         holder.myFileType.setText(myFileTypeString);
         holder.myFileName.setText(fileName);
@@ -73,13 +78,13 @@ public class MyFileAdapter extends RecyclerView.Adapter<MyFileAdapter.MyFileHold
         holder.myFilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listenToClick.onPicClicked(holder, position, myFiles);
+                listenToClick.onFileClicked(holder, position, myFiles);
             }
         });
         holder.myFilePic.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                listenToClick.onPicClicked(myFile);
+                listenToClick.onFileHeld(myFile,v,position);
                 return true;
             }
         });

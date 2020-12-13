@@ -2,6 +2,7 @@ package com.project.real_calculator.ui.files;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -19,10 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -132,7 +135,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
      * @param files An ArrayList of all the items in the Adapter
      */
     @Override
-    public void onPicClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
+    public void onFileClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
 
         if(selecting) {
             holder.checkBox.setChecked(!files.get(position).getCheckBox());
@@ -142,20 +145,173 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
     }
 
     @Override
-    public void onPicClicked(FolderModel folderModel) {
-        // TODO: code in here for edit name
-    }
-
-    @Override
-    public void onPicClicked(MyFileModel myFileModel) {
+    public void onFolderClicked(FolderModel folderModel) {
 
     }
 
     @Override
-    public void onPicHeld(FolderModel folderModel, View view, int position) {
+    public void onFileClicked(MyFileModel myFileModel) {
 
     }
 
+    @Override
+    public void onFolderHeld(FolderModel folderModel, View view, int position) {
+
+    }
+
+    @Override
+    public void onFileHeld(final MyFileModel file, View view, final int position) {
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.album_popup, popup.getMenu());
+        popup.setForceShowIcon(true);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                final int delete = R.id.action_delete;
+                final int edit = R.id.action_edit;
+                switch (item.getItemId()){
+                    case delete:
+                        // delete button clicked
+                        dialogDelete(FilesActivity.this, file);
+                        break;
+                    case edit:
+                        // edit button clicked
+                        editFileName(file, position);
+                        break;
+                }
+                return true;
+            }
+        });
+        popup.show();
+    }
+
+    public void dialogDelete(final Context context, final MyFileModel file){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    // clicked yes
+                    case DialogInterface.BUTTON_POSITIVE:
+                        new Thread(){
+                            public void run(){
+                                // file paths
+                                String filePath = getApplicationContext().getExternalFilesDir("folder/").getAbsolutePath();
+                                // delete all files in folder
+                                DataBaseHelper db = new DataBaseHelper(context);
+                                String name = String.valueOf(file.getId());
+                                File deleteFile = new File(filePath, name);
+
+                                boolean success = db.deleteFile(file);
+                                if (success){
+                                    deleteFile.delete();
+                                    allFiles.remove(file);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            fileAdapter.notifyDataSetChanged();
+                                            if (allFiles.isEmpty()){
+                                                empty.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }.start();
+
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure? "+file.getName()+" will be permanently deleted.")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    public void editFileName(final MyFileModel file, final int position){
+        // show dialog
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_album);
+
+        TextView title = dialog.findViewById(R.id.addNewAlbum);
+        TextView fileSize = dialog.findViewById(R.id.fileSize);
+        TextView fileType = dialog.findViewById(R.id.fileType);
+        final EditText fileName = dialog.findViewById(R.id.addAlbumName);
+        Button yesButton = dialog.findViewById(R.id.dialog_album_btn_yes);
+        yesButton.setText(getString(R.string.update));
+        Button noButton = dialog.findViewById(R.id.dialog_album_btn_no);
+
+        dialog.setTitle("Edit File");
+        title.setText(getString(R.string.edit_file));
+
+        String fType = "File Type: unknown";
+        StringBuffer fName = new StringBuffer(file.getName());
+        String fSize = "File Size: " + file.getSize();
+        String fExt = "";
+        if (file.getName().contains(".")){
+            String[] nameSplits = file.getName().split("\\.");
+            fName = new StringBuffer();
+            int i = 0;
+            do{
+                fName.append(nameSplits[i]);
+                i++;
+            }while(i<nameSplits.length-1);
+            fExt = nameSplits[nameSplits.length-1];
+            fType = "File Type: " + fExt;
+        }
+        fileName.setText(fName);
+        fileSize.setVisibility(View.VISIBLE);
+        fileSize.setText(fSize);
+        fileType.setVisibility(View.VISIBLE);
+        fileType.setText(fType);
+
+        dialog.show();
+        // buttons
+        final String finalFExt = fExt;
+        yesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataBaseHelper db = new DataBaseHelper(getApplicationContext());
+                // get text from fileName
+                // update name in folder
+                String newName = fileName.getText().toString().trim();
+                boolean hasDot = newName.contains(".");
+                String finalName = newName + "." + finalFExt;
+                // save change to db and folders array
+                boolean success = false;
+                if(newName.isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    if(hasDot){
+                        Toast.makeText(getApplicationContext(),"Name cannot contain .",Toast.LENGTH_SHORT).show();
+                    }else {
+                        file.setName(finalName);
+                        success = db.updateFileName(file);
+                    }
+                }
+                if(success){
+                    allFiles.get(position).setName(finalName);
+                    fileAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(),"Updated folder name",Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                }
+                dialog.cancel();
+            }
+        });
+        noButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+    }
 
 
     public void pickImagesIntent(){
@@ -265,7 +421,10 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
         // Get length of file in MB
         long fileSize = fileMetaData.size;
         long fileSizeInMB = fileSize / (1024*1024);
-        if (fileSizeInMB > 100){
+        if (fileSizeInMB < 100 && fileSize!=0){
+            // faster but more memory cost
+            imageOut.write(Util.encryptToByte(getBytes(imageStream)));
+        }else {
             // slower but less memory cost
             CipherInputStream cis = new CipherInputStream(imageStream, AES.getEncryptionCipher());
 
@@ -275,9 +434,6 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                 imageOut.write(buffer, 0, len);
             }
             cis.close();
-        }else {
-            // faster but more memory cost
-            imageOut.write(Util.encryptToByte(getBytes(imageStream)));
         }
 
         imageStream.close();
@@ -482,6 +638,10 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                                     @Override
                                     public void run() {
                                         pDialog.dismiss();
+                                        fileAdapter.notifyDataSetChanged();
+                                        if (allFiles.isEmpty()){
+                                            empty.setVisibility(View.VISIBLE);
+                                        }
                                     }
                                 });
                             }
@@ -507,7 +667,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
             selectedFiles.add(fileModels.get(i));
         }
 
-        SelectFolderFragment fragment = SelectFolderFragment.newInstance(context, selectedFiles, fileAdapter, allFiles, folderId);
+        SelectFolderFragment fragment = SelectFolderFragment.newInstance(context, selectedFiles, fileAdapter, allFiles, folderId, empty);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             fragment.setEnterTransition(new Fade());
@@ -555,7 +715,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
         new Thread(){
             public void run(){
                 // export
-                String sourceDir = getExternalFilesDir("media").getAbsolutePath();
+                String sourceDir = getExternalFilesDir("folder/").getAbsolutePath();
                 final int count = fileModels.size();
                 for (int i=0; i<count; i++){
                     final int finalI = i;

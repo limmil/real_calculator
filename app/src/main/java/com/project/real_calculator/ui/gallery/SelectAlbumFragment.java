@@ -37,18 +37,19 @@ public class SelectAlbumFragment extends Fragment implements IGalleryClickListen
     PhotoAdapter photoAdapter;
     RecyclerView albumRecycler;
     AlbumAdapter albumAdapter;
-    TextView empty;
+    TextView empty, photoEmpty;
     
-    public SelectAlbumFragment (Context context, List<PhotoModel> selectedPhotos, PhotoAdapter photoAdapter, List<PhotoModel> allImages, int currentAlbumId){
+    public SelectAlbumFragment (Context context, List<PhotoModel> selectedPhotos, PhotoAdapter photoAdapter, List<PhotoModel> allImages, int currentAlbumId, TextView photoEmpty){
         this.context = context;
         this.selectedPhotos = selectedPhotos;
         this.allImages = allImages;
         this.photoAdapter = photoAdapter;
         this.currentAlbumId = currentAlbumId;
+        this.photoEmpty = photoEmpty;
     }
     
-    public static SelectAlbumFragment newInstance(Context context, List<PhotoModel> selectedPhotos, PhotoAdapter photoAdapter, List<PhotoModel> allImages, int currentAlbumId){
-        return new SelectAlbumFragment(context, selectedPhotos, photoAdapter, allImages, currentAlbumId);
+    public static SelectAlbumFragment newInstance(Context context, List<PhotoModel> selectedPhotos, PhotoAdapter photoAdapter, List<PhotoModel> allImages, int currentAlbumId, TextView photoEmpty){
+        return new SelectAlbumFragment(context, selectedPhotos, photoAdapter, allImages, currentAlbumId, photoEmpty);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -141,6 +142,9 @@ public class SelectAlbumFragment extends Fragment implements IGalleryClickListen
                             photoAdapter.notifyDataSetChanged();
                         }
                         dialog.dismiss();
+                        if(allImages.isEmpty()){
+                            photoEmpty.setVisibility(View.VISIBLE);
+                        }
                         requireActivity().onBackPressed();
                     }
                 });

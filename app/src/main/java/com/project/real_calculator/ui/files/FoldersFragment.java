@@ -136,12 +136,12 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
 
 
     @Override
-    public void onPicClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
+    public void onFileClicked(MyFileAdapter.MyFileHolder holder, int position, List<MyFileModel> files) {
 
     }
 
     @Override
-    public void onPicClicked(FolderModel folder) {
+    public void onFolderClicked(FolderModel folder) {
         Intent move = new Intent(getActivity(), FilesActivity.class);
         move.putExtra("folderId", folder.getId());
         move.putExtra("folderName", folder.getFolderName());
@@ -150,12 +150,12 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
     }
 
     @Override
-    public void onPicClicked(MyFileModel myFileModel) {
+    public void onFileClicked(MyFileModel myFileModel) {
 
     }
 
     @Override
-    public void onPicHeld(final FolderModel folder, View view, final int position) {
+    public void onFolderHeld(final FolderModel folder, View view, final int position) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.album_popup, popup.getMenu());
@@ -179,6 +179,11 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
             }
         });
         popup.show();
+    }
+
+    @Override
+    public void onFileHeld(MyFileModel file, View view, int position) {
+
     }
 
     public void dialogDelete(Context context, final FolderModel folder){

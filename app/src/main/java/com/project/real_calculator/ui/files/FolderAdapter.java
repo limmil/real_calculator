@@ -70,13 +70,13 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
         holder.folderPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listenToClick.onPicClicked(folder);
+                listenToClick.onFolderClicked(folder);
             }
         });
         holder.folderPic.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                listenToClick.onPicHeld(folder,v,position);
+                listenToClick.onFolderHeld(folder,v,position);
                 return true;
             }
         });
