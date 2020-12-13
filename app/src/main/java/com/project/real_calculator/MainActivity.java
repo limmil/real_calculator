@@ -7,6 +7,7 @@ import com.project.real_calculator.database.models.UserModel;
 import com.project.real_calculator.encryption.*;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -398,7 +399,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(View v)
                 {
 
-                    String pas = setpass.getText().toString();
+                    final String pas = setpass.getText().toString();
                     String con = confirm.getText().toString();
 
                     //see if passwords match
@@ -418,38 +419,54 @@ public class MainActivity extends AppCompatActivity
                     //set passwords
                     else
                     {
-                        // generate iv and hash
-                        iv = Util.makeRandomString(64);
-                        hash = Util.makePasswordHash(pas);
-                        // generate mkey and encrypt it
-                        String plainKey = Util.makeRandomString(4096);
-                        mkey = Util.encryptToByte(pas, iv, plainKey);
-
-                        // add user to db
-                        UserModel newUser = new UserModel(iv, mkey, hash);
-                        boolean success = dbHelper.addUser(newUser);
-                        if (success) {
-                            Toast.makeText(getApplicationContext(), "Password set.", Toast.LENGTH_SHORT).show();
-                        }
                         dialog.cancel();
+                        final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this,
+                                "Loading", "Setting up keys", true);
+                        new Thread(){
+                            public void run(){
+                                // generate iv and hash
+                                iv = Util.makeRandomString(64);
+                                hash = Util.makePasswordHash(pas);
+                                // generate mkey and encrypt it
+                                String plainKey = Util.makeRandomString(4096);
+                                mkey = Util.encryptToByte(pas, iv, plainKey);
 
-                        //make tip dialog
-                        final Dialog td = new Dialog(MainActivity.this);
-                        td.setTitle("Password set");
-                        td.setContentView(R.layout.dialog_setpass_successful_message);
-                        td.show();
+                                // add user to db
+                                UserModel newUser = new UserModel(iv, mkey, hash);
+                                boolean success = dbHelper.addUser(newUser);
+                                if (success) {
+                                    progressDialog.dismiss();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "Password set.", Toast.LENGTH_SHORT).show();
+                                            //make tip dialog
+                                            final Dialog td = new Dialog(MainActivity.this);
+                                            td.setTitle("Password set");
+                                            td.setContentView(R.layout.dialog_setpass_successful_message);
+                                            td.show();
 
-                        //set ok button2
-                        Button okButton2 = (Button) td.findViewById(R.id.okButton2);
+                                            //set ok button2
+                                            Button okButton2 = (Button) td.findViewById(R.id.okButton2);
 
-                        okButton2.setOnClickListener(new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                td.cancel();
+                                            okButton2.setOnClickListener(new View.OnClickListener()
+                                            {
+                                                @Override
+                                                public void onClick(View v)
+                                                {
+                                                    td.cancel();
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             }
-                        });
+                        }.start();
+
+
+
+
+
                     }
 
 
