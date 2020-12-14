@@ -211,11 +211,11 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
                                     }
                                 }
                                 // delete all files
-                                boolean result = db.deleteAllFilesFromFolder(folder);
+                                db.deleteAllFilesFromFolder(folder);
                                 // delete folder
                                 boolean success = db.deleteFolder(folder);
                                 // remove album from albums array
-                                if(success && result){
+                                if(success){
                                     allFolders.remove(folder);
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override

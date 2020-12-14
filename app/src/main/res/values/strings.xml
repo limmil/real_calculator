@@ -70,5 +70,8 @@
     <string name="edit_folder">Edit Folder</string>
     <string name="edit_file">Edit File</string>
     <string name="update">Update</string>
+    <string name="real_calculator">Real Calculator</string>
+    <string name="definitely_a_calculator">definitely a calculator</string>
+    <string name="search_notes">Search Notes</string>
 
 </resources>
