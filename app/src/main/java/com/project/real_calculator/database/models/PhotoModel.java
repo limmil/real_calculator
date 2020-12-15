@@ -1,5 +1,7 @@
 package com.project.real_calculator.database.models;
 
+import com.project.real_calculator.encryption.Util;
+
 public class PhotoModel {
 
     private int id;
@@ -11,9 +13,25 @@ public class PhotoModel {
     private String albumName;
     private String timeStamp;
     private String size;
+    private byte[] iv, tiv, civ;
     private boolean selected;
     private boolean checkBoxVisibility = false;
     private boolean checkBox = false;
+    final private String DEFAULT_STR = "N/A";
+
+    public PhotoModel(){
+        this.id = 0;
+        this.name = DEFAULT_STR;
+        this.content = DEFAULT_STR;
+        this.thumbnail = DEFAULT_STR;
+        this.fileType = DEFAULT_STR;
+        this.timeStamp = DEFAULT_STR;
+        this.album = 0;
+        this.size = "unknown";
+        this.iv = Util.makeRandom12ByteNonce();
+        this.tiv = Util.makeRandom12ByteNonce();
+        this.civ = Util.makeRandom12ByteNonce();
+    }
 
     public PhotoModel(int id, String name, String content, String thumbnail, String fileType, String timeStamp, int album){
         this.id = id;
@@ -24,6 +42,9 @@ public class PhotoModel {
         this.timeStamp = timeStamp;
         this.album = album;
         this.size = "unknown";
+        this.iv = new byte[0];
+        this.tiv = new byte[0];
+        this.civ = new byte[0];
     }
 
     public int getId() {
@@ -96,6 +117,30 @@ public class PhotoModel {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
+
+    public byte[] getThumbIv() {
+        return tiv;
+    }
+
+    public void setThumbIv(byte[] tiv) {
+        this.tiv = tiv;
+    }
+
+    public byte[] getContentIv() {
+        return civ;
+    }
+
+    public void setContentIv(byte[] civ) {
+        this.civ = civ;
     }
 
     public boolean getSelected() {

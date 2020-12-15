@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -20,6 +19,7 @@ public class AES
     //~~~setting data
     private static SecretKeySpec secretKey;
     private static IvParameterSpec iv;
+    private IvParameterSpec mIv;
 
     public static final String AES_TRANSFORMATION_CTR = "AES/CTR/NoPadding";
     public static final String AES_TRANSFORMATION_CBC = "AES/CBC/PKCS7Padding";
@@ -32,7 +32,46 @@ public class AES
     private static byte[] decryptedBytes;
     private static byte[] encryptedBytes;
 
-    private AES(){}
+    public AES(byte[] nonce){
+        if (nonce.length>=12){
+            int rngLen = 12;
+            byte[] slice = Arrays.copyOfRange(nonce, 0, rngLen);
+            byte[] myIv = new byte[16];
+            System.arraycopy(slice, 0, myIv, 0, rngLen);
+            mIv = new IvParameterSpec(myIv);
+        }else{
+            byte[] myIv = new byte[16];
+            System.arraycopy(nonce, 0, myIv, 0, nonce.length);
+            mIv = new IvParameterSpec(myIv);
+        }
+    }
+    public byte[] glideDataFetcherDecrypt(byte[] content){
+
+        Cipher c = null;
+        byte[] result = new byte[0];
+        try{
+            c = Cipher.getInstance(AES_TRANSFORMATION_CTR);
+            c.init(Cipher.DECRYPT_MODE, secretKey, mIv);
+            result = c.doFinal(content);
+        }
+        catch(Exception e){
+            System.out.println("Error occurred while " +
+                    "encrypting: " + e.toString());
+        }
+        return result;
+    }
+    public Cipher glideDecryptCipher(){
+        Cipher c = null;
+        try{
+            c = Cipher.getInstance(AES_TRANSFORMATION_CTR);
+            c.init(Cipher.DECRYPT_MODE, secretKey, mIv);
+        }
+        catch(Exception e){
+            System.out.println("Error occurred while " +
+                    "encrypting: " + e.toString());
+        }
+        return c;
+    }
 
     //~~~set key method
     public static void setKey(String myKey)
@@ -57,10 +96,36 @@ public class AES
         try
         {
             initVector = initVector.trim();
-            initVector = initVector.substring(0,16);
-            iv = new IvParameterSpec(initVector.getBytes(StandardCharsets.UTF_8));
+            initVector = initVector.substring(0,12);
+            // IV for CTR mode, reusing IV is bad
+            // IV is a nonce followed by a counter (starting at 0). The IV is always 128 bit long.
+            // IV in hex looks for example: ffffffffffffffffffffffff00000000
+            //                              |nonce                  |counter
+            byte[] nonce = initVector.getBytes(StandardCharsets.UTF_8);
+            byte[] myIv = new byte[16];
+            System.arraycopy(nonce, 0, myIv, 0, nonce.length);
+            iv = new IvParameterSpec(myIv);
         }
         catch (Exception e) {
+            System.out.println("Error while setting " +
+                    "initial vector: " + e.toString());
+        }
+    }
+    public static void setIV(byte[] nonce){
+        try{
+            if (nonce.length>=12){
+                int rngLen = 12;
+                byte[] slice = Arrays.copyOfRange(nonce, 0, rngLen);
+                byte[] myIv = new byte[16];
+                System.arraycopy(slice, 0, myIv, 0, rngLen);
+                iv = new IvParameterSpec(myIv);
+            }else{
+                byte[] myIv = new byte[16];
+                System.arraycopy(nonce, 0, myIv, 0, nonce.length);
+                iv = new IvParameterSpec(myIv);
+            }
+        }
+        catch (Exception e){
             System.out.println("Error while setting " +
                     "initial vector: " + e.toString());
         }

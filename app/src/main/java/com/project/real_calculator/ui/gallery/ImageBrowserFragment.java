@@ -40,6 +40,8 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.PhotoModel;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
 import com.project.real_calculator.ui.gallery.utils.PhotoAdapter;
 import com.project.real_calculator.ui.gallery.utils.RecyclerViewPagerImageIndicator;
@@ -253,6 +255,8 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
         public Object instantiateItem(@NonNull ViewGroup containerCollection, final int position) {
             LayoutInflater layoutinflater = (LayoutInflater) containerCollection.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+            final PhotoModel photoModel = allImages.get(position);
+
             View view = layoutinflater.inflate(R.layout.fragment_gallery_browser_pager,null);
             final ProgressBar loadImageProgress = view.findViewById(R.id.loadingImageProgress);
             image = view.findViewById(R.id.image);
@@ -260,34 +264,38 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
             setTransitionName(image, String.valueOf(position)+"picture");
 
-            String[] arr = allImages.get(position).getFileType().split("/");
+            String[] arr = photoModel.getFileType().split("/");
             File myExternalFile;
-            int id = allImages.get(position).getId();
+            int id = photoModel.getId();
             String fileType = "N/A";
-            String fileExtension = "N/A";
+            byte[] nonce = new byte[0];
             if (arr.length==2){
                 fileType = arr[0];
-                fileExtension = arr[1];
                 if (fileType.equals("image")){
                     String imageDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
                     myExternalFile = new File(imageDir, String.valueOf(id));
+                    nonce = photoModel.getContentIv();
                 } else if (fileType.equals("video")){
                     playButton.setVisibility(View.VISIBLE);
                     String imageDir = animeContx.getExternalFilesDir("media/t").getAbsolutePath();
                     myExternalFile = new File(imageDir, String.valueOf(id));
+                    nonce = photoModel.getThumbIv();
                 } else{
                     String imageDir = animeContx.getExternalFilesDir("media/t").getAbsolutePath();
                     myExternalFile = new File(imageDir, String.valueOf(id));
+                    nonce = photoModel.getThumbIv();
                 }
             } else{
                 String imageDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
                 myExternalFile = new File(imageDir, String.valueOf(id));
+                nonce = photoModel.getContentIv();
             }
 
 
             if(myExternalFile.exists()) {
+                EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, nonce);
                 Glide.with(animeContx)
-                        .load(myExternalFile)
+                        .load(efo)
                         .apply(new RequestOptions().fitCenter())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.drawable.ic_baseline_image)
@@ -348,18 +356,18 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                         .into(image);
             }
 
-            final String finalFileExtension = fileExtension.toLowerCase();
             playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Glide.get(requireActivity()).clearMemory();
                     // get the file and decrypt in onto disk
                     String sourceVideoDir = animeContx.getExternalFilesDir("media").getAbsolutePath();
-                    String sourceFileName = String.valueOf(allImages.get(position).getId());
+                    String sourceFileName = String.valueOf(photoModel.getId());
                     final File sourceVideoFile = new File(sourceVideoDir, sourceFileName);
 
                     Intent move = new Intent(getActivity(), VideoPlayerActivity.class);
                     move.putExtra("sourceVideoPath", sourceVideoFile.getAbsolutePath());
+                    AES.setIV(photoModel.getContentIv());
 
                     startActivity(move);
                 }

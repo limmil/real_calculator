@@ -17,6 +17,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.database.DataBaseHelper;
 import com.project.real_calculator.database.models.AlbumModel;
 import com.project.real_calculator.database.models.PhotoModel;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 import com.project.real_calculator.interfaces.IGalleryClickListener;
 import com.project.real_calculator.R;
 
@@ -65,8 +67,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         File myExternalFile = new File(dirPath, thumbnail);
 
         if (myExternalFile.exists()){
+            EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, photoIds.get(photoIds.size()-1).getThumbIv());
             Glide.with(albumContx)
-                    .load(myExternalFile)
+                    .load(efo)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.drawable.ic_baseline_album)
                     .apply(new RequestOptions().centerCrop())

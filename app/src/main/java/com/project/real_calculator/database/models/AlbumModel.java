@@ -1,5 +1,7 @@
 package com.project.real_calculator.database.models;
 
+import com.project.real_calculator.encryption.Util;
+
 public class AlbumModel {
 
     private int id;
@@ -7,6 +9,26 @@ public class AlbumModel {
     private int itemsCount;
     private String timestamp;
     private boolean isSelected;
+    private byte[] iv;
+    final private String DEFAULT_STR = "N/A";
+
+    public AlbumModel(){
+        this.id = 0;
+        this.albumName = DEFAULT_STR;
+        this.timestamp = DEFAULT_STR;
+        this.itemsCount = 0;
+        this.isSelected = false;
+        this.iv = Util.makeRandom12ByteNonce();
+    }
+
+    public AlbumModel(int id){
+        this.id = id;
+        this.albumName = DEFAULT_STR;
+        this.timestamp = DEFAULT_STR;
+        this.itemsCount = 0;
+        this.isSelected = false;
+        this.iv = new byte[0];
+    }
 
     public AlbumModel(int id, String albumName, String timestamp, int itemsCount){
         this.id = id;
@@ -14,6 +36,7 @@ public class AlbumModel {
         this.timestamp = timestamp;
         this.itemsCount = itemsCount;
         this.isSelected = false;
+        this.iv = new byte[0];
     }
 
     public int getId() {
@@ -56,5 +79,12 @@ public class AlbumModel {
         isSelected = selected;
     }
 
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
 }
 

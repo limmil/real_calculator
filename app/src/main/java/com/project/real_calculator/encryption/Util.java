@@ -83,6 +83,12 @@ public class Util
         return md5;
     }
 
+    public static byte[] makeRandom12ByteNonce(){
+        byte[] nonce = new byte[12];
+        new SecureRandom().nextBytes(nonce);
+        return nonce;
+    }
+
     public static String makeHashSha256(String password)
     {
         return makeHashSha(password, "SHA-256");

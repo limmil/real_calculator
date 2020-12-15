@@ -22,6 +22,7 @@ public final class UserContract {
         public static final String COLUMN_THUMBNAIL = "THUMBNAIL";
         public static final String COLUMN_COUNT = "COUNT";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+        public static final String COLUMN_IV = "IV";
     }
     public static class Photo implements BaseColumns {
         public static final String TABLE_NAME = "PHOTOS";
@@ -32,6 +33,9 @@ public final class UserContract {
         public static final String COLUMN_ALBUM = "ALBUM";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
         public static final String COLUMN_SIZE = "SIZE";
+        public static final String COLUMN_IV = "IV";
+        public static final String COLUMN_THUMB_IV = "TIV";
+        public static final String COLUMN_CONTENT_IV = "CIV";
         public static final String INDEX_ALBUM = "PHOTOS_ALBUM_IDX";
     }
 
@@ -40,6 +44,7 @@ public final class UserContract {
         public static final String COLUMN_NAME = "NAME";
         public static final String COLUMN_COUNT = "COUNT";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+        public static final String COLUMN_IV = "IV";
     }
     public static class MyFile implements BaseColumns {
         public static final String TABLE_NAME = "FILES";
@@ -49,6 +54,8 @@ public final class UserContract {
         public static final String COLUMN_FOLDER = "FOLDER";
         public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
         public static final String COLUMN_SIZE = "SIZE";
+        public static final String COLUMN_IV = "IV";
+        public static final String COLUMN_CONTENT_IV = "CIV";
         public static final String INDEX_FOLDER = "PHOTOS_FOLDER_IDX";
     }
 }

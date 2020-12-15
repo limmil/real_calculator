@@ -92,7 +92,8 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                         if(name.isEmpty()){
                             Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
                         }else{
-                            AlbumModel newAlbum = new AlbumModel(0,name,"N/A",0);
+                            AlbumModel newAlbum = new AlbumModel();
+                            newAlbum.setAlbumName(name);
                             success = db.addAlbum(newAlbum);
                         }
                         if(success){

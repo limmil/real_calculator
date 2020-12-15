@@ -5,14 +5,15 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.load.model.ModelLoader;
 import com.bumptech.glide.load.model.ModelLoaderFactory;
 import com.bumptech.glide.load.model.MultiModelLoaderFactory;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 
-public class EncryptionModelLoaderFactory implements ModelLoaderFactory<File, ByteBuffer> {
+public class EncryptionModelLoaderFactory implements ModelLoaderFactory<EncryptedFileObject, ByteBuffer> {
     @NonNull
     @Override
-    public ModelLoader<File, ByteBuffer> build(@NonNull MultiModelLoaderFactory multiFactory) {
+    public ModelLoader<EncryptedFileObject, ByteBuffer> build(@NonNull MultiModelLoaderFactory multiFactory) {
         return new EncryptionModelLoader();
     }
 

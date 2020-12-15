@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.project.real_calculator.database.UserContract.*;
 import com.project.real_calculator.database.models.*;
+import com.project.real_calculator.encryption.AES;
 import com.project.real_calculator.encryption.Util;
 
 import androidx.annotation.Nullable;
@@ -39,7 +40,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Album.COLUMN_NAME + " BLOB NOT NULL, " +
             Album.COLUMN_THUMBNAIL + " BLOB, " +
             Album.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-            Album.COLUMN_COUNT + " INTEGER NOT NULL)";
+            Album.COLUMN_COUNT + " INTEGER NOT NULL, " +
+            Album.COLUMN_IV + " BLOB NOT NULL)";
     private static final String SQL_DELETE_ALBUM =
             "DROP TABLE IF EXISTS " + Album.TABLE_NAME;
     // photo has foreign key from album
@@ -53,6 +55,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Photo.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             Photo.COLUMN_ALBUM + " INTEGER, " +
             Photo.COLUMN_SIZE + " BLOB, " +
+            Photo.COLUMN_IV + " BLOB NOT NULL, " +
+            Photo.COLUMN_THUMB_IV + " BLOB NOT NULL, " +
+            Photo.COLUMN_CONTENT_IV + " BLOB NOT NULL, " +
             " FOREIGN KEY ("+Photo.COLUMN_ALBUM+") REFERENCES "+Album.TABLE_NAME+"("+Album._ID+"))";
     private static final String SQL_DELETE_PHOTO =
             "DROP TABLE IF EXISTS " + Photo.TABLE_NAME;
@@ -69,7 +74,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             Folder._ID + " INTEGER PRIMARY KEY, " +
             Folder.COLUMN_NAME + " BLOB NOT NULL, " +
             Folder.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-            Folder.COLUMN_COUNT + " INTEGER NOT NULL)";
+            Folder.COLUMN_COUNT + " INTEGER NOT NULL, " +
+            Folder.COLUMN_IV + " BLOB NOT NULL)";
     private static final String SQL_DELETE_FOLDER =
             "DROP TABLE IF EXISTS " + Folder.TABLE_NAME;
     // files has foreign key from folder
@@ -82,6 +88,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             MyFile.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             MyFile.COLUMN_FOLDER + " INTEGER, " +
             MyFile.COLUMN_SIZE + " BLOB, " +
+            MyFile.COLUMN_IV + " BLOB NOT NULL, " +
+            MyFile.COLUMN_CONTENT_IV + " BLOB NOT NULL, " +
             " FOREIGN KEY ("+MyFile.COLUMN_FOLDER+") REFERENCES "+Folder.TABLE_NAME+"("+Folder._ID+"))";
     private static final String SQL_DELETE_FILE =
             "DROP TABLE IF EXISTS " + MyFile.TABLE_NAME;
@@ -182,11 +190,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean addAlbum(AlbumModel album){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        // get nonce
+        byte[] iv = album.getIv();
         // encrypt name, thumbnail
+        AES.setIV(iv);
         byte[] albumName = Util.encryptToByte(album.getAlbumName());
 
         cv.put(Album.COLUMN_NAME, albumName);
         cv.put(Album.COLUMN_COUNT, album.getItemsCount());
+        cv.put(Album.COLUMN_IV, iv);
 
         long insert = db.insert(Album.TABLE_NAME, null, cv);
         db.close();
@@ -203,10 +215,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 byte[] bName = cursor.getBlob(1);
                 String time = cursor.getString(3);
                 int count = cursor.getInt(4);
+                byte[] iv = cursor.getBlob(5);
                 //decrypt data
+                AES.setIV(iv);
                 String name = Util.decryptToString(bName);
 
                 AlbumModel album = new AlbumModel(id, name, time, count);
+                album.setIv(iv);
                 albumModels.add(album);
             }while(cursor.moveToNext());
         }
@@ -220,6 +235,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(album.getId());
         // encrypt new name
+        AES.setIV(album.getIv());
         cv.put(Album.COLUMN_NAME, Util.encryptToByte(album.getAlbumName()));
         int updated = db.update(Album.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
@@ -248,12 +264,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         long insert = -1;
         for (PhotoModel tmp : photos){
+            byte[] iv = tmp.getIv();
             // encrypt data
+            AES.setIV(iv);
             byte[] name = Util.encryptToByte(tmp.getName());
             byte[] content = Util.encryptToByte(tmp.getContent());
             byte[] fileType = Util.encryptToByte(tmp.getFileType());
             byte[] thumbnail = Util.encryptToByte(tmp.getThumbnail());
             byte[] size = Util.encryptToByte(tmp.getSize());
+            byte[] tiv = tmp.getThumbIv();
+            byte[] civ = tmp.getContentIv();
             int album = albumModel.getId();
             // insert data
             cv.put(Photo.COLUMN_NAME, name);
@@ -262,6 +282,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(Photo.COLUMN_THUMBNAIL, thumbnail);
             cv.put(Photo.COLUMN_ALBUM, album);
             cv.put(Photo.COLUMN_SIZE, size);
+            cv.put(Photo.COLUMN_IV, iv);
+            cv.put(Photo.COLUMN_THUMB_IV, tiv);
+            cv.put(Photo.COLUMN_CONTENT_IV, civ);
 
             insert = db.insert(Photo.TABLE_NAME, null, cv);
             if (insert == -1){return insert;}
@@ -287,7 +310,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String time = cursor.getString(5);
                 int albumId = cursor.getInt(6);
                 byte[] bSize = cursor.getBlob(7);
+                byte[] iv = cursor.getBlob(8);
+                byte[] tiv = cursor.getBlob(9);
+                byte[] civ = cursor.getBlob(10);
                 //decrypt data
+                AES.setIV(iv);
                 String name = Util.decryptToString(bName);
                 String content = Util.decryptToString(bContent);
                 String fileType = Util.decryptToString(bFileType);
@@ -296,6 +323,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                 PhotoModel photo = new PhotoModel(id, name, content, thumbnail, fileType, time, albumId);
                 photo.setSize(size);
+                photo.setIv(iv);
+                photo.setThumbIv(tiv);
+                photo.setContentIv(civ);
 
                 photos.add(photo);
             }while(cursor.moveToNext());
@@ -307,7 +337,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
     public List<PhotoModel> getPhotoIdsFromAlbum(AlbumModel album){
         List<PhotoModel> photos = new ArrayList<>();
-        String q = "SELECT " + Photo._ID + " FROM " +
+        String q = "SELECT " + Photo._ID +", "+
+                Photo.COLUMN_THUMB_IV +" FROM " +
                 Photo.TABLE_NAME + " WHERE " +
                 Photo.COLUMN_ALBUM + " = " +
                 album.getId();
@@ -316,8 +347,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()){
             do{
                 int id = cursor.getInt(0);
+                byte[] tiv = cursor.getBlob(1);
 
                 PhotoModel photo = new PhotoModel(id, "", "", "", "", "", 0);
+                photo.setThumbIv(tiv);
                 photos.add(photo);
             }while(cursor.moveToNext());
         }
@@ -331,6 +364,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(photoModel.getId());
         // encrypt updates
+        AES.setIV(photoModel.getIv());
         cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
         int updated = db.update(Photo.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
@@ -370,6 +404,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(photoModel.getId());
 
+        AES.setIV(photoModel.getIv());
         cv.put(Photo.COLUMN_ALBUM, photoModel.getAlbum());
         cv.put(Photo.COLUMN_NAME, Util.encryptToByte(photoModel.getName()));
         cv.put(Photo.COLUMN_THUMBNAIL, Util.encryptToByte(photoModel.getThumbnail()));
@@ -427,11 +462,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean addFolder(FolderModel folder){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        byte[] iv = folder.getIv();
         // encrypt name
+        AES.setIV(iv);
         byte[] folderName = Util.encryptToByte(folder.getFolderName());
 
         cv.put(Folder.COLUMN_NAME, folderName);
         cv.put(Folder.COLUMN_COUNT, folder.getItemsCount());
+        cv.put(Folder.COLUMN_IV, iv);
 
         long insert = db.insert(Folder.TABLE_NAME, null, cv);
         db.close();
@@ -448,7 +486,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 byte[] bName = cursor.getBlob(1);
                 String time = cursor.getString(2);
                 int count = cursor.getInt(3);
+                byte[] iv = cursor.getBlob(4);
                 //decrypt data
+                AES.setIV(iv);
                 String name = Util.decryptToString(bName);
 
                 FolderModel folder = new FolderModel(id, name, time, count);
@@ -465,6 +505,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(folder.getId());
         // encrypt new name
+        AES.setIV(folder.getIv());
         cv.put(Folder.COLUMN_NAME, Util.encryptToByte(folder.getFolderName()));
         int updated = db.update(Folder.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
@@ -493,6 +534,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         long insert = -1;
         for (MyFileModel tmp : files){
             // encrypt data
+            byte[] iv = tmp.getIv();
+            AES.setIV(iv);
             byte[] name = Util.encryptToByte(tmp.getName());
             byte[] content = Util.encryptToByte(tmp.getContent());
             byte[] fileType = Util.encryptToByte(tmp.getFileType());
@@ -504,6 +547,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put(MyFile.COLUMN_FILETYPE, fileType);
             cv.put(MyFile.COLUMN_FOLDER, folderIn);
             cv.put(MyFile.COLUMN_SIZE, size);
+            cv.put(MyFile.COLUMN_IV, iv);
+            cv.put(MyFile.COLUMN_CONTENT_IV, tmp.getContentIv());
 
             insert = db.insert(MyFile.TABLE_NAME, null, cv);
             if (insert == -1){return insert;}
@@ -528,7 +573,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String time = cursor.getString(4);
                 int folderId = cursor.getInt(5);
                 byte[] bSize = cursor.getBlob(6);
+                byte[] iv = cursor.getBlob(7);
+                byte[] civ = cursor.getBlob(8);
                 //decrypt data
+                AES.setIV(iv);
                 String name = Util.decryptToString(bName);
                 String content = Util.decryptToString(bContent);
                 String fileType = Util.decryptToString(bFileType);
@@ -536,6 +584,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                 MyFileModel file = new MyFileModel(id, name, content, fileType, time, folderId);
                 file.setSize(size);
+                file.setContentIv(civ);
 
                 files.add(file);
             }while(cursor.moveToNext());
@@ -571,6 +620,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(myFileModel.getId());
         // encrypt updates
+        AES.setIV(myFileModel.getIv());
         cv.put(Photo.COLUMN_NAME, Util.encryptToByte(myFileModel.getName()));
         int updated = db.update(MyFile.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
@@ -610,6 +660,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         String id = String.valueOf(myFileModel.getId());
 
+        // encrypt updated data
+        AES.setIV(myFileModel.getIv());
         cv.put(MyFile.COLUMN_FOLDER, myFileModel.getFolder());
         cv.put(MyFile.COLUMN_NAME, Util.encryptToByte(myFileModel.getName()));
         cv.put(MyFile.COLUMN_FILETYPE, Util.encryptToByte(myFileModel.getFileType()));

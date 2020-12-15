@@ -407,8 +407,8 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
     public void saveFileFromURI(Uri uri) throws IOException{
         FileMetaData fileMetaData = FileMetaData.getFileMetaData(getApplicationContext(), uri);
 
-        MyFileModel saveFile = new MyFileModel(0,"N/A","N/A","N/A","N/A",0);
-        FolderModel intoFolder = new FolderModel(folderId,"","",0);
+        MyFileModel saveFile = new MyFileModel();
+        FolderModel intoFolder = new FolderModel(folderId);
 
         int id = (int) db.addFile(saveFile, intoFolder);
         String storageFileName = String.valueOf(id);
@@ -425,9 +425,11 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
         long fileSizeInMB = fileSize / (1024*1024);
         if (fileSizeInMB < 100 && fileSize!=0){
             // faster but more memory cost
+            AES.setIV(saveFile.getContentIv());
             imageOut.write(Util.encryptToByte(getBytes(imageStream)));
         }else {
             // slower but less memory cost
+            AES.setIV(saveFile.getContentIv());
             CipherInputStream cis = new CipherInputStream(imageStream, AES.getEncryptionCipher());
 
             byte[] buffer = new byte[64*1024];
@@ -720,6 +722,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                 String sourceDir = getExternalFilesDir("folder/").getAbsolutePath();
                 final int count = fileModels.size();
                 for (int i=0; i<count; i++){
+                    final MyFileModel myFileModel = fileModels.get(i);
                     final int finalI = i;
                     runOnUiThread(new Runnable(){
                         @Override
@@ -731,21 +734,21 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                         }
                     });
 
-                    String sourceFileName = String.valueOf(fileModels.get(i).getId());
+                    String sourceFileName = String.valueOf(myFileModel.getId());
                     File sourceFile = new File(sourceDir, sourceFileName);
                     ContentResolver resolver = getContentResolver();
                     Uri outUri = null;
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                         ContentValues cv = new ContentValues();
-                        cv.put(MediaStore.MediaColumns.DISPLAY_NAME, fileModels.get(i).getName());
-                        cv.put(MediaStore.MediaColumns.MIME_TYPE, fileModels.get(i).getFileType());
+                        cv.put(MediaStore.MediaColumns.DISPLAY_NAME, myFileModel.getName());
+                        cv.put(MediaStore.MediaColumns.MIME_TYPE, myFileModel.getFileType());
 
                         outUri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv);
                     }else{
                         File DOWNLOAD_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                         String authority = getApplicationContext().getPackageName() + ".provider";
-                        String fileName = fileModels.get(i).getName()+"."+fileModels.get(i).getFileType().split("/")[1];
+                        String fileName = myFileModel.getName()+"."+myFileModel.getFileType().split("/")[1];
                         File exportFile = new File(DOWNLOAD_DIR, fileName);
                         outUri = FileProvider.getUriForFile(getApplicationContext(), authority, exportFile);
                     }
@@ -753,6 +756,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                     OutputStream out;
                     try{
                         fis = new FileInputStream(sourceFile);
+                        AES.setIV(myFileModel.getContentIv());
                         CipherInputStream cis = new CipherInputStream(fis, AES.getDecryptionCipher());
                         out = resolver.openOutputStream(outUri);
 

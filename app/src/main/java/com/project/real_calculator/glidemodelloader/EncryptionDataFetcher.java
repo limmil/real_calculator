@@ -2,41 +2,36 @@ package com.project.real_calculator.glidemodelloader;
 
 import androidx.annotation.NonNull;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
 import com.project.real_calculator.encryption.AES;
-import com.project.real_calculator.encryption.Util;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
 import javax.crypto.CipherInputStream;
 
 public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
 
-    private final File file;
+    private final EncryptedFileObject file;
 
-    public EncryptionDataFetcher(File file) {
+    public EncryptionDataFetcher(EncryptedFileObject file) {
         this.file = file;
     }
 
     @Override
     public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super ByteBuffer> callback) {
         // open file
-
         byte[] data = new byte[0];
         ByteBuffer byteBuffer = ByteBuffer.wrap(data);
 
         try {
-            // faster decryption method more ram
-            data = Util.decryptToByte(getBytes(new FileInputStream(file)));
+            AES decrypt = new AES(file.getIv());
+            data = decrypt.glideDataFetcherDecrypt(getBytes(new FileInputStream(file.getEncryptedFile())));
             byteBuffer = ByteBuffer.wrap(data);
         } catch (IOException e) {
             //e.printStackTrace();
@@ -46,15 +41,14 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         }
 
 
-
-
-
         callback.onDataReady(byteBuffer);
     }
 
+
+
     public byte[] getBytes(InputStream inputStream) throws IOException {
-        MyByteArrayOutputStream byteBuffer = new MyByteArrayOutputStream((int)file.length());
-        int bufferSize = 16 * 1024;
+        MyByteArrayOutputStream byteBuffer = new MyByteArrayOutputStream((int)file.getEncryptedFile().length());
+        int bufferSize = 64 * 1024;
         byte[] buffer = new byte[bufferSize];
 
         int len;
@@ -65,14 +59,15 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         return byteBuffer.getBuf();
     }
 
-    public static ByteBuffer decryptFile(File f){
+    public static ByteBuffer decryptFile(EncryptedFileObject f){
         FileInputStream fis;
         CipherInputStream cis;
+        AES cipher = new AES(f.getIv());
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[0]);
         try {
-            fis = new FileInputStream(f);
-            cis = new CipherInputStream(fis, AES.getDecryptionCipher());
-            MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)f.length());
+            fis = new FileInputStream(f.getEncryptedFile());
+            cis = new CipherInputStream(fis, cipher.glideDecryptCipher());
+            MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)f.getEncryptedFile().length());
             byte[] buffer = new byte[1024*1024];
 
             int len = 0;

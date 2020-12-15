@@ -14,6 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 import com.project.real_calculator.interfaces.IImageIndicatorListener;
 
 import java.io.File;
@@ -56,8 +57,9 @@ public class RecyclerViewPagerImageIndicator extends RecyclerView.Adapter<Indica
         String thumbnailDir = pictureContx.getExternalFilesDir("media/t").getAbsolutePath();
         File myExternalFile = new File(thumbnailDir, String.valueOf(pic.getId()));
 
+        EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, pic.getThumbIv());
         Glide.with(pictureContx)
-                .load(myExternalFile)
+                .load(efo)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .apply(new RequestOptions().centerCrop())
                 .into(holder.image);

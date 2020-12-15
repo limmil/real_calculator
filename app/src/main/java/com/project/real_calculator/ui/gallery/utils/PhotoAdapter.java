@@ -13,6 +13,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.project.real_calculator.R;
 import com.project.real_calculator.database.models.PhotoModel;
+import com.project.real_calculator.encryption.AES;
+import com.project.real_calculator.encryption.EncryptedFileObject;
 import com.project.real_calculator.interfaces.IGalleryClickListener;
 
 import java.io.File;
@@ -57,9 +59,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
         String thumbnailDir = contx.getExternalFilesDir("media/t").getAbsolutePath();
         File myExternalFile = new File(thumbnailDir, String.valueOf(photo.getId()));
 
-
+        //AES.setIV(photo.getThumbIv());
+        EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, photo.getThumbIv());
         Glide.with(contx)
-                .load(myExternalFile)
+                .load(efo)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .placeholder(R.drawable.ic_baseline_image)

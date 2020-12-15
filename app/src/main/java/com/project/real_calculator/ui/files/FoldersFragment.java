@@ -97,7 +97,8 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
                         if(name.isEmpty()){
                             Toast.makeText(getActivity(),"Name cannot be empty",Toast.LENGTH_SHORT).show();
                         }else{
-                            FolderModel newFolder = new FolderModel(0,name,"N/A",0);
+                            FolderModel newFolder = new FolderModel();
+                            newFolder.setFolderName(name);
                             success = db.addFolder(newFolder);
                         }
                         if(success){

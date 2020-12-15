@@ -1,5 +1,7 @@
 package com.project.real_calculator.database.models;
 
+import com.project.real_calculator.encryption.Util;
+
 public class MyFileModel {
 
     private int id;
@@ -10,9 +12,23 @@ public class MyFileModel {
     private String folderName;
     private String timeStamp;
     private String size;
+    private byte[] iv, civ;
     private boolean selected;
     private boolean checkBoxVisibility = false;
     private boolean checkBox = false;
+    final private String DEFAULT_STR = "N/A";
+
+    public MyFileModel(){
+        this.id = 0;
+        this.name = DEFAULT_STR;
+        this.content = DEFAULT_STR;
+        this.fileType = DEFAULT_STR;
+        this.timeStamp = DEFAULT_STR;
+        this.folder = 0;
+        this.size = "unknown";
+        this.iv = Util.makeRandom12ByteNonce();
+        this.civ = Util.makeRandom12ByteNonce();
+    }
 
     public MyFileModel(int id, String name, String content, String fileType, String timeStamp, int folder){
         this.id = id;
@@ -22,6 +38,8 @@ public class MyFileModel {
         this.timeStamp = timeStamp;
         this.folder = folder;
         this.size = "unknown";
+        this.iv = new byte[0];
+        this.civ = new byte[0];
     }
 
     public int getId() {
@@ -86,6 +104,22 @@ public class MyFileModel {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
+
+    public byte[] getContentIv() {
+        return civ;
+    }
+
+    public void setContentIv(byte[] civ) {
+        this.civ = civ;
     }
 
     public boolean getSelected() {
