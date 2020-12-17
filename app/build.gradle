@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
-        applicationId "com.project.real_calculator"
+        applicationId "com.limmil.real_calculator"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1

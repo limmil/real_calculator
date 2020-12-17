@@ -7,7 +7,7 @@
     tools:context=".DrawerActivity">
 
 
-    <com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView
+    <com.limmil.real_calculator.ui.gallery.utils.AutoFitRecyclerView
         android:id="@+id/albumRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +16,7 @@
         android:clipToPadding="false"
         android:layout_below="@id/fab">
 
-    </com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView>
+    </com.limmil.real_calculator.ui.gallery.utils.AutoFitRecyclerView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

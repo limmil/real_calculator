@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">real_calculator</string>
+    <string name="other_app_name">Calculator</string>
+    <string name="ImageBrowseActivity">ImageBrowseActivity</string>
+    <string name="VideoPlayerActivity">VideoPlayerActivity</string>
+    <string name="FilesActivity">FilesActivity</string>
+    <string name="NewNoteActivity">NewNoteActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -49,7 +54,6 @@
     <string name="Gallery">Gallery</string>
     <string name="Notes">Notes</string>
     <string name="title_activity_drawer">DrawerActivity</string>
-    <string name="ImageBrowseActivity">ImageBrowseActivity</string>
 
     <string name="edit_album">Edit Album</string>
     <string name="undo">undo</string>
@@ -75,7 +79,7 @@
     <string name="search_notes">Search Notes</string>
     <string name="note_title">Note Title</string>
     <string name="note_subtitle">Note Subtitle</string>
-    <string name="type_notes_here">Type notes here...</string>
+    <string name="type_notes_here">Type notes here…</string>
     <string name="no_notes">No Notes</string>
 
 </resources>

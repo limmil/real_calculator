@@ -108,7 +108,7 @@
         </androidx.cardview.widget.CardView>
 
 
-        <com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView
+        <com.limmil.real_calculator.ui.gallery.utils.AutoFitRecyclerView
             android:layout_below="@id/head"
             android:id="@+id/imageRecycler"
             android:layout_width="match_parent"
@@ -116,7 +116,7 @@
             android:background="@color/black"
             android:columnWidth="@dimen/picture_column_width">
 
-        </com.project.real_calculator.ui.gallery.utils.AutoFitRecyclerView>
+        </com.limmil.real_calculator.ui.gallery.utils.AutoFitRecyclerView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/imagefab"

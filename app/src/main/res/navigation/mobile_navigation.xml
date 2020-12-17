@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_notes"
-        android:name="com.project.real_calculator.ui.notes.NotesFragment"
+        android:name="com.limmil.real_calculator.ui.notes.NotesFragment"
         android:label="@string/Notes"
         tools:layout="@layout/fragment_notes" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.project.real_calculator.ui.gallery.GalleryFragment"
+        android:name="com.limmil.real_calculator.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_files"
-        android:name="com.project.real_calculator.ui.files.FoldersFragment"
+        android:name="com.limmil.real_calculator.ui.files.FoldersFragment"
         android:label="@string/files"
         tools:layout="@layout/fragment_folders" />
 
