@@ -59,7 +59,7 @@ import javax.crypto.CipherInputStream;
 
 public class FilesActivity extends AppCompatActivity implements IFilesClickListener {
     //request code to pick files
-    private static final int PICK_FILES_CODE = 0;
+    private static final int PICK_FILES_CODE = 1;
     //store image uris in this array list
     private ArrayList<Uri> filesUris;
     RecyclerView fileRecycler;

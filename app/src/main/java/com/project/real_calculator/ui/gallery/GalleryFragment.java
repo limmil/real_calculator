@@ -194,8 +194,8 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                         new Thread(){
                             public void run(){
                                 // file paths
-                                String filePath = getActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
-                                String thumbPath = getActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
+                                String filePath = requireActivity().getApplicationContext().getExternalFilesDir("media/").getAbsolutePath();
+                                String thumbPath = requireActivity().getApplicationContext().getExternalFilesDir("media/t").getAbsolutePath();
                                 // delete all photos in album
                                 DataBaseHelper db = new DataBaseHelper(getActivity());
                                 List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);

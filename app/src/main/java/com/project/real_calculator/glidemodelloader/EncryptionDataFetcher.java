@@ -31,7 +31,7 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
 
         try {
             AES decrypt = new AES(file.getIv());
-            data = decrypt.glideDataFetcherDecrypt(getBytes(new FileInputStream(file.getEncryptedFile())));
+            data = decrypt.iDecrypt(getBytes(new FileInputStream(file.getEncryptedFile())));
             byteBuffer = ByteBuffer.wrap(data);
         } catch (IOException e) {
             //e.printStackTrace();
@@ -66,7 +66,7 @@ public class EncryptionDataFetcher implements DataFetcher<ByteBuffer> {
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[0]);
         try {
             fis = new FileInputStream(f.getEncryptedFile());
-            cis = new CipherInputStream(fis, cipher.glideDecryptCipher());
+            cis = new CipherInputStream(fis, cipher.iDecryptCipher());
             MyByteArrayOutputStream bos = new MyByteArrayOutputStream((int)f.getEncryptedFile().length());
             byte[] buffer = new byte[1024*1024];
 

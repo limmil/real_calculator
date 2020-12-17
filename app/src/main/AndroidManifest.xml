@@ -41,6 +41,11 @@
             android:label="FilesActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.notes.NewNoteActivity"
+            android:label="NewNoteActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".DrawerActivity"

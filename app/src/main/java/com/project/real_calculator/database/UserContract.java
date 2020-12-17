@@ -58,4 +58,11 @@ public final class UserContract {
         public static final String COLUMN_CONTENT_IV = "CIV";
         public static final String INDEX_FOLDER = "PHOTOS_FOLDER_IDX";
     }
+
+    public static class Note implements  BaseColumns {
+        public static final String TABLE_NAME = "NOTES";
+        public static final String COLUMN_TITLE_IV = "TIV";
+        public static final String COLUMN_CONTENT_IV = "CIV";
+        public static final String COLUMN_TIMESTAMP = "TIMESTAMP";
+    }
 }

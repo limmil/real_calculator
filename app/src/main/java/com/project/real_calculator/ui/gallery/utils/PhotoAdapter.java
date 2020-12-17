@@ -26,18 +26,18 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
 
     private List<PhotoModel> photoList;
     private Context contx;
-    private final IGalleryClickListener listerner;
+    private final IGalleryClickListener listener;
 
     /**
      *
      * @param photoList ArrayList of PhotoModel objects
      * @param contx The Activities Context
-     * @param listerner An interface for listening to clicks on the RecyclerView's items
+     * @param listener An interface for listening to clicks on the RecyclerView's items
      */
-    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IGalleryClickListener listerner){
+    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IGalleryClickListener listener){
         this.photoList = photoList;
         this.contx = contx;
-        this.listerner = listerner;
+        this.listener = listener;
     }
 
     @NonNull
@@ -74,13 +74,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
         holder.picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listerner.onPicClicked(holder, position, photoList);
+                listener.onPicClicked(holder, position, photoList);
             }
         });
         holder.picture.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                listerner.onPicHeld(photo,v,position);
+                listener.onPicHeld(photo,v,position);
                 return true;
             }
         });

@@ -23,18 +23,18 @@ import java.util.List;
 public class RecyclerViewPagerImageIndicator extends RecyclerView.Adapter<IndicatorHolder>{
     List<PhotoModel> pictureList;
     Context pictureContx;
-    private final IImageIndicatorListener imageListerner;
+    private final IImageIndicatorListener imageListener;
 
     /**
      *
      * @param pictureList ArrayList of PhotoModel objects
      * @param pictureContx The Activity of fragment context
-     * @param imageListerner Interface for communication between adapter and fragment
+     * @param imageListener Interface for communication between adapter and fragment
      */
-    public RecyclerViewPagerImageIndicator(List<PhotoModel> pictureList, Context pictureContx, IImageIndicatorListener imageListerner) {
+    public RecyclerViewPagerImageIndicator(List<PhotoModel> pictureList, Context pictureContx, IImageIndicatorListener imageListener) {
         this.pictureList = pictureList;
         this.pictureContx = pictureContx;
-        this.imageListerner = imageListerner;
+        this.imageListener = imageListener;
     }
 
 
@@ -70,7 +70,7 @@ public class RecyclerViewPagerImageIndicator extends RecyclerView.Adapter<Indica
                 //holder.card.setCardElevation(5);
                 pic.setSelected(true);
                 notifyDataSetChanged();
-                imageListerner.onImageIndicatorClicked(position);
+                imageListener.onImageIndicatorClicked(position);
             }
         });
 

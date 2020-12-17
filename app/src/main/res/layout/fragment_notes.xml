@@ -50,7 +50,9 @@
         android:paddingEnd="12sp"
         android:paddingBottom="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutSearch" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="-8dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/notesfab"
@@ -62,5 +64,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_my_plus" />
+
+    <TextView
+        android:id="@+id/emptyNotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_notes"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/notesRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/notesRecyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearch" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

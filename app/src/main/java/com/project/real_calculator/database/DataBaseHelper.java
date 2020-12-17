@@ -101,6 +101,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_FILE_FOLDER_INDEX =
             "DROP INDEX IF EXISTS " + MyFile.INDEX_FOLDER;
 
+    private static final String SQL_CREATE_NOTES = "CREATE TABLE " +
+            Note.TABLE_NAME + " (" +
+            Note._ID + " INTEGER PRIMARY KEY, " +
+            Note.COLUMN_TITLE_IV + " BLOB NOT NULL, " +
+            Note.COLUMN_CONTENT_IV + " BLOB NOT NULL, " +
+            Note.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+    private static final String SQL_DELETE_NOTES =
+            "DROP TABLE IF EXISTS " + Note.TABLE_NAME;
+
 
 
     public DataBaseHelper(@Nullable Context context) {
@@ -123,6 +132,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_FOLDER);
         sqLiteDatabase.execSQL(SQL_CREATE_FILE);
         sqLiteDatabase.execSQL(SQL_CREATE_FILE_FOLDER_INDEX);
+
+        sqLiteDatabase.execSQL(SQL_CREATE_NOTES);
     }
 
     @Override
@@ -136,6 +147,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_DELETE_FILE_FOLDER_INDEX);
         sqLiteDatabase.execSQL(SQL_DELETE_FILE);
         sqLiteDatabase.execSQL(SQL_DELETE_FOLDER);
+
+        sqLiteDatabase.execSQL(SQL_DELETE_NOTES);
     }
 
     // USER TABLE __________________________________________________________________________________
@@ -710,5 +723,49 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         int deletedRows = db.delete(MyFile.TABLE_NAME, selection, selectionArgs);
         db.close();
         return deletedRows > 0;
+    }
+
+
+    // NOTES TABLE _________________________________________________________________________________
+    /* NOTES CRUD */
+    public long addNote(NoteModel noteModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        long insert = -1;
+        cv.put(Note.COLUMN_TITLE_IV, noteModel.getTitleIv());
+        cv.put(Note.COLUMN_CONTENT_IV, noteModel.getContentIv());
+        insert = db.insert(Note.TABLE_NAME, null, cv);
+        db.close();
+
+        return insert;
+    }
+    public List<NoteModel> getAllNotes(){
+        List<NoteModel> noteModels = new ArrayList<>();
+        String q = "SELECT * FROM " + Note.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        if (cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(0);
+                byte[] tiv = cursor.getBlob(1);
+                byte[] civ = cursor.getBlob(2);
+                String time = cursor.getString(3);
+
+                NoteModel noteModel = new NoteModel(id,tiv,civ,time);
+                noteModels.add(noteModel);
+            }while(cursor.moveToNext());
+        }
+        db.close();
+        cursor.close();
+
+        return noteModels;
+    }
+    public boolean deleteNote(NoteModel noteModel){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] id = { String.valueOf(noteModel.getId()) };
+        int deleted = db.delete(Note.TABLE_NAME, "_id = ?", id);
+
+        db.close();
+        return deleted > 0;
     }
 }

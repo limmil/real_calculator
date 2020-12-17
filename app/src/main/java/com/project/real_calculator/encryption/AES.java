@@ -45,7 +45,7 @@ public class AES
             mIv = new IvParameterSpec(myIv);
         }
     }
-    public byte[] glideDataFetcherDecrypt(byte[] content){
+    public byte[] iDecrypt(byte[] content){
 
         Cipher c = null;
         byte[] result = new byte[0];
@@ -60,7 +60,7 @@ public class AES
         }
         return result;
     }
-    public Cipher glideDecryptCipher(){
+    public Cipher iDecryptCipher(){
         Cipher c = null;
         try{
             c = Cipher.getInstance(AES_TRANSFORMATION_CTR);
