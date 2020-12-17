@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity
     boolean threadRunning = false;
     String hash, iv;
     byte[] mkey;
+    private DataBaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -375,7 +376,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onStartUp()
     {
-        final DataBaseHelper dbHelper = new DataBaseHelper(MainActivity.this);
+        dbHelper = new DataBaseHelper(MainActivity.this);
 
         //check if user table first row exist
         if (!dbHelper.userExist()) //if user doesn't exist
@@ -487,46 +488,48 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onLongClick(View v) {
                 final String pass = disp.getText().toString();
-                new Thread(){
-                    public void run(){
-                        if (!threadRunning) {
-                            // run thread one at a time
-                            threadRunning = true;
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setVisibility(View.VISIBLE);
-                                }
-                            });
-                            // heavy lifting
-                            boolean result = Util.checkPassword(pass, hash);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            });
-                            // password matches
-                            if (result) {
+                if(dbHelper.userExist()) {
+                    new Thread() {
+                        public void run() {
+                            if (!threadRunning) {
+                                // run thread one at a time
+                                threadRunning = true;
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        setDisp("", getString(R.string.Access_Granted));
-                                        setToAC();
+                                        progressBar.setVisibility(View.VISIBLE);
                                     }
                                 });
-                                //opens a new activity
-                                Intent secret = new Intent();
-                                secret.setClassName("com.project.real_calculator",
-                                        "com.project.real_calculator.DrawerActivity");
-                                startActivity(secret);
-                                Util.setMasterKey(pass, iv, mkey);
+                                // heavy lifting
+                                boolean result = Util.checkPassword(pass, hash);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
+                                // password matches
+                                if (result) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setDisp("", getString(R.string.Access_Granted));
+                                            setToAC();
+                                        }
+                                    });
+                                    //opens a new activity
+                                    Intent secret = new Intent();
+                                    secret.setClassName("com.limmil.real_calculator",
+                                            "com.limmil.real_calculator.DrawerActivity");
+                                    startActivity(secret);
+                                    Util.setMasterKey(pass, iv, mkey);
+                                }
+                                // switch off flag
+                                threadRunning = false;
                             }
-                            // switch off flag
-                            threadRunning = false;
                         }
-                    }
-                }.start();
+                    }.start();
+                }
 
                 return true;
             }
