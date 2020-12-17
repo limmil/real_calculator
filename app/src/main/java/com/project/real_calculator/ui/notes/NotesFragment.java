@@ -190,6 +190,8 @@ public class NotesFragment extends Fragment implements INotesClickListener {
             }
             if (notes.isEmpty()){
                 empty.setVisibility(View.VISIBLE);
+            }else{
+                empty.setVisibility(View.GONE);
             }
             noteAdapter.notifyDataSetChanged();
         }
