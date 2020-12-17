@@ -11,7 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,7 +33,7 @@ import java.util.List;
 
 public class NotesFragment extends Fragment implements INotesClickListener {
 
-    private List<NoteModel> notes;
+    private List<NoteModel> notes, filterNotes;
     RecyclerView notesRecyclerView;
     NoteAdapter noteAdapter;
     DataBaseHelper db;
@@ -64,6 +66,27 @@ public class NotesFragment extends Fragment implements INotesClickListener {
             }
         });
 
+        final SearchView inputSearch = root.findViewById(R.id.inputSearch);
+        // make entire SearchView clickable
+        inputSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inputSearch.setIconified(false);
+            }
+        });
+        inputSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                noteAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
         notesRecyclerView = root.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(
                 new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
@@ -72,13 +95,14 @@ public class NotesFragment extends Fragment implements INotesClickListener {
         // uses db
         notes = new ArrayList<>();
         notes = db.getAllNotes();
+        filterNotes = new ArrayList<>(notes);
 
         empty = root.findViewById(R.id.emptyNotes);
         if (notes.isEmpty()){
             empty.setVisibility(View.VISIBLE);
         }
 
-        noteAdapter = new NoteAdapter(requireContext(), notes, this);
+        noteAdapter = new NoteAdapter(requireContext(), notes, filterNotes, this, empty);
         notesRecyclerView.setAdapter(noteAdapter);
 
 
@@ -150,6 +174,7 @@ public class NotesFragment extends Fragment implements INotesClickListener {
                                 // remove NoteModel from notes array
                                 if(success){
                                     notes.remove(noteModel);
+                                    filterNotes.remove(noteModel);
                                     requireActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -187,6 +212,7 @@ public class NotesFragment extends Fragment implements INotesClickListener {
             List<NoteModel> newNotes = db.getAllNotes();
             if (newNotes.size()>notes.size()){
                 notes.add(newNotes.get(newNotes.size()-1));
+                filterNotes.add(newNotes.get(newNotes.size()-1));
             }
             if (notes.isEmpty()){
                 empty.setVisibility(View.VISIBLE);

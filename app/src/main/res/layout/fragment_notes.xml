@@ -20,13 +20,8 @@
         android:paddingEnd="10sp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="20sp"
-            android:layout_height="20sp"
-            android:contentDescription="@string/search_notes"
-            android:src="@drawable/ic_baseline_search"
-            app:tint="@color/almostWhite" />
-        <EditText
+
+        <SearchView
             android:id="@+id/inputSearch"
             android:layout_width="match_parent"
             android:layout_height="35sp"

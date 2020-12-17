@@ -1,9 +1,12 @@
 package com.project.real_calculator.ui.notes;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,18 +24,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder>{
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> implements Filterable {
 
     private List<NoteModel> notes;
+    private List<NoteModel> filterNotes;
+    private TextView empty;
     private Context context;
     private INotesClickListener listener;
 
-    public NoteAdapter(Context context, List<NoteModel> notes, INotesClickListener listener){
+    public NoteAdapter(Context context, List<NoteModel> notes, List<NoteModel> filterNotes, INotesClickListener listener, TextView empty){
         this.context = context;
         this.notes = notes;
         this.listener = listener;
+        this.filterNotes = filterNotes;
+        this.empty = empty;
     }
 
     @NonNull
@@ -47,7 +55,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public void onBindViewHolder(@NonNull NoteViewHolder holder, final int position) {
         final NoteModel noteModel = notes.get(position);
 
-        decryptNoteModel(context, noteModel);
+        // decrypt only once
+        if (noteModel.getTitle().isEmpty() && noteModel.getContentPreview().isEmpty()) {
+            decryptNoteModel(context, noteModel);
+        }
         holder.title.setText(noteModel.getTitle());
         holder.contentPreview.setText(noteModel.getContentPreview());
         holder.dateTime.setText(noteModel.getDateTime());
@@ -72,6 +83,44 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public int getItemCount() {
         return notes.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return myFilter;
+    }
+    private Filter myFilter = new Filter(){
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<NoteModel> filteredList = new ArrayList<>();
+            if (constraint==null || constraint.length()==0){
+                filteredList.addAll(filterNotes);
+            }else{
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (NoteModel item : filterNotes){
+                    if (item.getTitle().toLowerCase().contains(filterPattern) ||
+                        item.getContentPreview().toLowerCase().contains(filterPattern)){
+                        filteredList.add(item);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            notes.clear();
+            notes.addAll((List)results.values);
+            if (notes.isEmpty()){
+                empty.setVisibility(View.VISIBLE);
+            }else {
+                empty.setVisibility(View.GONE);
+            }
+            notifyDataSetChanged();
+        }
+    };
 
     private void decryptNoteModel(Context context, final NoteModel noteModel){
 
@@ -115,6 +164,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
         return byteBuffer.toByteArray();
     }
+
+
 
     static class NoteViewHolder extends RecyclerView.ViewHolder{
 
