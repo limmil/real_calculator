@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">real_calculator</string>
-    <string name="other_app_name">Calculator</string>
+    <string name="app_name">Calculator</string>
+    <string name="other_app_name">Real Calculator</string>
     <string name="ImageBrowseActivity">ImageBrowseActivity</string>
     <string name="VideoPlayerActivity">VideoPlayerActivity</string>
     <string name="FilesActivity">FilesActivity</string>
