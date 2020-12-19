@@ -82,11 +82,14 @@
     <string name="type_notes_here">Type notes here…</string>
     <string name="no_notes">No Notes</string>
     <string name="about">About</string>
-    <string name="calculator_loading_icon">% Loading Progress Spinner</string>
+    <string name="verification_spinner">Verification Spinner</string>
     <string name="change_password">Change Password</string>
     <string name="reset_password">Reset Password</string>
     <string name="enter_current_password">Enter Current Password</string>
     <string name="enter_new_password">Enter New Password</string>
     <string name="confirm_new_password">Confirm New Password</string>
+    <string name="github_link">https://github.com/limmil/real_calculator</string>
+    <string name="learn_more_on">Learn more on</string>
+    <string name="created_by_limmil">Created by limmil</string>
 
 </resources>

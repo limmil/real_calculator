@@ -31,7 +31,7 @@
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             android:paddingStart="10sp"
             android:paddingEnd="10sp"
-            android:text="@string/calculator_loading_icon" />
+            android:text="@string/verification_spinner" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="30dp"

@@ -1,5 +1,6 @@
 package com.limmil.real_calculator;
 
+import android.app.Dialog;
 import android.os.Bundle;
 
 
@@ -65,7 +66,10 @@ public class DrawerActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case about:
                 // show dialog about
-                Toast.makeText(getApplicationContext(), "about page", Toast.LENGTH_SHORT).show();
+                final Dialog dialog = new Dialog(this);
+                dialog.setTitle("About Page");
+                dialog.setContentView(R.layout.dialog_about);
+                dialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
