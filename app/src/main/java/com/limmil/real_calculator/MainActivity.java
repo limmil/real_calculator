@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         disp = (EditText) findViewById(R.id.Text_Display);
         clear = (Button) findViewById(R.id.Clear_Button);
         progressBar = findViewById(R.id.Verify_Progress);
-        onStartUp();
+        //onStartUp();
         login = findViewById(R.id.Percent_Button);
         setLoginButton(login);
     }
@@ -489,6 +489,8 @@ public class MainActivity extends AppCompatActivity
         button.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v) {
+                onStartUp();
+
                 final String pass = disp.getText().toString();
                 final SharedPreferences sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
                 final boolean spinnerSetting = sharedPreferences.getBoolean("spinner", true);
@@ -548,13 +550,6 @@ public class MainActivity extends AppCompatActivity
         if (disp.getText().toString().equals(getString(R.string.Access_Granted))){
             disp.setText("");
             AES.clear();
-        }
-        // refresh in case of password change
-        List<UserModel> users = dbHelper.getUsers();
-        if (!users.isEmpty()) {
-            iv = users.get(0).getIv();
-            hash = users.get(0).getPassword();
-            mkey = users.get(0).getBmkey();
         }
     }
 }
