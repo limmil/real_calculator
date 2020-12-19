@@ -106,17 +106,31 @@ public class Util
     public static void setMasterKey(String password, String iv, byte[] mkey){
         // decrypt master key
         AES.setKey(password);
-        AES.setIV(iv);
+        String newIv = makeHashSha256(iv + password);
+        AES.setIV(newIv);
         // setup master key and derive iv from master key
         String mk = new String(AES.decrypt(mkey), StandardCharsets.UTF_8);
         AES.setKey(mk);
-        AES.setIV(Util.makeHashSha256(mk));
+
+        //AES.setIV(Util.makeHashSha256(mk)); // doesn't do anything
+    }
+    public static String getMasterKey(String password, String iv, byte[] mkey){
+        // decrypt master key
+        AES.setKey(password);
+        String newIv = makeHashSha256(iv + password);
+        AES.setIV(newIv);
+        // setup master key and derive iv from master key
+        String mk = new String(AES.decrypt(mkey), StandardCharsets.UTF_8);
+        AES.setKey(mk);
+
+        return mk;
     }
 
     // assuming password and iv is not known yet
     public static byte[] encryptToByte(String password, String iv, String content){
         AES.setKey(password);
-        AES.setIV(iv);
+        String newIv = makeHashSha256(iv + password);
+        AES.setIV(newIv);
         return AES.encrypt(content.getBytes(StandardCharsets.UTF_8));
     }
     // assuming password and iv is already set

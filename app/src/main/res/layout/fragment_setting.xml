@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimaryDark"
+    android:id="@+id/settingPage">
+
+    <LinearLayout
+        android:id="@+id/layoutSetting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="15sp"
+        android:layout_marginEnd="8sp"
+
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/settingSwitch"
+            android:background="@drawable/background_search"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:textColor="@color/white"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:paddingStart="10sp"
+            android:paddingEnd="10sp"
+            android:text="@string/calculator_loading_icon" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text=""/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutSearch2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8sp"
+        android:layout_marginTop="15sp"
+        android:layout_marginEnd="8sp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSetting">
+
+
+        <TextView
+            android:id="@+id/settingChangePassword"
+            android:layout_width="match_parent"
+            android:background="@drawable/background_search"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:focusable="true"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:textColor="@color/white"
+            android:text="@string/change_password" />
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

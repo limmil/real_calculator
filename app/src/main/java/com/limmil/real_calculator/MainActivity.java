@@ -8,7 +8,9 @@ import com.limmil.real_calculator.encryption.*;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -376,7 +378,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onStartUp()
     {
-        dbHelper = new DataBaseHelper(MainActivity.this);
+        dbHelper = new DataBaseHelper(getApplicationContext());
 
         //check if user table first row exist
         if (!dbHelper.userExist()) //if user doesn't exist
@@ -488,6 +490,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onLongClick(View v) {
                 final String pass = disp.getText().toString();
+                final SharedPreferences sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
+                final boolean spinnerSetting = sharedPreferences.getBoolean("spinner", true);
                 if(dbHelper.userExist()) {
                     new Thread() {
                         public void run() {
@@ -497,7 +501,9 @@ public class MainActivity extends AppCompatActivity
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        progressBar.setVisibility(View.VISIBLE);
+                                        if (spinnerSetting) {
+                                            progressBar.setVisibility(View.VISIBLE);
+                                        }
                                     }
                                 });
                                 // heavy lifting
@@ -543,5 +549,10 @@ public class MainActivity extends AppCompatActivity
             disp.setText("");
             AES.clear();
         }
+        // refresh in case of password change
+        List<UserModel> users = dbHelper.getUsers();
+        iv = users.get(0).getIv();
+        hash = users.get(0).getPassword();
+        mkey = users.get(0).getBmkey();
     }
 }

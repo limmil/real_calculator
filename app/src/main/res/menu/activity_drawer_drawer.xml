@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_top"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_notes"
             android:icon="@drawable/ic_menu_notes"
@@ -17,5 +19,15 @@
             android:icon="@drawable/ic_menu_folder"
             android:title="@string/files" />
     </group>
+    <group
+        android:id="@+id/menu_bot"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_baseline_settings"
+            android:title="@string/action_settings" />
+
+    </group>
+
 
 </menu>

@@ -22,5 +22,10 @@
         android:name="com.limmil.real_calculator.ui.files.FoldersFragment"
         android:label="@string/files"
         tools:layout="@layout/fragment_folders" />
+    <fragment
+        android:id="@+id/nav_setting"
+        android:name="com.limmil.real_calculator.ui.setting.SettingFragment"
+        android:label="Setting"
+        tools:layout="@layout/fragment_setting" />
 
 </navigation>

@@ -10,6 +10,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.limmil.real_calculator.encryption.AES;
+import com.limmil.real_calculator.ui.gallery.GalleryFragment;
+import com.limmil.real_calculator.ui.setting.SettingFragment;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -17,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -40,7 +44,7 @@ public class DrawerActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_notes, R.id.nav_gallery, R.id.nav_files)
+                R.id.nav_notes, R.id.nav_gallery, R.id.nav_files, R.id.nav_setting)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -53,6 +57,19 @@ public class DrawerActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.drawer, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        final int about = R.id.action_about;
+        switch (item.getItemId()){
+            case about:
+                // show dialog about
+                Toast.makeText(getApplicationContext(), "about page", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

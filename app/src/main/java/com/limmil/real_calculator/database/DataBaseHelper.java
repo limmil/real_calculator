@@ -196,6 +196,32 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return result;
     }
+    public boolean updateUser(UserModel userModel){
+        int id = 0;
+
+        String q = "SELECT " + User._ID + " FROM " + User.TABLE_NAME;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(q, null);
+        // get the first user
+        if (cursor.moveToFirst()){
+            do{
+                id = cursor.getInt(0);
+            }while(cursor.moveToNext());
+        }
+
+        String idStr = String.valueOf(id);
+        ContentValues cv = new ContentValues();
+
+        cv.put(User.COLUMN_PASSWORD, userModel.getPassword());
+        cv.put(User.COLUMN_MKEY, userModel.getBmkey());
+        cv.put(User.COLUMN_IV, userModel.getIv());
+
+        int update = db.update(User.TABLE_NAME, cv, "_id = ?", new String[]{idStr});
+        db.close();
+        cursor.close();
+
+        return update > 0;
+    }
 
 
     // ALBUM TABLE _________________________________________________________________________________
