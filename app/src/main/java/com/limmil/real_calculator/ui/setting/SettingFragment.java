@@ -74,8 +74,10 @@ public class SettingFragment extends Fragment {
         final Dialog dialog = new Dialog(getContext());
         dialog.setTitle("Reset Password");
         dialog.setContentView(R.layout.dialog_reset_password);
-        dialog.show();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.getWindow().setLayout((6 * width)/7, WRAP_CONTENT);
+        dialog.show();
+
 
         //setting button and EditText from dialog
         final EditText currentPassword = dialog.findViewById(R.id.currentPassword);

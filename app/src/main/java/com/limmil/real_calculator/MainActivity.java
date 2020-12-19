@@ -387,6 +387,7 @@ public class MainActivity extends AppCompatActivity
             final Dialog dialog = new Dialog(MainActivity.this);
             dialog.setTitle("Set a password");
             dialog.setContentView(R.layout.dialog_setpassword);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             dialog.show();
 
             //setting button and EditText from dialog
@@ -446,6 +447,7 @@ public class MainActivity extends AppCompatActivity
                                             final Dialog td = new Dialog(MainActivity.this);
                                             td.setTitle("Password set");
                                             td.setContentView(R.layout.dialog_setpass_successful_message);
+                                            td.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                                             td.show();
 
                                             //set ok button2

@@ -75,6 +75,7 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                 final Dialog dialog = new Dialog(getActivity());
                 dialog.setTitle("Add New Album");
                 dialog.setContentView(R.layout.dialog_add_album);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 dialog.show();
 
                 //setting button and EditText from dialog

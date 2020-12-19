@@ -69,6 +69,7 @@ public class DrawerActivity extends AppCompatActivity {
                 final Dialog dialog = new Dialog(this);
                 dialog.setTitle("About Page");
                 dialog.setContentView(R.layout.dialog_about);
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 dialog.show();
                 return true;
             default:

@@ -272,6 +272,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
         fileType.setVisibility(View.VISIBLE);
         fileType.setText(fType);
 
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
         // buttons
         final String finalFExt = fExt;

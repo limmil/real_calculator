@@ -75,6 +75,7 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
                 // reusing dialog_add_album
                 TextView title = dialog.findViewById(R.id.addNewAlbum);
                 title.setText(getString(R.string.add_new_folder));
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 dialog.show();
 
                 //setting button and EditText from dialog
