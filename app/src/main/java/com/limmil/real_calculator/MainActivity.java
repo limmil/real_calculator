@@ -551,8 +551,10 @@ public class MainActivity extends AppCompatActivity
         }
         // refresh in case of password change
         List<UserModel> users = dbHelper.getUsers();
-        iv = users.get(0).getIv();
-        hash = users.get(0).getPassword();
-        mkey = users.get(0).getBmkey();
+        if (!users.isEmpty()) {
+            iv = users.get(0).getIv();
+            hash = users.get(0).getPassword();
+            mkey = users.get(0).getBmkey();
+        }
     }
 }
