@@ -91,5 +91,6 @@
     <string name="github_link">https://github.com/limmil/real_calculator</string>
     <string name="learn_more_on">Learn more on</string>
     <string name="created_by_limmil">Created by limmil</string>
+    <string name="reset">Reset</string>
 
 </resources>

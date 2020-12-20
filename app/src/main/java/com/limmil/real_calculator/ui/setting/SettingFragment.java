@@ -153,7 +153,7 @@ public class SettingFragment extends Fragment {
                                     Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
                             }else{
-                                getActivity().runOnUiThread(new Runnable() {
+                                requireActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         progressDialog.dismiss();

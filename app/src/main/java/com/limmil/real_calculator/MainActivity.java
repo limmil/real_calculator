@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
         //onStartUp();
         login = findViewById(R.id.Percent_Button);
         setLoginButton(login);
+        appIntro();
     }
 
 
@@ -452,13 +453,24 @@ public class MainActivity extends AppCompatActivity
 
                                             //set ok button2
                                             Button okButton2 = (Button) td.findViewById(R.id.okButton2);
-
                                             okButton2.setOnClickListener(new View.OnClickListener()
                                             {
                                                 @Override
                                                 public void onClick(View v)
                                                 {
                                                     td.cancel();
+                                                }
+                                            });
+
+                                            final Dialog dialogTwo = new Dialog(MainActivity.this);
+                                            dialogTwo.setContentView(R.layout.intro_two);
+                                            dialogTwo.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                                            dialogTwo.show();
+                                            Button introTwoButton = dialogTwo.findViewById(R.id.introTwoButton);
+                                            introTwoButton.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialogTwo.dismiss();
                                                 }
                                             });
                                         }
@@ -544,6 +556,28 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
+    }
+
+    public void appIntro(){
+        final SharedPreferences sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        final boolean appIntro = sharedPreferences.getBoolean("intro", true);
+        if (appIntro){
+
+            final Dialog dialogOne = new Dialog(MainActivity.this);
+            dialogOne.setContentView(R.layout.intro_one);
+            dialogOne.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialogOne.show();
+            Button introOneButton = dialogOne.findViewById(R.id.introOneButton);
+            introOneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogOne.dismiss();
+                }
+            });
+
+            sharedPreferences.edit().putBoolean("intro", false).apply();
+        }
+
     }
 
     @Override
