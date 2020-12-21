@@ -38,6 +38,7 @@ import com.limmil.real_calculator.R;
 import com.limmil.real_calculator.database.DataBaseHelper;
 import com.limmil.real_calculator.database.models.FolderModel;
 import com.limmil.real_calculator.database.models.MyFileModel;
+import com.limmil.real_calculator.database.models.PhotoModel;
 import com.limmil.real_calculator.encryption.AES;
 import com.limmil.real_calculator.encryption.Util;
 import com.limmil.real_calculator.interfaces.IFilesClickListener;
@@ -69,7 +70,8 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
     int folderId;
     TextView folderName;
     ImageButton backButton, menuButton, deleteButton, moveButton, exportButton;
-    Button undoButton;
+    Button undoButton, allButton;
+    FloatingActionButton fab;
     boolean selecting;
     TextView empty;
     DataBaseHelper db;
@@ -116,7 +118,7 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
             empty.setVisibility(View.VISIBLE);
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.imagefab);
+        fab = (FloatingActionButton) findViewById(R.id.imagefab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -498,6 +500,14 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
             }
         });
 
+        allButton = findViewById(R.id.all_select);
+        allButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allButtonFunction();
+            }
+        });
+
         deleteButton = findViewById(R.id.browse_delete_btn);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -587,7 +597,9 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
                     }
                     public void menuClick(){
                         menuButton.setVisibility(View.GONE);
+                        fab.setVisibility(View.GONE);
                         undoButton.setVisibility(View.VISIBLE);
+                        allButton.setVisibility(View.VISIBLE);
                         selecting = true;
                         for (MyFileModel fileModel : allFiles){
                             fileModel.setCheckBoxVisibility(true);
@@ -789,15 +801,24 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
     public void undoButtonFunction(){
 
         undoButton.setVisibility(View.GONE);
+        allButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
         moveButton.setVisibility(View.GONE);
         exportButton.setVisibility(View.GONE);
         menuButton.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
         for (MyFileModel fileModel : allFiles){
             fileModel.setCheckBoxVisibility(false);
             fileModel.setCheckBox(false);
         }
         selecting = false;
+        fileAdapter.notifyDataSetChanged();
+    }
+
+    public void allButtonFunction(){
+        for (MyFileModel myFileModel : allFiles){
+            myFileModel.setCheckBox(true);
+        }
         fileAdapter.notifyDataSetChanged();
     }
 

@@ -55,16 +55,25 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/all_select"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="@android:color/transparent"
+                    android:padding="1dp"
+                    android:text="@string/all"
+                    android:textColor="@color/colorAccent"
+                    android:visibility="gone" />
                 <Button
                     android:id="@+id/undo_select"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_delete"
                     android:text="@string/undo"
                     android:textColor="@color/white"
                     android:layout_gravity="end"
                     android:background="@android:color/transparent"
-                    android:padding="12dp"
                     android:visibility="gone"/>
                 <ImageButton
                     android:id="@+id/browseMenu"
