@@ -31,7 +31,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 
 - More details for the implementation [here]()
 
-[Back To The Top](#real-caculator)
+[Back To The Top](#real-calculator)
 
 ---
 
@@ -59,7 +59,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 </a>
 --->
 
-[Back To The Top](#real-caculator)
+[Back To The Top](#real-calculator)
 
 ---
 
@@ -68,7 +68,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 ![](https://user-images.githubusercontent.com/40067550/102833882-3a33ba00-43a7-11eb-87bf-c416ba47f766.png)
 >The files folder contains all private data. Just copy and save it some where else. Replace the entire folder when transfering or restoring data.
 
-[Back To The Top](#real-caculator)
+[Back To The Top](#real-calculator)
 
 ---
 
