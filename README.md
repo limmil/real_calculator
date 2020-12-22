@@ -3,7 +3,7 @@
 
 Calculator                  |    Hidden Files
 :-------------------------:|:-------------------------:
-![](https://user-images.githubusercontent.com/40067550/102741882-5f252000-4308-11eb-8373-4b3d984936fd.PNG)  |  ![](https://user-images.githubusercontent.com/40067550/102741989-aad7c980-4308-11eb-9e60-79d64a5f39ea.PNG)
+<img src="https://user-images.githubusercontent.com/40067550/102741882-5f252000-4308-11eb-8373-4b3d984936fd.PNG" width="200">  |  <img src="https://user-images.githubusercontent.com/40067550/102741989-aad7c980-4308-11eb-9e60-79d64a5f39ea.PNG" width="200">
 
 > Quick views of the app.
 
