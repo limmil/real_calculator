@@ -19,7 +19,7 @@ Calculator                  |    Hidden Files
 
 ## Description
 
-The focus of this project is user privacy. Real Calculator uses AES-256-CTR to encrypt files and hides them behind a calculator interface. No one will be able to access the files without knowning the password. It has a fully functional gallery to view encrypted images and videos directly. It has a simple notepad that encrypts plaintext and a file container that encrypts any files. The best part is no ads, and it is open source for anyone to check the security and encryption implementation.
+The focus of this project is user privacy. Real Calculator uses AES-256-CTR to encrypt files and hides them behind a calculator interface. No one will be able to access the files without knowing the password. It has a fully functional gallery to view encrypted images and videos directly. It has a simple notepad that encrypts plaintext and a file container that encrypts any files. The best part is no ads, and it is open source for anyone to check the security and encryption implementation.
 
 ### Technologies
 
@@ -29,7 +29,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 
 ### Implementation
 
-- More details for the implementation [here]()
+- More details for the implementation [here](https://docs.google.com/document/d/1obKkawsvlU-oFi3q3-3VcC_kQWDKf1B-DOzdEH6kkW8/edit?usp=sharing)
 
 [Back To The Top](#real-calculator)
 
@@ -47,7 +47,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 
 ### Installation via APK
 
-- Download the apk [here]()
+- Download the apk [here](https://github.com/limmil/real_calculator/releases/tag/v1.0)
 
 ### Installation via Google Play Store
 
