@@ -51,13 +51,10 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 
 ### Installation via Google Play Store
 
-- Working on it
-<!---
-<a href="www.google.com">
+<a href="https://play.google.com/store/apps/details?id=com.limmil.real_calculator">
   <img alt="Get it on Google Play" vspace="20"
        src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="60" />
 </a>
---->
 
 [Back To The Top](#real-calculator)
 
