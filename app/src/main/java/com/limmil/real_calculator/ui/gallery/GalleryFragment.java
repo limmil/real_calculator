@@ -258,6 +258,7 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         dialog.setTitle("Edit Album");
         title.setText(getString(R.string.edit_album));
         albumName.setText(albumModel.getAlbumName());
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
         // buttons
         yesButton.setOnClickListener(new View.OnClickListener() {

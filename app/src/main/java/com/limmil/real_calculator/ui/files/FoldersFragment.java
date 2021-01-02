@@ -256,6 +256,7 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
         dialog.setTitle("Edit Folder");
         title.setText(getString(R.string.edit_folder));
         folderName.setText(folderModel.getFolderName());
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
         // buttons
         yesButton.setOnClickListener(new View.OnClickListener() {
