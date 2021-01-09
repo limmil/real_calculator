@@ -1,16 +1,18 @@
 package com.limmil.real_calculator.calculator;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /*
  * Postfix p = new Postfix();
- * p.eval("postfix"); = a double number
+ * p.eval("postfix"); = a BigDecimal number
  */
 public class Postfix
 {
-    Stack<Double> stack;
+    Stack<BigDecimal> stack;
 
     public Postfix()
     {
-        stack = new Stack<Double>();
+        stack = new Stack<BigDecimal>();
     }
 
     public double eval(String expr)
@@ -23,47 +25,47 @@ public class Postfix
             {
                 case "+":
                 {
-                    double a = stack.pop();
-                    double b = stack.pop();
-                    double c = a + b;
+                    BigDecimal a = stack.pop();
+                    BigDecimal b = stack.pop();
+                    BigDecimal c = a.add(b);
                     stack.push(c);
                 }
                 break;
                 case"-":
                 {
-                    double a = stack.pop();
-                    double b = stack.pop();
-                    double c = b - a;
+                    BigDecimal a = stack.pop();
+                    BigDecimal b = stack.pop();
+                    BigDecimal c = b.subtract(a);
                     stack.push(c);
                 }
                 break;
                 case"*":
                 {
-                    double a = stack.pop();
-                    double b = stack.pop();
-                    double c = a * b;
+                    BigDecimal a = stack.pop();
+                    BigDecimal b = stack.pop();
+                    BigDecimal c = a.multiply(b);
                     stack.push(c);
                 }
                 break;
                 case"/":
                 {
-                    double a = stack.pop();
-                    double b = stack.pop();
-                    double c = b / a;
+                    BigDecimal a = stack.pop();
+                    BigDecimal b = stack.pop();
+                    BigDecimal c = b.divide(a,7, RoundingMode.DOWN);
                     stack.push(c);
                 }
                 break;
                 case"^":
                 {
-                    double a = stack.pop();
-                    double b = stack.pop();
-                    double c = Math.pow(b,a);
+                    BigDecimal a = stack.pop();
+                    BigDecimal b = stack.pop();
+                    BigDecimal c = new BigDecimal("" + Math.pow(b.doubleValue(), a.doubleValue()));
                     stack.push(c);
                 }
                 break;
                 case"pi":
                 {
-                    double a = Math.PI;
+                    BigDecimal a = new BigDecimal("" + Math.PI);
                     stack.push(a);
                 }
                 break;
@@ -73,13 +75,12 @@ public class Postfix
                     {
                         continue;
                     }
-                    else stack.push(Double.parseDouble(s));
+                    else stack.push(new BigDecimal(s));
                 }
 
             }
         }
-            return stack.peek();
-
+            return stack.peek().doubleValue();
     }
 
 }
