@@ -6,12 +6,14 @@ import com.limmil.real_calculator.database.DataBaseHelper;
 import com.limmil.real_calculator.database.models.UserModel;
 import com.limmil.real_calculator.encryption.*;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +43,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         disp = (EditText) findViewById(R.id.Text_Display);
+        disp.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                disp.setFocusableInTouchMode(true);
+                return false;
+            }
+        });
+
         clear = (Button) findViewById(R.id.Clear_Button);
         progressBar = findViewById(R.id.Verify_Progress);
         //onStartUp();
@@ -78,18 +88,16 @@ public class MainActivity extends AppCompatActivity
         {
             case Zero_Button:
             {
-                final String temp = disp.getText().toString();
+                disp.setFocusable(false);
 
                 if(flag) {disp.setText("");}
-                if (!temp.equals(getString(R.string.zero_button)))
-                {
-                    setDisp(temp, getString(R.string.zero_button));
-                }
+                setDisp(disp.getText().toString(), getString(R.string.zero_button));
                 setToCE();
             }
             break;
             case One_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.one_button));
                 setToCE();
@@ -97,6 +105,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Two_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.two_button));
                 setToCE();
@@ -104,6 +113,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Three_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.three_button));
                 setToCE();
@@ -111,6 +121,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Four_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.four_button));
                 setToCE();
@@ -118,6 +129,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Five_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.five_button));
                 setToCE();
@@ -125,6 +137,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Six_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.six_button));
                 setToCE();
@@ -132,6 +145,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Seven_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.seven_button));
                 setToCE();
@@ -139,6 +153,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Eight_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.eight_button));
                 setToCE();
@@ -146,6 +161,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Nine_Button:
             {
+                disp.setFocusable(false);
                 if(flag) {disp.setText("");}
                 checkZero(getString(R.string.nine_button));
                 setToCE();
@@ -153,6 +169,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Left_Bracket:
             {
+                disp.setFocusable(false);
                 if(!disp.getText().toString().equals("error"))
                 {
                     checkZero(getString(R.string.left_bracket));
@@ -166,6 +183,7 @@ public class MainActivity extends AppCompatActivity
             break;
             case Right_Bracket:
             {
+                disp.setFocusable(false);
                 final String temp = disp.getText().toString();
 
                 if(flag) {disp.setText(getString(R.string.zero_button));}
@@ -203,19 +221,19 @@ public class MainActivity extends AppCompatActivity
 
                 if(flag)
                 {
-                    setDisp("", getString(R.string.zero_button));
+                    setDisp("", "");
                 }
                 else
                 {
                     if(temp.length() == 1)
                     {
-                        setDisp("", getString(R.string.zero_button));
+                        setDisp("", "");
                     }
                     else
                     {
                         if(temp.equals(""))
                         {
-                            setDisp("", getString(R.string.zero_button));
+                            setDisp("", "");
                         }
                         else
                         {
@@ -230,6 +248,7 @@ public class MainActivity extends AppCompatActivity
             case Divide_Button:
             {
                 final String temp = disp.getText().toString();
+                disp.setFocusable(false);
 
                 if(!temp.equals("error"))
                 {
@@ -248,6 +267,7 @@ public class MainActivity extends AppCompatActivity
             case Times_Button:
             {
                 final String temp = disp.getText().toString();
+                disp.setFocusable(false);
 
                 if(!temp.equals("error"))
                 {
@@ -266,6 +286,7 @@ public class MainActivity extends AppCompatActivity
             case Minus_Button:
             {
                 final String temp = disp.getText().toString();
+                disp.setFocusable(false);
 
                 if(!temp.equals("error"))
                 {
@@ -288,6 +309,7 @@ public class MainActivity extends AppCompatActivity
             case Plus_Button:
             {
                 final String temp = disp.getText().toString();
+                disp.setFocusable(false);
 
                 if(!temp.equals("error"))
                 {
@@ -302,26 +324,28 @@ public class MainActivity extends AppCompatActivity
             break;
             case Decimal_Button:
             {
-                if(flag) {disp.setText(getString(R.string.zero_button));}
+                disp.setFocusable(false);
+                if(flag) {disp.setText("");}
                 setDisp(disp.getText().toString(), getString(R.string.decimal_button));
                 setToCE();
             }
             break;
             case Equal_Button:
             {
+                disp.setFocusable(false);
                 str = disp.getText().toString();
-                str = str.replace(getString(R.string.divide_button), "/");
-                str = str.replace(getString(R.string.times_button), "*");
-                str = str.replace(getString(R.string.percent_button), "/100");
-                str = str.replace(getString((R.string.PowTen)), "*10^");
-                str = Calculate.compute(str);
-                if (str.equals("error"))
-                {
-                    disp.setText(getString(R.string.ERROR));
-                }
-                else
-                {
-                    disp.setText(str);
+
+                if (!str.isEmpty()) {
+                    str = str.replace(getString(R.string.divide_button), "/");
+                    str = str.replace(getString(R.string.times_button), "*");
+                    str = str.replace(getString(R.string.percent_button), "/100");
+                    str = str.replace(getString((R.string.PowTen)), "*10^");
+                    str = Calculate.compute(str);
+                    if (str.equals("error")) {
+                        disp.setText(getString(R.string.ERROR));
+                    } else {
+                        disp.setText(str);
+                    }
                 }
 
                 disp.setSelection(disp.getText().length());
@@ -330,6 +354,7 @@ public class MainActivity extends AppCompatActivity
             break;
             default:
             {
+                disp.setFocusable(false);
                 str = "";
                 disp.setText(getString(R.string.zero_button));
                 disp.setSelection(disp.getText().length());
