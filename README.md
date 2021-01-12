@@ -47,7 +47,7 @@ The focus of this project is user privacy. Real Calculator uses AES-256-CTR to e
 
 ### Installation via APK
 
-- Download the apk [here](https://github.com/limmil/real_calculator/releases/tag/v1.0)
+- Download the apk [here](https://github.com/limmil/real_calculator/releases)
 
 ### Installation via Google Play Store
 
