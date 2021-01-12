@@ -93,5 +93,9 @@
     <string name="created_by_limmil">Created by limmil</string>
     <string name="reset">Reset</string>
     <string name="all">all</string>
+    <string name="weak">weak</string>
+    <string name="good">good</string>
+    <string name="strong">strong</string>
+    <string name="password_hash_strength">Password Hash Strength</string>
 
 </resources>

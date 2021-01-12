@@ -99,6 +99,10 @@ public class Util
         return BCrypt.hashpw(password, BCrypt.gensalt(12));
     }
 
+    public static String makePasswordHash(String password, int strength){
+        return BCrypt.hashpw(password, BCrypt.gensalt(strength));
+    }
+
     public static boolean checkPassword(String password, String hash){
         return BCrypt.checkpw(password, hash);
     }

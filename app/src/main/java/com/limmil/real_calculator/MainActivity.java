@@ -13,11 +13,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -419,7 +425,40 @@ public class MainActivity extends AppCompatActivity
             //setting button and EditText from dialog
             final EditText setpass = (EditText) dialog.findViewById(R.id.setpass);
             final EditText confirm = (EditText) dialog.findViewById(R.id.confirm);
-            Button okButton = (Button) dialog.findViewById(R.id.okButton);
+            final Button okButton = (Button) dialog.findViewById(R.id.okButton);
+            RadioButton strongRButton = dialog.findViewById(R.id.strong);
+            final RadioGroup radioGroup = dialog.findViewById(R.id.radioGroup);
+            ImageView helpButton = dialog.findViewById(R.id.help);
+            strongRButton.setChecked(true);
+
+            confirm.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                        //do what you want on the press of 'done'
+                        okButton.performClick();
+                    }
+                    return false;
+                }
+            });
+
+            final Toast helpToast = Toast.makeText(getApplicationContext(),
+                "Stronger hash strength will take longer to verify password.",
+                Toast.LENGTH_LONG);
+            helpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    helpToast.show();
+                }
+            });
+
+            // avoid toast spamming
+            final Toast dnmToast = Toast.makeText(getApplicationContext(),
+                    "Does not match.",
+                    Toast.LENGTH_SHORT);
+            final Toast lenCheckToast = Toast.makeText(getApplicationContext(),
+                    "Password needs to be at least 6 characters long.",
+                    Toast.LENGTH_SHORT);
 
             okButton.setOnClickListener(new View.OnClickListener()
             {
@@ -434,20 +473,28 @@ public class MainActivity extends AppCompatActivity
                     //see if passwords match
                     if(!pas.equals(con))
                     {
-                        Toast.makeText(getApplicationContext(),
-                                "Does not match.",
-                                Toast.LENGTH_SHORT).show();
+                        dnmToast.show();
                     }
                     //check password length
                     else if(pas.length() < 6)
                     {
-                        Toast.makeText(getApplicationContext(),
-                                "Password needs to be at least 6 characters long.",
-                                Toast.LENGTH_SHORT).show();
+                        lenCheckToast.show();
                     }
                     //set passwords
                     else
                     {
+                        int tempStrength;
+                        if (radioGroup.getCheckedRadioButtonId() == R.id.weak) {
+                            tempStrength = 10;
+                        } else if (radioGroup.getCheckedRadioButtonId() == R.id.good){
+                            tempStrength = 11;
+                        } else if (radioGroup.getCheckedRadioButtonId() == R.id.strong){
+                            tempStrength = 12;
+                        } else{
+                            tempStrength = 12;
+                        }
+                        final int hashStrength = tempStrength;
+
                         dialog.cancel();
                         final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this,
                                 "Loading", "Setting up keys", true);
@@ -455,7 +502,7 @@ public class MainActivity extends AppCompatActivity
                             public void run(){
                                 // generate iv and hash
                                 iv = Util.makeRandomString(64);
-                                hash = Util.makePasswordHash(pas);
+                                hash = Util.makePasswordHash(pas, hashStrength);
                                 // generate mkey and encrypt it
                                 String plainKey = Util.makeRandomString(4096);
                                 mkey = Util.encryptToByte(pas, iv, plainKey);
