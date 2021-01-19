@@ -286,6 +286,34 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             }
 
 
+            image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (indicatorRecycler.getVisibility() == View.GONE) {
+                        indicatorRecycler.setVisibility(View.VISIBLE);
+                        header.setVisibility(View.VISIBLE);
+                    } else {
+                        indicatorRecycler.setVisibility(View.GONE);
+                        header.setVisibility(View.GONE);
+                    }
+
+                    /**
+                     * uncomment the below condition and comment the one above to control recyclerView visibility automatically
+                     * when image is clicked
+                     */
+                    /*if(viewVisibilityController == 0){
+                        indicatorRecycler.setVisibility(View.VISIBLE);
+                        header.setVisibility(View.VISIBLE);
+                        visibiling();
+                    }else{
+                        viewVisibilitylooper++;
+                    }*/
+
+
+                }
+            });
+
             if(myExternalFile.exists()) {
                 EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, nonce);
                 Glide.with(animeContx)
@@ -316,33 +344,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                         })
                         .into(image);
 
-                image.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        if (indicatorRecycler.getVisibility() == View.GONE) {
-                            indicatorRecycler.setVisibility(View.VISIBLE);
-                            header.setVisibility(View.VISIBLE);
-                        } else {
-                            indicatorRecycler.setVisibility(View.GONE);
-                            header.setVisibility(View.GONE);
-                        }
-
-                        /**
-                         * uncomment the below condition and comment the one above to control recyclerView visibility automatically
-                         * when image is clicked
-                         */
-                    /*if(viewVisibilityController == 0){
-                        indicatorRecycler.setVisibility(View.VISIBLE);
-                        header.setVisibility(View.VISIBLE);
-                        visibiling();
-                    }else{
-                        viewVisibilitylooper++;
-                    }*/
-
-
-                    }
-                });
             }else{
                 Glide.with(animeContx)
                         .load(R.drawable.ic_baseline_broken_image)
