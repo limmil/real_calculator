@@ -31,12 +31,12 @@
             android:name="com.limmil.real_calculator.ui.gallery.ImageBrowseActivity"
             android:label="@string/ImageBrowseActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
         <activity
             android:name="com.limmil.real_calculator.ui.gallery.VideoPlayerActivity"
             android:label="@string/VideoPlayerActivity"
             android:configChanges="orientation|screenSize|layoutDirection"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
         <activity
             android:name="com.limmil.real_calculator.ui.files.FilesActivity"
             android:label="@string/FilesActivity"
