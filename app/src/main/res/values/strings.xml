@@ -97,5 +97,6 @@
     <string name="good">good</string>
     <string name="strong">strong</string>
     <string name="password_hash_strength">Password Hash Strength</string>
+    <string name="setup_msg">HOLD the % button to get started.</string>
 
 </resources>

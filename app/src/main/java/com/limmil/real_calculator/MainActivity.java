@@ -1,6 +1,9 @@
 package com.limmil.real_calculator;
 
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.limmil.real_calculator.calculator.*;
 import com.limmil.real_calculator.database.DataBaseHelper;
 import com.limmil.real_calculator.database.models.UserModel;
@@ -545,6 +548,12 @@ public class MainActivity extends AppCompatActivity
                                                     dialogTwo.dismiss();
                                                 }
                                             });
+                                            ImageView showCase = dialogTwo.findViewById(R.id.imageView4);
+                                            Glide.with(getApplicationContext())
+                                                    .load(R.drawable.intro_two)
+                                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                                    .skipMemoryCache(true)
+                                                    .into(showCase);
                                         }
                                     });
                                 }
@@ -635,6 +644,26 @@ public class MainActivity extends AppCompatActivity
         final boolean appIntro = sharedPreferences.getBoolean("intro", true);
         if (appIntro){
 
+            final Dialog td = new Dialog(MainActivity.this);
+            td.setTitle("Password setup");
+            // reusing layout
+            td.setContentView(R.layout.dialog_setpass_successful_message);
+            td.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            td.show();
+
+            //set ok button2
+            Button okButton2 = (Button) td.findViewById(R.id.okButton2);
+            okButton2.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    td.cancel();
+                }
+            });
+            TextView msg = td.findViewById(R.id.successMessage);
+            msg.setText(getString(R.string.setup_msg));
+
             final Dialog dialogOne = new Dialog(MainActivity.this);
             dialogOne.setContentView(R.layout.intro_one);
             dialogOne.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -646,6 +675,12 @@ public class MainActivity extends AppCompatActivity
                     dialogOne.dismiss();
                 }
             });
+            ImageView showCase = dialogOne.findViewById(R.id.imageView3);
+            Glide.with(getApplicationContext())
+                    .load(R.drawable.intro_one)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(showCase);
 
             sharedPreferences.edit().putBoolean("intro", false).apply();
         }
