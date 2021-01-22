@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
-import com.limmil.real_calculator.MainActivity;
 import com.limmil.real_calculator.R;
 import com.limmil.real_calculator.database.DataBaseHelper;
 import com.limmil.real_calculator.database.models.UserModel;
@@ -108,12 +107,6 @@ public class SettingFragment extends Fragment {
         final Toast helpToast = Toast.makeText(getContext(),
                 "Stronger hash strength will take longer to verify password.",
                 Toast.LENGTH_LONG);
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                helpToast.show();
-            }
-        });
 
         // avoid toast spamming
         final Toast dnmToast = Toast.makeText(getContext(),
@@ -122,6 +115,15 @@ public class SettingFragment extends Fragment {
         final Toast lenCheckToast = Toast.makeText(getContext(),
                 "Password needs to be at least 6 characters long.",
                 Toast.LENGTH_SHORT);
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dnmToast.cancel();
+                lenCheckToast.cancel();
+                helpToast.show();
+            }
+        });
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,11 +136,15 @@ public class SettingFragment extends Fragment {
                 //see if passwords match
                 if(!resetPasswordStr.equals(reconfirmStr))
                 {
+                    lenCheckToast.cancel();
+                    helpToast.cancel();
                     dnmToast.show();
                 }
                 //check password length
                 else if(resetPasswordStr.length() < 6)
                 {
+                    dnmToast.cancel();
+                    helpToast.cancel();
                     lenCheckToast.show();
                 }else{
                     // check current password hash

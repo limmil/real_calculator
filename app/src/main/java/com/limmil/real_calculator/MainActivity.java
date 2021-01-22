@@ -3,13 +3,11 @@ package com.limmil.real_calculator;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.limmil.real_calculator.calculator.*;
 import com.limmil.real_calculator.database.DataBaseHelper;
 import com.limmil.real_calculator.database.models.UserModel;
 import com.limmil.real_calculator.encryption.*;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -62,7 +60,6 @@ public class MainActivity extends AppCompatActivity
 
         clear = (Button) findViewById(R.id.Clear_Button);
         progressBar = findViewById(R.id.Verify_Progress);
-        //onStartUp();
         login = findViewById(R.id.Percent_Button);
         setLoginButton(login);
         appIntro();
@@ -411,7 +408,7 @@ public class MainActivity extends AppCompatActivity
         flag = false;
     }
 
-    public void onStartUp()
+    public void onLogin()
     {
         dbHelper = new DataBaseHelper(getApplicationContext());
 
@@ -448,12 +445,6 @@ public class MainActivity extends AppCompatActivity
             final Toast helpToast = Toast.makeText(getApplicationContext(),
                 "Stronger hash strength will take longer to verify password.",
                 Toast.LENGTH_LONG);
-            helpButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    helpToast.show();
-                }
-            });
 
             // avoid toast spamming
             final Toast dnmToast = Toast.makeText(getApplicationContext(),
@@ -462,6 +453,15 @@ public class MainActivity extends AppCompatActivity
             final Toast lenCheckToast = Toast.makeText(getApplicationContext(),
                     "Password needs to be at least 6 characters long.",
                     Toast.LENGTH_SHORT);
+
+            helpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dnmToast.cancel();
+                    lenCheckToast.cancel();
+                    helpToast.show();
+                }
+            });
 
             okButton.setOnClickListener(new View.OnClickListener()
             {
@@ -476,11 +476,15 @@ public class MainActivity extends AppCompatActivity
                     //see if passwords match
                     if(!pas.equals(con))
                     {
+                        lenCheckToast.cancel();
+                        helpToast.cancel();
                         dnmToast.show();
                     }
                     //check password length
                     else if(pas.length() < 6)
                     {
+                        dnmToast.cancel();
+                        helpToast.cancel();
                         lenCheckToast.show();
                     }
                     //set passwords
@@ -584,7 +588,7 @@ public class MainActivity extends AppCompatActivity
         button.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v) {
-                onStartUp();
+                onLogin();
 
                 final String pass = disp.getText().toString();
                 final SharedPreferences sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
@@ -643,6 +647,9 @@ public class MainActivity extends AppCompatActivity
         final SharedPreferences sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE);
         final boolean appIntro = sharedPreferences.getBoolean("intro", true);
         if (appIntro){
+            // generates app data folder
+            dbHelper = new DataBaseHelper(getApplicationContext());
+            dbHelper.userExist();
 
             final Dialog td = new Dialog(MainActivity.this);
             td.setTitle("Password setup");
