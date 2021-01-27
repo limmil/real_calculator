@@ -65,7 +65,7 @@
                 android:id="@+id/dialog_album_btn_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/yes"
+                android:text="@string/OK"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
                 android:id="@+id/dialog_album_btn_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no"
+                android:text="@string/cancel"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold" />
         </LinearLayout>

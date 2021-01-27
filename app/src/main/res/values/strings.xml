@@ -98,5 +98,6 @@
     <string name="strong">strong</string>
     <string name="password_hash_strength">Password Hash Strength</string>
     <string name="setup_msg">HOLD the % button to get started.</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
