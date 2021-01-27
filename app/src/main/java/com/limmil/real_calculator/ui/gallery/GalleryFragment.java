@@ -65,6 +65,7 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         }else{
             albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
             albumRecycler.setAdapter(albumAdapter);
+            albumRecycler.scrollToPosition(albumAdapter.getItemCount()-1);
         }
 
         fab.setOnClickListener(new View.OnClickListener() {

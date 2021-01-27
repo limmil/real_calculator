@@ -62,6 +62,7 @@ public class FoldersFragment extends Fragment implements IFilesClickListener {
         }else{
             folderAdapter = new FolderAdapter(allFolders, getActivity(), this);
             folderRecycler.setAdapter(folderAdapter);
+            folderRecycler.scrollToPosition(folderAdapter.getItemCount()-1);
         }
 
         fab.setOnClickListener(new View.OnClickListener() {

@@ -63,21 +63,23 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
     private ImagesPagerAdapter pagingImages;
     private RecyclerViewPagerImageIndicator indicatorAdapter;
     private PhotoAdapter photoAdapter;
+    private RecyclerView imageRecycler;
     private int previousSelected = -1;
 
     public ImageBrowserFragment(){
 
     }
 
-    public ImageBrowserFragment(List<PhotoModel> allImages, int imagePosition, Context anim, PhotoAdapter photoAdapter) {
+    public ImageBrowserFragment(List<PhotoModel> allImages, int imagePosition, Context anim, PhotoAdapter photoAdapter, RecyclerView imageRecycler) {
         this.allImages = allImages;
         this.position = imagePosition;
         this.animeContx = anim;
         this.photoAdapter = photoAdapter;
+        this.imageRecycler =  imageRecycler;
     }
 
-    public static ImageBrowserFragment newInstance(List<PhotoModel> allImages, int imagePosition, Context anim, PhotoAdapter photoAdapter) {
-        ImageBrowserFragment fragment = new ImageBrowserFragment(allImages,imagePosition,anim,photoAdapter);
+    public static ImageBrowserFragment newInstance(List<PhotoModel> allImages, int imagePosition, Context anim, PhotoAdapter photoAdapter, RecyclerView imageRecycler) {
+        ImageBrowserFragment fragment = new ImageBrowserFragment(allImages,imagePosition,anim,photoAdapter,imageRecycler);
         return fragment;
     }
 
@@ -477,5 +479,6 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
             allImages.get(position).setSelected(false);
         }
         Glide.get(requireContext()).clearMemory();
+        imageRecycler.scrollToPosition(position);
     }
 }

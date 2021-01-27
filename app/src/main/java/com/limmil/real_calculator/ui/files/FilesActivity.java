@@ -116,6 +116,8 @@ public class FilesActivity extends AppCompatActivity implements IFilesClickListe
 
         if (allFiles.isEmpty()){
             empty.setVisibility(View.VISIBLE);
+        }else{
+            fileRecycler.scrollToPosition(fileAdapter.getItemCount()-1);
         }
 
         fab = (FloatingActionButton) findViewById(R.id.imagefab);

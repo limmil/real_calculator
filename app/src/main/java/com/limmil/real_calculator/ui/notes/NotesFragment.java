@@ -97,12 +97,15 @@ public class NotesFragment extends Fragment implements INotesClickListener {
         filterNotes = new ArrayList<>(notes);
 
         empty = root.findViewById(R.id.emptyNotes);
-        if (notes.isEmpty()){
-            empty.setVisibility(View.VISIBLE);
-        }
 
         noteAdapter = new NoteAdapter(requireContext(), notes, filterNotes, this, empty);
         notesRecyclerView.setAdapter(noteAdapter);
+
+        if (notes.isEmpty()){
+            empty.setVisibility(View.VISIBLE);
+        }else{
+            notesRecyclerView.scrollToPosition(noteAdapter.getItemCount()-1);
+        }
 
 
         return root;
