@@ -96,6 +96,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         playerView.setKeepScreenOn(true);
         simpleExoPlayer.prepare(mediaSource);
         simpleExoPlayer.setPlayWhenReady(true);
+        simpleExoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
         simpleExoPlayer.addListener(new Player.EventListener(){
 
             @Override
