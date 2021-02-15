@@ -13,7 +13,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -425,11 +428,41 @@ public class MainActivity extends AppCompatActivity
             //setting button and EditText from dialog
             final EditText setpass = (EditText) dialog.findViewById(R.id.setpass);
             final EditText confirm = (EditText) dialog.findViewById(R.id.confirm);
+            final TextView pwStrength = (TextView) dialog.findViewById(R.id.password_strength);
             final Button okButton = (Button) dialog.findViewById(R.id.okButton);
             RadioButton strongRButton = dialog.findViewById(R.id.strong);
             final RadioGroup radioGroup = dialog.findViewById(R.id.radioGroup);
             ImageView helpButton = dialog.findViewById(R.id.help);
             strongRButton.setChecked(true);
+
+            setpass.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    int iPasswordScore = Util.calculatePasswordStrength(setpass.getText().toString());
+                    String strength = "Weak Password";
+                    if(iPasswordScore < 5){
+                        strength = "Weak Password";
+                        pwStrength.setTextColor(Color.parseColor("#e72f2f"));
+                    }else if(iPasswordScore > 4 && iPasswordScore < 8){
+                        strength = "Good Password";
+                        pwStrength.setTextColor(Color.parseColor("#feb937"));
+                    }else{
+                        strength = "Strong Password";
+                        pwStrength.setTextColor(Color.parseColor("#95b645"));
+                    }
+                    pwStrength.setText(strength);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
 
             confirm.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -691,6 +724,52 @@ public class MainActivity extends AppCompatActivity
 
             sharedPreferences.edit().putBoolean("intro", false).apply();
         }
+
+    }
+
+    private static int calculatePasswordStrength(String password){
+
+        int iPasswordScore = 0;
+
+        if( password.length() < 8 )
+            return 0;
+        else if( password.length() >= 10 )
+            iPasswordScore += 2;
+        else
+            iPasswordScore += 1;
+
+        /*
+         * if password contains 2 digits, add 2 to score.
+         * if contains 1 digit add 1 to score
+         */
+        if( password.matches("(?=.*[0-9].*[0-9]).*") )
+            iPasswordScore += 2;
+        else if ( password.matches("(?=.*[0-9]).*") )
+            iPasswordScore += 1;
+
+        //if password contains 1 lower case letter, add 2 to score
+        if( password.matches("(?=.*[a-z]).*") )
+            iPasswordScore += 2;
+
+        /*
+         * if password contains 2 upper case letters, add 2 to score.
+         * if contains only 1 then add 1 to score.
+         */
+        if( password.matches("(?=.*[A-Z].*[A-Z]).*") )
+            iPasswordScore += 2;
+        else if( password.matches("(?=.*[A-Z]).*") )
+            iPasswordScore += 1;
+
+        /*
+         * if password contains 2 special characters, add 2 to score.
+         * if contains only 1 special character then add 1 to score.
+         */
+        if( password.matches("(?=.*[~!@#$%^&*()_-].*[~!@#$%^&*()_-]).*") )
+            iPasswordScore += 2;
+        else if( password.matches("(?=.*[~!@#$%^&*()_-]).*") )
+            iPasswordScore += 1;
+
+        return iPasswordScore;
 
     }
 

@@ -4,7 +4,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -84,6 +87,7 @@ public class SettingFragment extends Fragment {
 
 
         //setting button and EditText from dialog
+        final TextView pwStrength = (TextView) dialog.findViewById(R.id.repassword_strength);
         final EditText currentPassword = dialog.findViewById(R.id.currentPassword);
         final EditText resetPassword = dialog.findViewById(R.id.resetPassword);
         final EditText reconfirm = dialog.findViewById(R.id.reconfirm);
@@ -92,6 +96,35 @@ public class SettingFragment extends Fragment {
         final ImageView helpButton = dialog.findViewById(R.id.reHelp);
         final RadioGroup radioGroup = dialog.findViewById(R.id.reRadioGroup);
         strongRButton.setChecked(true);
+
+        resetPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int iPasswordScore = Util.calculatePasswordStrength(resetPassword.getText().toString());
+                String strength = "Weak Password";
+                if(iPasswordScore < 5){
+                    strength = "Weak Password";
+                    pwStrength.setTextColor(Color.parseColor("#e72f2f"));
+                }else if(iPasswordScore > 4 && iPasswordScore < 8){
+                    strength = "Good Password";
+                    pwStrength.setTextColor(Color.parseColor("#feb937"));
+                }else{
+                    strength = "Strong Password";
+                    pwStrength.setTextColor(Color.parseColor("#95b645"));
+                }
+                pwStrength.setText(strength);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         reconfirm.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

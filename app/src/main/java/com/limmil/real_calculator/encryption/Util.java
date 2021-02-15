@@ -162,6 +162,53 @@ public class Util
     }
 
 
+    public static int calculatePasswordStrength(String password){
+
+        int iPasswordScore = 0;
+
+        if(password.length() < 6)
+            return 0;
+        else if(password.length() >= 10)
+            iPasswordScore += 2;
+        else
+            iPasswordScore += 1;
+
+        /*
+         * if password contains 2 digits, add 2 to score.
+         * if contains 1 digit add 1 to score
+         */
+        if(password.matches("(?=.*[0-9].*[0-9]).*"))
+            iPasswordScore += 2;
+        else if(password.matches("(?=.*[0-9]).*"))
+            iPasswordScore += 1;
+
+        //if password contains 1 lower case letter, add 2 to score
+        if(password.matches("(?=.*[a-z]).*"))
+            iPasswordScore += 2;
+
+        /*
+         * if password contains 2 upper case letters, add 2 to score.
+         * if contains only 1 then add 1 to score.
+         */
+        if(password.matches("(?=.*[A-Z].*[A-Z]).*"))
+            iPasswordScore += 2;
+        else if(password.matches("(?=.*[A-Z]).*"))
+            iPasswordScore += 1;
+
+        /*
+         * if password contains 2 special characters, add 2 to score.
+         * if contains only 1 special character then add 1 to score.
+         */
+        if(password.matches("(?=.*[~!@#$%^&*()_-].*[~!@#$%^&*()_-]).*"))
+            iPasswordScore += 2;
+        else if(password.matches("(?=.*[~!@#$%^&*()_-]).*"))
+            iPasswordScore += 1;
+
+
+        return iPasswordScore;
+
+    }
+
 
 
     public static void main(String[] args)
