@@ -1,6 +1,7 @@
 package com.limmil.real_calculator.ui.notes;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -128,6 +129,8 @@ public class NewNoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // save file
-        saveNotes();
+        if (AES.getSecretKey()!=null){
+            saveNotes();
+        }
     }
 }
