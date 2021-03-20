@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -212,6 +213,15 @@ public class NotesFragment extends Fragment implements INotesClickListener {
         if(noteAdapter != null){
             // update newly added notes
             List<NoteModel> newNotes = db.getAllNotes();
+            // update title and preview after saving
+            if(newNotes.size()==notes.size()){
+                for (int i=0; i<notes.size(); i++){
+                    notes.get(i).setTitle(newNotes.get(i).getTitle());
+                    notes.get(i).setContentPreview(newNotes.get(i).getContentPreview());
+                    filterNotes.get(i).setTitle(newNotes.get(i).getTitle());
+                    filterNotes.get(i).setContentPreview(newNotes.get(i).getContentPreview());
+                }
+            }
             if (newNotes.size()>notes.size()){
                 notes.add(newNotes.get(newNotes.size()-1));
                 filterNotes.add(newNotes.get(newNotes.size()-1));
