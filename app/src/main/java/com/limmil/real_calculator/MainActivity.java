@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -544,8 +545,7 @@ public class MainActivity extends AppCompatActivity
                                 iv = Util.makeRandomString(64);
                                 hash = Util.makePasswordHash(pas, hashStrength);
                                 // generate mkey and encrypt it
-                                String plainKey = Util.makeRandomString(4096);
-                                mkey = Util.encryptToByte(pas, iv, plainKey);
+                                String plainKey = Util.makeRandomStringFromRandomBytes(4096);
 
                                 // add user to db
                                 UserModel newUser = new UserModel(iv, mkey, hash);

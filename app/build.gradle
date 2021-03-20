@@ -8,8 +8,8 @@ android {
         applicationId "com.limmil.real_calculator"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -1,5 +1,6 @@
 package com.limmil.real_calculator.encryption;
 
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,11 @@ public class Util
         }
 
         return sb.toString();
+    }
+
+    public static String makeRandomStringFromRandomBytes(int length)
+    {
+        return new String(makeRandomByteArray(length), StandardCharsets.UTF_8);
     }
 
     public static String makeHashSha(String password, String SHA)
@@ -79,10 +85,14 @@ public class Util
         return md5;
     }
 
+    public static byte[] makeRandomByteArray(int length){
+        byte[] arr = new byte[length];
+        new SecureRandom().nextBytes(arr);
+        return arr;
+    }
+
     public static byte[] makeRandom12ByteNonce(){
-        byte[] nonce = new byte[12];
-        new SecureRandom().nextBytes(nonce);
-        return nonce;
+        return makeRandomByteArray(12);
     }
 
     public static String makeHashSha256(String password)
