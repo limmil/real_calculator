@@ -546,6 +546,7 @@ public class MainActivity extends AppCompatActivity
                                 hash = Util.makePasswordHash(pas, hashStrength);
                                 // generate mkey and encrypt it
                                 String plainKey = Util.makeRandomStringFromRandomBytes(4096);
+                                mkey = Util.encryptToByte(pas, iv, plainKey);
 
                                 // add user to db
                                 UserModel newUser = new UserModel(iv, mkey, hash);
