@@ -39,6 +39,7 @@ import com.limmil.real_calculator.database.models.PhotoModel;
 import com.limmil.real_calculator.encryption.AES;
 import com.limmil.real_calculator.encryption.EncryptedFileObject;
 import com.limmil.real_calculator.interfaces.IImageIndicatorListener;
+import com.limmil.real_calculator.ui.gallery.utils.HackyViewPager;
 import com.limmil.real_calculator.ui.gallery.utils.PhotoAdapter;
 import com.limmil.real_calculator.ui.gallery.utils.RecyclerViewPagerImageIndicator;
 
@@ -54,7 +55,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
     private Context animeContx;
     private PhotoView image;
     private ImageButton playButton;
-    private ViewPager imagePager;
+    private HackyViewPager imagePager;
     private CardView header;
     private ImageButton backButton, deleteButton;
     private RecyclerView indicatorRecycler;

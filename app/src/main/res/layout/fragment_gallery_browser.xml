@@ -33,12 +33,12 @@
     </androidx.cardview.widget.CardView>
 
 
-    <androidx.viewpager.widget.ViewPager
+    <com.limmil.real_calculator.ui.gallery.utils.HackyViewPager
         android:id="@+id/imagePager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </androidx.viewpager.widget.ViewPager>
+    </com.limmil.real_calculator.ui.gallery.utils.HackyViewPager>
 
     <!--android:scaleType="centerCrop"-->
 
