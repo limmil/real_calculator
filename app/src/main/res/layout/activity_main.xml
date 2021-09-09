@@ -27,7 +27,7 @@
             android:id="@+id/Text_Display"
             android:cursorVisible="true"
             android:gravity="bottom|end"
-            android:inputType="none"
+            android:inputType="textNoSuggestions|textVisiblePassword"
             android:maxLength="200"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/white"
