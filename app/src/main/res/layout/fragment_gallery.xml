@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:background="@color/black"
         android:columnWidth="120dp"
+        android:paddingBottom="100dp"
         android:clipToPadding="false"
         android:layout_below="@id/fab">
 
