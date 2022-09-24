@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,9 +27,13 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawable;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -319,6 +324,8 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
 
             if(myExternalFile.exists()) {
                 EncryptedFileObject efo = new EncryptedFileObject(myExternalFile, nonce);
+                // need this for webp plugin to work
+                Transformation<Bitmap> fitCenter = new FitCenter();
                 Glide.with(animeContx)
                         .load(efo)
                         .apply(new RequestOptions().fitCenter())
@@ -345,6 +352,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                                 return false;
                             }
                         })
+                        .optionalTransform(WebpDrawable.class, new WebpDrawableTransformation(fitCenter)) //webp decoder
                         .into(image);
 
 
