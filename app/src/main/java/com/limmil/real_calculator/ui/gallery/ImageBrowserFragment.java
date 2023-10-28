@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static androidx.core.view.ViewCompat.setTransitionName;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class ImageBrowserFragment extends Fragment implements IImageIndicatorListener {
     private List<PhotoModel> allImages = new ArrayList<>();
@@ -328,6 +329,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                 Transformation<Bitmap> fitCenter = new FitCenter();
                 Glide.with(animeContx)
                         .load(efo)
+                        //.transition(withCrossFade())
                         .apply(new RequestOptions().fitCenter())
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.drawable.ic_baseline_image)
@@ -354,6 +356,7 @@ public class ImageBrowserFragment extends Fragment implements IImageIndicatorLis
                         })
                         .optionalTransform(WebpDrawable.class, new WebpDrawableTransformation(fitCenter)) //webp decoder
                         .into(image);
+                        //.clearOnDetach();
 
 
             }else{
