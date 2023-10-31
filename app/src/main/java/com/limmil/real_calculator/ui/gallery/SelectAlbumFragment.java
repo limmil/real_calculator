@@ -81,7 +81,8 @@ public class SelectAlbumFragment extends Fragment implements IGalleryClickListen
         if(allAlbums.isEmpty()){
             empty.setVisibility(View.VISIBLE);
         }else{
-            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
+            String dirPath = getActivity().getExternalFilesDir("media/t").getAbsolutePath();
+            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this, dirPath, db);
             albumRecycler.setAdapter(albumAdapter);
         }
 

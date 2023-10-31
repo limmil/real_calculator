@@ -63,7 +63,8 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
         if(allAlbums.isEmpty()){
             empty.setVisibility(View.VISIBLE);
         }else{
-            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this);
+            String dirPath = getActivity().getExternalFilesDir("media/t").getAbsolutePath();
+            albumAdapter = new AlbumAdapter(allAlbums, getActivity(), this, dirPath, db);
             albumRecycler.setAdapter(albumAdapter);
             albumRecycler.scrollToPosition(albumAdapter.getItemCount()-1);
         }
@@ -103,7 +104,8 @@ public class GalleryFragment extends Fragment implements IGalleryClickListener {
                             List<AlbumModel> tmp = db.getAlbums();
                             // albumAdapter is null when adding the first one
                             if (tmp.size()==1){
-                                albumAdapter = new AlbumAdapter(allAlbums, getActivity(), GalleryFragment.this);
+                                String dirPath = getActivity().getExternalFilesDir("media/t").getAbsolutePath();
+                                albumAdapter = new AlbumAdapter(allAlbums, getActivity(), GalleryFragment.this, dirPath, db);
                                 albumRecycler.setAdapter(albumAdapter);
                                 empty.setVisibility(View.GONE);
                             }

@@ -29,6 +29,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
     private List<AlbumModel> albums;
     private Context albumContx;
     private IGalleryClickListener listenToClick;
+    private String dirPath;
+    private DataBaseHelper db;
 
     /**
      *
@@ -36,10 +38,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
      * @param albumContx The Activity or fragment Context
      * @param listen interFace for communication between adapter and fragment or activity
      */
-    public AlbumAdapter(List<AlbumModel> albums, Context albumContx, IGalleryClickListener listen) {
+    public AlbumAdapter(List<AlbumModel> albums, Context albumContx, IGalleryClickListener listen, String dirPath, DataBaseHelper db) {
         this.albums = albums;
         this.albumContx = albumContx;
         this.listenToClick = listen;
+        this.dirPath = dirPath;
+        this.db = db;
     }
 
     @NonNull
@@ -56,9 +60,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumHolder>
         final AlbumModel album = albums.get(position);
 
         // load album thumbnail
-        String dirPath = albumContx.getExternalFilesDir("media/t").getAbsolutePath();
-        DataBaseHelper db = new DataBaseHelper(albumContx);
-        List<PhotoModel> photoIds= db.getPhotoIdsFromAlbum(album);
+        List<PhotoModel> photoIds = db.getPhotoIdsFromAlbum(album);
         String thumbnail = "temp";
         if (photoIds.size()>0){
             thumbnail = Integer.toString(photoIds.get(photoIds.size()-1).getId());

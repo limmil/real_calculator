@@ -18,6 +18,7 @@ import com.limmil.real_calculator.interfaces.IGalleryClickListener;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import static androidx.core.view.ViewCompat.setTransitionName;
 
@@ -26,6 +27,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
     private List<PhotoModel> photoList;
     private Context contx;
     private final IGalleryClickListener listener;
+    private String thumbnailDir;
 
     /**
      *
@@ -33,10 +35,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
      * @param contx The Activities Context
      * @param listener An interface for listening to clicks on the RecyclerView's items
      */
-    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IGalleryClickListener listener){
+    public PhotoAdapter(List<PhotoModel> photoList, Context contx, IGalleryClickListener listener, String thumbnailDir){
         this.photoList = photoList;
         this.contx = contx;
         this.listener = listener;
+        this.thumbnailDir = thumbnailDir;
     }
 
     @NonNull
@@ -55,7 +58,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PicHolder>{
         holder.checkBox.setChecked(photo.getCheckBox());
 
         // load thumbnail
-        String thumbnailDir = contx.getExternalFilesDir("media/t").getAbsolutePath();
         File myExternalFile = new File(thumbnailDir, String.valueOf(photo.getId()));
 
         //AES.setIV(photo.getThumbIv());
